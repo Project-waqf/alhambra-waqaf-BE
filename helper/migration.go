@@ -2,13 +2,13 @@ package helper
 
 import "gorm.io/gorm"
 
-type User struct {
+type Admin struct {
 	gorm.Model
-	Name string
-	Email string
-	Password string
+	Name     string `gorm:"type:varchar(255)"`
+	Username string `gorm:"type:varchar(255)"`
+	Password string `gorm:"type:varchar(255)"`
 }
 
 func InitMigrate(db *gorm.DB) {
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Admin{})
 }
