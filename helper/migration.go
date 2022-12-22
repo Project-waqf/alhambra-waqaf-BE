@@ -9,6 +9,22 @@ type Admin struct {
 	Password string `gorm:"type:varchar(255)"`
 }
 
+type News struct {
+	gorm.Model
+	Title   string `gorm:"type:varchar(255)"`
+	Body    string `gorm:"type:text"`
+	Picture string `gorm:"type:varchar(255)"`
+}
+
+type Wakaf struct {
+	gorm.Model
+	Title    string `gorm:"type:varchar(255)"`
+	Category string `gorm:"type:varchar(255)"`
+	Picture  string `gorm:"type:varchar(255)"`
+}
+
 func InitMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Admin{})
+	db.AutoMigrate(&News{})
+	db.AutoMigrate(&Wakaf{})
 }
