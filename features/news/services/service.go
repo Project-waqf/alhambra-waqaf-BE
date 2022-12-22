@@ -19,3 +19,19 @@ func (news *NewsServices) AddNews(input domain.News) (domain.News, error) {
 	}
 	return res, nil
 }
+
+func (news *NewsServices) GetAll() ([]domain.News, error) {
+	res, err := news.NewsRepository.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (news *NewsServices) Get(id int) (domain.News, error) {
+	res, err := news.NewsRepository.Get(id)
+	if err != nil {
+		return domain.News{}, err
+	}
+	return res, nil
+}

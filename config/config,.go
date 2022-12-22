@@ -17,6 +17,7 @@ type AppConfig struct {
 	DB_USERNAME string
 	DB_PASSWORD string
 	DB_NAME     string
+	SECRET_JWT  string
 }
 
 var lock = &sync.Mutex{}
@@ -56,6 +57,7 @@ func initConfig() *AppConfig {
 	defaultConfig.DB_NAME = os.Getenv("DB_NAME")
 	defaultConfig.DB_USERNAME = os.Getenv("DB_USERNAME")
 	defaultConfig.DB_PASSWORD = os.Getenv("DB_PASSWORD")
+	defaultConfig.SECRET_JWT = os.Getenv("SECRET_JWT")
 
 	return &defaultConfig
 }

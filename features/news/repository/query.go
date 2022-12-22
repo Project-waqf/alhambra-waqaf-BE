@@ -17,11 +17,31 @@ func New(db *gorm.DB) domain.RepoInterface {
 }
 
 func (news *NewsRepository) Insert(input domain.News) (domain.News, error) {
-	cnv := FromDomain(input)
+	cnv := FromDomainAddNews(input)
 
 	if err := news.db.Create(&cnv).Last(&cnv).Error; err != nil {
 		return domain.News{}, err
 	}
 
-	return ToDomain(cnv), nil
+	return ToDomainAddNews(cnv), nil
+}
+
+func (news *NewsRepository) GetAll() ([]domain.News, error) {
+	var res []News
+
+	if err := news.db.Find(&res).Error; err != nil {
+		return []domain.News{}, err
+	}
+
+	return ToDomainGetAll(res), nil
+}
+
+func (news *NewsRepository) Get(id int) (domain.News, error) {
+	var res News
+
+	if err := news.db.Where("id = ?", id).First(&res).Error; err != nil {
+		return domain.News{}, err
+	}
+
+	return ToDomainGet(res), nil
 }

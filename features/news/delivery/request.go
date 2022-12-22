@@ -8,7 +8,7 @@ type News struct {
 	Picture string `json:"picture" form:"picture"`
 }
 
-func ToDomain(data News) domain.News {
+func ToDomainAddNews(data News) domain.News {
 	return domain.News{
 		Title: data.Title,
 		Body: data.Body,

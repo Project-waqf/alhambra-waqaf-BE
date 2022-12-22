@@ -13,8 +13,12 @@ type News struct {
 
 type UseCaseInterface interface {
 	AddNews(input News) (News, error)
+	GetAll() ([]News, error)
+	Get(id int) (News, error)
 }
 
 type RepoInterface interface {
 	Insert(input News) (News, error)
+	GetAll() ([]News, error)
+	Get(id int) (News, error)
 }
