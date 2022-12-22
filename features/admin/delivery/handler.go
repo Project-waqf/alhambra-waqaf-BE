@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"wakaf/features/admin/domain"
 	"wakaf/helper"
-
+	"wakaf/middlewares"
 	"github.com/labstack/echo/v4"
 )
 
@@ -38,6 +38,8 @@ func (delivery *AdminDelivery) Login() echo.HandlerFunc{
 			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusBadRequest, helper.Success("Login success", res))
+		loginRes := FromDomainLogin(res)
+		loginRes.Token, _= middlewares.CreateToken(int(res.ID), res.Username)
+		return c.JSON(http.StatusBadRequest, helper.Success("Login success", loginRes))
 	}
 }

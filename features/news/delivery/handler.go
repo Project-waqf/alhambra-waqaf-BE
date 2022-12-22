@@ -22,11 +22,9 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 		NewsServices: data,
 	}
 
-	config := config.AppConfig{}
-
-	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.SECRET_JWT)))   // ADD NEWS
-	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.SECRET_JWT))) // GET ALL NEWS
-	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.SECRET_JWT)))
+	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // ADD NEWS
+	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET ALL NEWS
+	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (news *NewsDelivery) AddNews() echo.HandlerFunc {
