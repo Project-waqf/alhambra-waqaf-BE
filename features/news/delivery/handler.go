@@ -22,9 +22,10 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 		NewsServices: data,
 	}
 
-	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // ADD NEWS
-	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET ALL NEWS
-	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))               // ADD NEWS
+	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))             // GET ALL NEWS
+	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET SINGLE NEWS
+	e.PUT("/admin/news/id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (news *NewsDelivery) AddNews() echo.HandlerFunc {
@@ -88,5 +89,27 @@ func (news *NewsDelivery) GetSingleNews() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusOK, helper.Success("Get news successfully", FromDOmainGet(res)))
+	}
+}
+
+func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input News
+		err := c.Bind(&input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+		id := c.Param("id")
+		cnvId, err:= strconv.Atoi(id)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+		cnvInput := ToDomainAddNews(input)
+		res, err := news.NewsServices.UpdateNews(cnvId, cnvInput)
+		if err != nil {	
+			log.Print(err.Error())
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusOK, helper.Success("Update news successfully", FromDOmainGet(res)))
 	}
 }

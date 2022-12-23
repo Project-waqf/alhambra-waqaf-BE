@@ -35,3 +35,11 @@ func (news *NewsServices) Get(id int) (domain.News, error) {
 	}
 	return res, nil
 }
+
+func (news *NewsServices) UpdateNews(id int, input domain.News) (domain.News, error) {
+	res, err := news.NewsRepository.Edit(id, input)
+	if err != nil {
+		return domain.News{}, err
+	}
+	return res, nil
+}

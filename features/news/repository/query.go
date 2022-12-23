@@ -45,3 +45,14 @@ func (news *NewsRepository) Get(id int) (domain.News, error) {
 
 	return ToDomainGet(res), nil
 }
+
+func (news *NewsRepository) Edit(id int, input domain.News) (domain.News, error) {
+	data := FromDomainAddNews(input)
+
+	if err := news.db.Model(&News{}).Where("id = ?", id).Updates(&data).Error; err != nil {
+		return domain.News{}, err
+	}
+	
+	data.ID = uint(id)
+	return ToDomainAddNews(data), nil
+}
