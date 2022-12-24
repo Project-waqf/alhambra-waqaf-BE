@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"log"
 	"wakaf/features/news/domain"
 
 	"gorm.io/gorm"
@@ -50,6 +51,7 @@ func (news *NewsRepository) Edit(id int, input domain.News) (domain.News, error)
 	data := FromDomainAddNews(input)
 
 	if err := news.db.Model(&News{}).Where("id = ?", id).Updates(&data).Error; err != nil {
+		log.Print(err.Error())
 		return domain.News{}, err
 	}
 	

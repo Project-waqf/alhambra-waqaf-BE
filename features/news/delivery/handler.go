@@ -25,7 +25,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))               // ADD NEWS
 	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))             // GET ALL NEWS
 	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET SINGLE NEWS
-	e.PUT("/admin/news/id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.PUT("/admin/news/:id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (news *NewsDelivery) AddNews() echo.HandlerFunc {
@@ -99,11 +99,25 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
-		id := c.Param("id")
+		id := c.Param("id_news")
 		cnvId, err:= strconv.Atoi(id)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
+
+		file, fileheader, err := c.Request().FormFile("picture")
+		if err != nil {
+			log.Print(err)
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		filename, err := helper.Upload(c, file, fileheader)
+		if err != nil {
+			log.Print(err)
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		input.Picture = filename
 		cnvInput := ToDomainAddNews(input)
 		res, err := news.NewsServices.UpdateNews(cnvId, cnvInput)
 		if err != nil {	
