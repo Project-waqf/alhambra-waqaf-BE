@@ -1,4 +1,4 @@
 *.git
 *_test.go
 *.html
-*.out
+*.out   
