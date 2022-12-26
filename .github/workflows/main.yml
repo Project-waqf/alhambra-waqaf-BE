@@ -48,5 +48,5 @@ jobs:
             docker stop wakaf
             docker rm wakaf
             docker rmi faturfawkes/wakaf_img
-            docker run --name wakaf --link ${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} -p 80:8000 -e SERVER_PORT=${{ secret.SERVER_PORT }} -e DB_USERNAME=${{ secret.DB_USERNAME }} -e DB_PASSWORD=${{ secret.DB_PASSWORD }} -e DB_HOST=${{ secret.DB_HOST }} -e DB_PORT=${{ secret.DB_PORT }} -e DB_NAME=${{ secret.DB_NAME }} -e IMAGEIO_PUBLIC=${{ secret.IMAGEIO_PUBLIC }} -e IMAGEIO_PRIVATE=${{ secret.IMAGEIO_PRIVATE }} -e SECRET_JWT=${{ secret.SECRET_JWT }} -d faturfawkes/waqaf_img
+            docker run --name wakaf --link ${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} -p 80:8000 -e SERVER_PORT=${{ secrets.SERVER_PORT }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_HOST=${{ secrets.DB_HOST }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_NAME=${{ secrets.DB_NAME }} -e IMAGEIO_PUBLIC=${{ secrets.IMAGEIO_PUBLIC }} -e IMAGEIO_PRIVATE=${{ secrets.IMAGEIO_PRIVATE }} -e SECRET_JWT=${{ secrets.SECRET_JWT }} -d faturfawkes/waqaf_img
           
