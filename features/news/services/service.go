@@ -43,3 +43,5 @@ func (news *NewsServices) UpdateNews(id int, input domain.News) (domain.News, er
 	}
 	return res, nil
 }
+
+func (news *NewsServices) Delete(id int) error
