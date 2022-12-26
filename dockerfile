@@ -10,8 +10,8 @@ WORKDIR /app
 ADD . .
 
 # BUAT FILE EXE
-RUN go build -o main .
+RUN go build -o main
 
 #RUN EXE
-CMD ["./main"]
+CMD [ "./main" ]
 
