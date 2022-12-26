@@ -13,8 +13,10 @@ type Wakaf struct {
 
 type UseCaseInterface interface {
 	AddWakaf(input Wakaf) (Wakaf, error)
+	GetAllWakaf() ([]Wakaf, error)
 }
 
 type RepoInterface interface {
 	Insert(input Wakaf) (Wakaf, error)
+	GetAllWakaf() ([]Wakaf, error)
 }

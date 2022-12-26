@@ -32,3 +32,19 @@ func ToDomainAdd(input Wakaf) domain.Wakaf {
 		UpdatedAt: input.UpdatedAt,
 	}
 }
+
+func ToDomainGetAll(input []Wakaf) []domain.Wakaf{
+	var res []domain.Wakaf
+
+	for _, v := range input {
+		res = append(res, domain.Wakaf{
+			ID: v.ID,
+			Title: v.Title,
+			Category: v.Category,
+			Picture: v.Picture,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		})
+	}
+	return res
+}

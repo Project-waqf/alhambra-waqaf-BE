@@ -23,3 +23,19 @@ func FromDomainAdd(input domain.Wakaf) WakafResponse {
 		UpdatedAt: input.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 	} 
 }
+
+func FromDomainGetAll(input []domain.Wakaf) []WakafResponse {
+	var res []WakafResponse
+
+	for _, v := range input {
+		res = append(res, WakafResponse{
+			ID: v.ID,
+			Title: v.Title,
+			Category: v.Category,
+			Picture: v.Picture,
+			CreatedAt:  v.CreatedAt.Format("Monday, 02-01-2006 T15:04:05"),
+			UpdatedAt:  v.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
+		})
+	}
+	return res
+}

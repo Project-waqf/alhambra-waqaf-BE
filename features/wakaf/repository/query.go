@@ -24,3 +24,12 @@ func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	}
 	return ToDomainAdd(data), nil
 }
+
+func (wakaf *WakafRepo) GetAllWakaf() ([]domain.Wakaf, error) {
+	var res []Wakaf
+
+	if err := wakaf.db.Find(&res).Error; err != nil {
+		return []domain.Wakaf{}, err
+	}
+	return ToDomainGetAll(res), nil
+}

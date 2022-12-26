@@ -20,7 +20,8 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 		WakafService: data,
 	}
 
-	e.POST("admin/wakaf", handler.AddWakaf(),  middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.POST("admin/wakaf", handler.AddWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // INSERT WAKAF
+	e.GET("admin/wakaf", handler.GetAllWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET ALL WAKAF
 }
 
 func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
@@ -29,27 +30,38 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 
 		err := c.Bind(&input)
 		if err != nil {
-			log.Print(err)
+			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err != nil {
-			log.Print(err)
+			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		dest, err := helper.Upload(c, file, fileheader)
 		if err != nil {
-			log.Print(err)
+			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
 		input.Picture = dest
 		res, err := wakaf.WakafService.AddWakaf(ToDomainAdd(input))
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Somethin error in server"))
+			log.Println(err)
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		log.Print(res)
 		return c.JSON(http.StatusOK, helper.Success("Add wakaf successfully", FromDomainAdd(res)))
+	}
+}
+ func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		
+		res, err := wakaf.WakafService.GetAllWakaf()
+		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusOK, helper.Success("Get all wakaf successfully", FromDomainGetAll(res)))
 	}
 }
