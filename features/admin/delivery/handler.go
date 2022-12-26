@@ -40,6 +40,6 @@ func (delivery *AdminDelivery) Login() echo.HandlerFunc{
 		}
 		loginRes := FromDomainLogin(res)
 		loginRes.Token, _= middlewares.CreateToken(int(res.ID), res.Username)
-		return c.JSON(http.StatusBadRequest, helper.Success("Login success", loginRes))
+		return c.JSON(http.StatusOK, helper.Success("Login success", loginRes))
 	}
 }
