@@ -16,6 +16,7 @@ type UseCaseInterface interface {
 	GetAll() ([]News, error)
 	Get(id int) (News, error)
 	UpdateNews(id int, input News) (News, error)
+	Delete(id int) (News,error)
 }
 
 type RepoInterface interface {
@@ -23,4 +24,5 @@ type RepoInterface interface {
 	GetAll() ([]News, error)
 	Get(id int) (News, error)
 	Edit(id int, input News) (News, error)
+	Delete(id int) (News, error)
 }

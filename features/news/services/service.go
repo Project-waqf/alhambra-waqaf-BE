@@ -43,3 +43,11 @@ func (news *NewsServices) UpdateNews(id int, input domain.News) (domain.News, er
 	}
 	return res, nil
 }
+
+func (news *NewsServices) Delete(id int) (domain.News, error) {
+	res, err := news.NewsRepository.Delete(id)
+	if err != nil {
+		return domain.News{}, err
+	}
+	return res, nil
+}

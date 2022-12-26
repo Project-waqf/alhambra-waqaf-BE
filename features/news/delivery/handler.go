@@ -26,6 +26,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))             // GET ALL NEWS
 	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET SINGLE NEWS
 	e.PUT("/admin/news/:id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.DELETE("/admin/news/:id_news", handler.DeleteNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (news *NewsDelivery) AddNews() echo.HandlerFunc {
@@ -125,5 +126,21 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusOK, helper.Success("Update news successfully", FromDOmainGet(res)))
+	}
+}
+
+func (news *NewsDelivery) DeleteNews() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id_news")
+		cnvId, err:= strconv.Atoi(id)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+		res, err := news.NewsServices.Delete(cnvId)
+		if err != nil {
+			log.Print(err)
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusOK, helper.Success("Delete news successfully", FromDOmainGet(res)))
 	}
 }

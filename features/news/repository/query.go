@@ -58,3 +58,16 @@ func (news *NewsRepository) Edit(id int, input domain.News) (domain.News, error)
 	data.ID = uint(id)
 	return ToDomainAddNews(data), nil
 }
+
+func (news *NewsRepository) Delete(id int) (domain.News, error) {
+	var res News
+
+	if err := news.db.Where("id = ?", id).First(&res).Error; err != nil {
+		return domain.News{}, err
+	}
+
+	if err := news.db.Model(&News{}).Delete("id = ?", id).Error; err != nil {
+		return domain.News{}, err
+	}
+	return ToDomainGet(res), nil
+}
