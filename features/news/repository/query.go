@@ -58,3 +58,5 @@ func (news *NewsRepository) Edit(id int, input domain.News) (domain.News, error)
 	data.ID = uint(id)
 	return ToDomainAddNews(data), nil
 }
+
+func (news *NewsRepository) Delete(id int) error
