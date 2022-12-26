@@ -1,0 +1,52 @@
+# This is a basic workflow to help you get started with Actions
+name: wakaf
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+# Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+# Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+        name: Login to Docker Hub
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/alhambra-wakaf:latest
+      - 
+        name: executing remote ssh using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker stop wakaf
+            docker rm wakaf
+            docker rmi faturfawkes/wakaf_img
+            docker run --name wakaf --link ${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} -p 80:8000 -e SERVER_PORT=${{ secret.SERVER_PORT }} -e DB_USERNAME=${{ secret.DB_USERNAME }} -e DB_PASSWORD=${{ secret.DB_PASSWORD }} -e DB_HOST=${{ secret.DB_HOST }} -e DB_PORT=${{ secret.DB_PORT }} -e DB_NAME=${{ secret.DB_NAME }} -e IMAGEIO_PUBLIC=${{ secret.IMAGEIO_PUBLIC }} -e IMAGEIO_PRIVATE=${{ secret.IMAGEIO_PRIVATE }} -e SECRET_JWT=${{ secret.SECRET_JWT }} -d faturfawkes/waqaf_img
+          
