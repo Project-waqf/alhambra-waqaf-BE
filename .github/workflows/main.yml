@@ -35,7 +35,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/alhambra-wakaf:latest
+          tags: faturfawkes/alhambra-wakaf
       - 
         name: executing remote ssh using ssh key
         uses: appleboy/ssh-action@master
@@ -47,6 +47,6 @@ jobs:
           script: |
             docker stop wakaf
             docker rm wakaf
-            docker rmi faturfawkes/wakaf_img
+            docker rmi faturfawkes/alhambra-wakaf
             docker run --name wakaf --link ${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }} -p 80:8000 -e SERVER_PORT=${{ secrets.SERVER_PORT }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e DB_HOST=${{ secrets.DB_HOST }} -e DB_PORT=${{ secrets.DB_PORT }} -e DB_NAME=${{ secrets.DB_NAME }} -e IMAGEIO_PUBLIC=${{ secrets.IMAGEIO_PUBLIC }} -e IMAGEIO_PRIVATE=${{ secrets.IMAGEIO_PRIVATE }} -e SECRET_JWT=${{ secrets.SECRET_JWT }} -d faturfawkes/waqaf_img
           
