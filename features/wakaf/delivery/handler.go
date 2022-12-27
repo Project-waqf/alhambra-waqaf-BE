@@ -3,6 +3,7 @@ package delivery
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"wakaf/config"
 	"wakaf/features/wakaf/domain"
 	"wakaf/helper"
@@ -22,6 +23,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 
 	e.POST("admin/wakaf", handler.AddWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // INSERT WAKAF
 	e.GET("admin/wakaf", handler.GetAllWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET ALL WAKAF
+	e.PUT("admin/wakaf/:id_wakaf", handler.UpdateWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
@@ -54,6 +56,7 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, helper.Success("Add wakaf successfully", FromDomainAdd(res)))
 	}
 }
+
  func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		
@@ -63,5 +66,40 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusOK, helper.Success("Get all wakaf successfully", FromDomainGetAll(res)))
+	}
+}
+
+func (wakaf *WakafDelivery) UpdateWakaf() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input WakafRequest
+		
+		id := c.Param("id_wakaf")
+		err := c.Bind(&input)
+		if err != nil {
+			log.Print(err)
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		file, fileheader, err := c.Request().FormFile("picture")
+		if err == nil {
+			fileName, err:= helper.Upload(c, file, fileheader)
+			if err != nil {
+				log.Println(err)
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+			input.Picture = fileName
+		}
+
+		cnvId, err:= strconv.Atoi(id)
+		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		res, err := wakaf.WakafService.UpdateWakaf(uint(cnvId), ToDomainAdd(input))
+		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusOK, helper.Success("Update wakaf successfully", FromDomainAdd(res)))																																																																					
 	}
 }

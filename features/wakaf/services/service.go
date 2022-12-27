@@ -27,3 +27,11 @@ func(wakaf *WakafService) GetAllWakaf() ([]domain.Wakaf, error) {
 	}
 	return res, nil
 }
+
+func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Wakaf, error) {
+	res, err := wakaf.WakafRepo.Edit(id, input)
+	if err != nil {
+		return domain.Wakaf{}, err
+	}
+	return res, nil
+}

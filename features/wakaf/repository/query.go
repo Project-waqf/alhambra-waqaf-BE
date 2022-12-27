@@ -33,3 +33,14 @@ func (wakaf *WakafRepo) GetAllWakaf() ([]domain.Wakaf, error) {
 	}
 	return ToDomainGetAll(res), nil
 }
+
+func (wakaf *WakafRepo) Edit(id uint, input domain.Wakaf) (domain.Wakaf, error) {
+	data := FromDomainAdd(input)
+
+	if err := wakaf.db.Where("id = ?", id).Updates(&data).Error; err != nil {
+		return domain.Wakaf{}, err
+	}
+
+	data.ID = id
+	return ToDomainAdd(data), nil
+}
