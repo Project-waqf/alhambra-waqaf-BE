@@ -32,3 +32,19 @@ func ToDomainAdd(input Asset) domain.Asset {
 		UpdatedAt: input.UpdatedAt,
 	}
 }
+
+func ToDomainGetAll(input []Asset) []domain.Asset {
+	var res []domain.Asset
+
+	for _, v := range input {
+		res = append(res, domain.Asset{
+			ID: v.ID,
+			Name: v.Name,
+			Picture: v.Picture,
+			Detail: v.Detail,
+			CreatedAt: v.CreatedAt,
+			UpdatedAt: v.UpdatedAt,
+		})
+	}
+	return res
+}

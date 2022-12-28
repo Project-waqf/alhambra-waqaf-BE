@@ -24,3 +24,13 @@ func (asset *AssetRepo) Insert(input domain.Asset) (domain.Asset, error) {
 	}
 	return ToDomainAdd(data), nil
 }
+
+func (asset *AssetRepo) GetAll() ([]domain.Asset, error) {
+	var res []Asset
+
+	if err := asset.db.Find(&res).Error; err != nil {
+		return []domain.Asset{}, err
+	}
+
+	return ToDomainGetAll(res), nil
+}

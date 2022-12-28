@@ -13,8 +13,10 @@ type Asset struct {
 
 type UsecaseInterface interface {
 	AddAsset(input Asset) (Asset, error)
+	GetAllAsset() ([]Asset, error)
 }
 
 type RepositoryInterface interface {
 	Insert(input Asset) (Asset, error)
+	GetAll() ([]Asset, error)
 }

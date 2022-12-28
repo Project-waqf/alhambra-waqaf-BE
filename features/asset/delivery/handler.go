@@ -21,6 +21,7 @@ func New(e *echo.Echo, data domain.UsecaseInterface) {
 	}
 
 	e.POST("admin/asset", handler.AddAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.GET("admin/asset", handler.GetAllAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
@@ -50,11 +51,22 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 		input.Picture = fileName
 		res, err := asset.AssetService.AddAsset(ToDomainAdd(input))
 		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusOK, helper.Success("Add asset successfully", res))
+	}
+}
+
+func (asset *AssetDelivery) GetAllAsset() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		res, err := asset.AssetService.GetAllAsset()
+		if err != nil {
 			if err != nil {
 				log.Println(err)
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
 		}
-		return c.JSON(http.StatusOK, helper.Success("Add asset successfully", res))
+		return c.JSON(http.StatusOK, helper.Success("Add asset successfully", FromDomainGetAll(res)))
 	}
 }
