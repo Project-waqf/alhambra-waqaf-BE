@@ -114,11 +114,11 @@ func (wakaf *WakafDelivery) DeleteWakaf() echo.HandlerFunc {
 			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
-		res, err := wakaf.WakafService.DeleteWakaf(uint(cnvId))
+		_, err = wakaf.WakafService.DeleteWakaf(uint(cnvId))
 		if err != nil {
 			log.Println(err)
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusOK, helper.Success("Update wakaf successfully", FromDomainGet(res)))
+		return c.JSON(http.StatusOK, helper.Success("Delete wakaf successfully", nil))
 	}
 }

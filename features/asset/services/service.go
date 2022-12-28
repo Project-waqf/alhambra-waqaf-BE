@@ -43,3 +43,11 @@ func (asset *AssetService) UpdateAsset(id uint, input domain.Asset) (domain.Asse
 	}
 	return res, nil
 }
+
+func (asset *AssetService) DeleteAsset(id uint) error {
+	err := asset.AssetRepo.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

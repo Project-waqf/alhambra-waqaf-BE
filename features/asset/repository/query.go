@@ -53,3 +53,10 @@ func (asset *AssetRepo) Edit(id uint, input domain.Asset) (domain.Asset, error) 
 	data.ID = id
 	return ToDomainAdd(data), nil
 }
+
+func (asset *AssetRepo) Delete(id uint) error {
+	if err := asset.db.Delete(&Asset{}, "id = ?", id).Error; err != nil {
+		return err
+	}
+	return nil
+}

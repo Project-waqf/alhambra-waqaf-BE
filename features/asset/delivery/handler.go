@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"wakaf/config"
 	"wakaf/features/asset/domain"
 	"wakaf/helper"
@@ -25,7 +26,7 @@ func New(e *echo.Echo, data domain.UsecaseInterface) {
 	e.GET("admin/asset", handler.GetAllAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 	e.GET("admin/asset/:id_asset", handler.GetAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 	e.PUT("admin/asset/:id_asset", handler.UpdateAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-
+	e.DELETE("admin/asset/:id_asset", handler.DeleteAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
@@ -124,5 +125,27 @@ func (asset *AssetDelivery) UpdateAsset() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusCreated, helper.Success("Update asset successfully", FromDomainAdd(res)))
+	}
+}
+
+func (asset *AssetDelivery) DeleteAsset() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id_asset")
+		cnvId, err := strconv.Atoi(id)
+		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		err = asset.AssetService.DeleteAsset(uint(cnvId))
+		if err != nil {
+			log.Println(err)
+			if strings.Contains(err.Error(), "found") {
+				return c.JSON(http.StatusNotFound, helper.Failed("Data not found"))
+			} else {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+		}
+		return c.JSON(http.StatusOK, helper.Success("Delete asset successfully", nil))
 	}
 }

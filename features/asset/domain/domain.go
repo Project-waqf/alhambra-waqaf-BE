@@ -16,6 +16,7 @@ type UsecaseInterface interface {
 	GetAllAsset() ([]Asset, error)
 	GetAsset(id uint) (Asset, error)
 	UpdateAsset(id uint, input Asset) (Asset, error)
+	DeleteAsset(id uint) (error)
 }
 
 type RepositoryInterface interface {
@@ -23,4 +24,5 @@ type RepositoryInterface interface {
 	GetAll() ([]Asset, error)
 	Get(id uint) (Asset, error)
 	Edit(id uint, input Asset) (Asset, error)
+	Delete(id uint) (error)
 }

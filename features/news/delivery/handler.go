@@ -137,11 +137,11 @@ func (news *NewsDelivery) DeleteNews() echo.HandlerFunc {
 			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
-		res, err := news.NewsServices.Delete(cnvId)
+		_, err = news.NewsServices.Delete(cnvId)
 		if err != nil {
 			log.Print(err)
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusOK, helper.Success("Delete news successfully", FromDOmainGet(res)))
+		return c.JSON(http.StatusOK, helper.Success("Delete news successfully", nil))
 	}
 }
