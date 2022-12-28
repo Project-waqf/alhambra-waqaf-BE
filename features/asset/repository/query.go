@@ -34,3 +34,12 @@ func (asset *AssetRepo) GetAll() ([]domain.Asset, error) {
 
 	return ToDomainGetAll(res), nil
 }
+
+func (asset *AssetRepo) Get(id uint) (domain.Asset, error) {
+	var res Asset
+
+	if err := asset.db.First(&res, "id = ?", id).Error; err != nil {
+		return domain.Asset{}, err
+	}
+	return ToDomainAdd(res), nil
+}

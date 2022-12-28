@@ -3,6 +3,7 @@ package delivery
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"wakaf/config"
 	"wakaf/features/asset/domain"
 	"wakaf/helper"
@@ -22,6 +23,7 @@ func New(e *echo.Echo, data domain.UsecaseInterface) {
 
 	e.POST("admin/asset", handler.AddAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 	e.GET("admin/asset", handler.GetAllAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.GET("admin/asset/:id_asset", handler.GetAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
@@ -54,7 +56,7 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 			log.Println(err)
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusOK, helper.Success("Add asset successfully", res))
+		return c.JSON(http.StatusOK, helper.Success("Add asset successfully", FromDomainAdd(res)))
 	}
 }
 
@@ -68,5 +70,22 @@ func (asset *AssetDelivery) GetAllAsset() echo.HandlerFunc {
 			}
 		}
 		return c.JSON(http.StatusOK, helper.Success("Add asset successfully", FromDomainGetAll(res)))
+	}
+}
+
+func (asset *AssetDelivery) GetAsset() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id_asset")
+		cnvId, err := strconv.Atoi(id)
+		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+		res, err := asset.AssetService.GetAsset(uint(cnvId))
+		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusOK, helper.Success("Get asset successfully", FromDomainAdd(res)))
 	}
 }
