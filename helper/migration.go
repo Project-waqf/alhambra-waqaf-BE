@@ -23,6 +23,19 @@ type Wakaf struct {
 	Picture  string `gorm:"type:varchar(255)"`
 }
 
+type Partner struct {
+	gorm.Model
+	Name    string `gorm:"varchar(255)"`
+	Picture string `gorm:"varchar(255)"`
+}
+
+type Asset struct {
+	gorm.Model
+	Name    string `gorm:"varchar(255)"`
+	Picture string `gorm:"varchar(255)"`
+	Detail  string `gorm:"varchar(255)"`
+}
+
 func InitMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Admin{})
 	db.AutoMigrate(&News{})
