@@ -44,3 +44,16 @@ func (wakaf *WakafRepo) Edit(id uint, input domain.Wakaf) (domain.Wakaf, error) 
 	data.ID = id
 	return ToDomainAdd(data), nil
 }
+
+func (wakaf *WakafRepo) Delete(id uint) (domain.Wakaf, error) {
+	var data Wakaf
+
+	if err := wakaf.db.Where("id = ?", id).First(&data).Error; err != nil {
+		return domain.Wakaf{}, err
+	}
+
+	if err := wakaf.db.Delete(&Wakaf{}, "id = ?", id).Error; err != nil {
+		return domain.Wakaf{}, err
+	}
+	return ToDomainGet(data), nil
+}

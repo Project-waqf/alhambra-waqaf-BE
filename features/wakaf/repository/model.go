@@ -48,3 +48,14 @@ func ToDomainGetAll(input []Wakaf) []domain.Wakaf{
 	}
 	return res
 }
+
+func ToDomainGet(input Wakaf) domain.Wakaf {
+	return domain.Wakaf{
+		ID: input.ID,
+		Title: input.Title,
+		Category: input.Category,
+		Picture: input.Picture,
+		CreatedAt: input.UpdatedAt,
+		UpdatedAt: input.UpdatedAt,
+	}
+}

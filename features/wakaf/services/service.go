@@ -35,3 +35,11 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 	}
 	return res, nil
 }
+
+func (wakaf *WakafService) DeleteWakaf(id uint) (domain.Wakaf, error) {
+	res, err := wakaf.WakafRepo.Delete(id)
+	if err != nil {
+		return domain.Wakaf{}, err
+	}
+	return res, nil
+}
