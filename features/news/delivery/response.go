@@ -5,7 +5,7 @@ import (
 )
 
 type NewsResponse struct {
-	ID        uint   `json:"id"`
+	ID        uint   `json:"id_news"`
 	Title     string `json:"title"`
 	Body      string `json:"body"`
 	Picture   string `json:"picture"`

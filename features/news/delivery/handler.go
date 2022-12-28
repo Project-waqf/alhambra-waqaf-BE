@@ -134,6 +134,7 @@ func (news *NewsDelivery) DeleteNews() echo.HandlerFunc {
 		id := c.Param("id_news")
 		cnvId, err:= strconv.Atoi(id)
 		if err != nil {
+			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		res, err := news.NewsServices.Delete(cnvId)

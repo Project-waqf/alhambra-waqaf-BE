@@ -5,7 +5,7 @@ import (
 )
 
 type WakafResponse struct {
-	ID        uint
+	ID        uint `json:"id_wakaf"`
 	Title     string `json:"title"`
 	Category  string `json:"category"`
 	Picture   string `json:"picture"`

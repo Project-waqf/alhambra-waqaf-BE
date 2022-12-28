@@ -10,6 +10,10 @@ import (
 	WakafRepository "wakaf/features/wakaf/repository"
 	WakafServices "wakaf/features/wakaf/services"
 	WakafDelivery "wakaf/features/wakaf/delivery"
+	AssetRepository "wakaf/features/asset/repository"
+	AssetServices "wakaf/features/asset/services"
+	AssetDelivery "wakaf/features/asset/delivery"
+	
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -30,4 +34,9 @@ func InitFactory(e *echo.Echo, db *gorm.DB) {
 	wakafRepoFactory := WakafRepository.New(db)
 	wakafServiceFactory := WakafServices.New(wakafRepoFactory)
 	WakafDelivery.New(e, wakafServiceFactory)
+
+	// ASSET
+	assetRepoFactory := AssetRepository.New(db)
+	assetServiceFactory := AssetServices.New(assetRepoFactory)
+	AssetDelivery.New(e, assetServiceFactory)
 }
