@@ -43,3 +43,13 @@ func (asset *AssetRepo) Get(id uint) (domain.Asset, error) {
 	}
 	return ToDomainAdd(res), nil
 }
+
+func (asset *AssetRepo) Edit(id uint, input domain.Asset) (domain.Asset, error) {
+	data := FromDomainAdd(input)
+
+	if err := asset.db.Where("id = ?", id).Updates(&data).Error; err != nil {
+		return domain.Asset{}, err
+	}
+	data.ID = id
+	return ToDomainAdd(data), nil
+}

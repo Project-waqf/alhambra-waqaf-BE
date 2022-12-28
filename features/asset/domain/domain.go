@@ -15,10 +15,12 @@ type UsecaseInterface interface {
 	AddAsset(input Asset) (Asset, error)
 	GetAllAsset() ([]Asset, error)
 	GetAsset(id uint) (Asset, error)
+	UpdateAsset(id uint, input Asset) (Asset, error)
 }
 
 type RepositoryInterface interface {
 	Insert(input Asset) (Asset, error)
 	GetAll() ([]Asset, error)
 	Get(id uint) (Asset, error)
+	Edit(id uint, input Asset) (Asset, error)
 }

@@ -35,3 +35,11 @@ func (asset *AssetService) GetAsset(id uint) (domain.Asset, error) {
 	}
 	return res, nil
 }
+
+func (asset *AssetService) UpdateAsset(id uint, input domain.Asset) (domain.Asset, error) {
+	res, err := asset.AssetRepo.Edit(id, input)
+	if err != nil {
+		return domain.Asset{}, err
+	}
+	return res, nil
+}
