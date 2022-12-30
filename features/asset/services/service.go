@@ -51,3 +51,11 @@ func (asset *AssetService) DeleteAsset(id uint) error {
 	}
 	return nil
 }
+
+func (asset *AssetService) ToOnline(id uint) error {
+	err := asset.AssetRepo.ToOnline(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

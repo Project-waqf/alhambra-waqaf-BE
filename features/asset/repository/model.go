@@ -11,23 +11,26 @@ type Asset struct {
 	Name    string `gorm:"varchar(255)"`
 	Picture string `gorm:"varchar(255)"`
 	Detail  string `gorm:"varchar(255)"`
+	Type    string
 }
 
 func FromDomainAdd(input domain.Asset) Asset {
 	return Asset{
-		Model: gorm.Model{ID: input.ID},
-		Name: input.Name,
+		Model:   gorm.Model{ID: input.ID},
+		Name:    input.Name,
 		Picture: input.Picture,
-		Detail: input.Detail,
+		Detail:  input.Detail,
+		Type:    input.Type,
 	}
 }
 
 func ToDomainAdd(input Asset) domain.Asset {
 	return domain.Asset{
-		ID: input.ID,
-		Name: input.Name,
-		Picture: input.Picture,
-		Detail: input.Detail,
+		ID:        input.ID,
+		Name:      input.Name,
+		Picture:   input.Picture,
+		Detail:    input.Detail,
+		Type:      input.Type,
 		CreatedAt: input.CreatedAt,
 		UpdatedAt: input.UpdatedAt,
 	}
@@ -38,10 +41,11 @@ func ToDomainGetAll(input []Asset) []domain.Asset {
 
 	for _, v := range input {
 		res = append(res, domain.Asset{
-			ID: v.ID,
-			Name: v.Name,
-			Picture: v.Picture,
-			Detail: v.Detail,
+			ID:        v.ID,
+			Name:      v.Name,
+			Picture:   v.Picture,
+			Detail:    v.Detail,
+			Type:      v.Type,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 		})

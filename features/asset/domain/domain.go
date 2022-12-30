@@ -7,6 +7,7 @@ type Asset struct {
 	Name      string
 	Picture   string
 	Detail    string
+	Type      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -16,7 +17,8 @@ type UsecaseInterface interface {
 	GetAllAsset() ([]Asset, error)
 	GetAsset(id uint) (Asset, error)
 	UpdateAsset(id uint, input Asset) (Asset, error)
-	DeleteAsset(id uint) (error)
+	DeleteAsset(id uint) error
+	ToOnline(id uint) error
 }
 
 type RepositoryInterface interface {
@@ -24,5 +26,6 @@ type RepositoryInterface interface {
 	GetAll() ([]Asset, error)
 	Get(id uint) (Asset, error)
 	Edit(id uint, input Asset) (Asset, error)
-	Delete(id uint) (error)
+	Delete(id uint) error
+	ToOnline(id uint) error
 }

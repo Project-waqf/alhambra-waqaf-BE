@@ -27,6 +27,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET SINGLE NEWS
 	e.PUT("/admin/news/:id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 	e.DELETE("/admin/news/:id_news", handler.DeleteNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.PUT("admin/news/online/:id_news", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (news *NewsDelivery) AddNews() echo.HandlerFunc {
@@ -98,11 +99,13 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 		var input News
 		err := c.Bind(&input)
 		if err != nil {
+			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		id := c.Param("id_news")
 		cnvId, err:= strconv.Atoi(id)
 		if err != nil {
+			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
@@ -143,5 +146,22 @@ func (news *NewsDelivery) DeleteNews() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusOK, helper.Success("Delete news successfully", nil))
+	}
+}
+
+func (news *NewsDelivery) ToOnline() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id_news")
+		cnvId, err := strconv.Atoi(id)
+		if err != nil {
+			log.Println(err)
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+		err = news.NewsServices.ToOnline(cnvId)
+		if err != nil {
+			log.Println(err.Error())
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusCreated, helper.Success("Set news to online successfully", nil))
 	}
 }

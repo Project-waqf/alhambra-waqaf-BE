@@ -14,6 +14,7 @@ type News struct {
 	Title   string `gorm:"type:varchar(255)"`
 	Body    string `gorm:"type:text"`
 	Picture string `gorm:"type:varchar(255)"`
+	Type string `gorm:"type:enum('draft', 'online')"`
 }
 
 type Wakaf struct {
@@ -28,6 +29,7 @@ type Asset struct {
 	Name    string `gorm:"varchar(255)"`
 	Picture string `gorm:"varchar(255)"`
 	Detail  string `gorm:"varchar(255)"`
+	Type string `gorm:"type:enum('draft', 'online')"`
 }
 
 func InitMigrate(db *gorm.DB) {

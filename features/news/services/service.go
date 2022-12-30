@@ -51,3 +51,11 @@ func (news *NewsServices) Delete(id int) (domain.News, error) {
 	}
 	return res, nil
 }
+
+func (news *NewsServices) ToOnline(id int) error {
+	err := news.NewsRepository.ToOnline(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

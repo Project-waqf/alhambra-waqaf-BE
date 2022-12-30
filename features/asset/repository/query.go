@@ -28,7 +28,7 @@ func (asset *AssetRepo) Insert(input domain.Asset) (domain.Asset, error) {
 func (asset *AssetRepo) GetAll() ([]domain.Asset, error) {
 	var res []Asset
 
-	if err := asset.db.Find(&res).Error; err != nil {
+	if err := asset.db.Where("type = 'online'").Find(&res).Error; err != nil {
 		return []domain.Asset{}, err
 	}
 
@@ -38,7 +38,7 @@ func (asset *AssetRepo) GetAll() ([]domain.Asset, error) {
 func (asset *AssetRepo) Get(id uint) (domain.Asset, error) {
 	var res Asset
 
-	if err := asset.db.First(&res, "id = ?", id).Error; err != nil {
+	if err := asset.db.Where("type = 'online'").First(&res, "id = ?", id).Error; err != nil {
 		return domain.Asset{}, err
 	}
 	return ToDomainAdd(res), nil
@@ -56,6 +56,18 @@ func (asset *AssetRepo) Edit(id uint, input domain.Asset) (domain.Asset, error) 
 
 func (asset *AssetRepo) Delete(id uint) error {
 	if err := asset.db.Delete(&Asset{}, "id = ?", id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (asset *AssetRepo) ToOnline(id uint) error {
+
+	if err := asset.db.First(&Asset{}, "id = ?", id).Error; err != nil {
+		return err
+	}
+
+	if err := asset.db.Model(&Asset{}).Where("id = ?", id).Update("type", "online").Error; err != nil {
 		return err
 	}
 	return nil

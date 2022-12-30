@@ -30,7 +30,7 @@ func (news *NewsRepository) Insert(input domain.News) (domain.News, error) {
 func (news *NewsRepository) GetAll() ([]domain.News, error) {
 	var res []News
 
-	if err := news.db.Find(&res).Error; err != nil {
+	if err := news.db.Where("type = 'online'").Find(&res).Error; err != nil {
 		return []domain.News{}, err
 	}
 
@@ -40,7 +40,7 @@ func (news *NewsRepository) GetAll() ([]domain.News, error) {
 func (news *NewsRepository) Get(id int) (domain.News, error) {
 	var res News
 
-	if err := news.db.Where("id = ?", id).First(&res).Error; err != nil {
+	if err := news.db.Where("id = ? and type = 'online'", id).First(&res).Error; err != nil {
 		return domain.News{}, err
 	}
 
@@ -70,4 +70,16 @@ func (news *NewsRepository) Delete(id int) (domain.News, error) {
 		return domain.News{}, err
 	}
 	return ToDomainGet(res), nil
+}
+
+func (news *NewsRepository) ToOnline(id int) error {
+
+	if err := news.db.Model(&News{}).Where("id = ?", id).Error; err != nil {
+		return err
+	}
+
+	if err := news.db.Model(&News{}).Where("id = ?", id).Update("type", "online").Error; err != nil {
+		return err
+	}
+	return nil
 }

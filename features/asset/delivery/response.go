@@ -3,34 +3,37 @@ package delivery
 import "wakaf/features/asset/domain"
 
 type AssetResponse struct {
-	ID        uint	`json:"id_asset"`
+	ID        uint   `json:"id_asset"`
 	Name      string `json:"name"`
 	Picture   string `json:"picture"`
 	Detail    string `json:"detail"`
+	Type      string `json:"type"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
 
 func FromDomainAdd(input domain.Asset) AssetResponse {
 	return AssetResponse{
-		ID: input.ID,
-		Name: input.Name,
-		Picture: input.Picture,
-		Detail: input.Detail,
+		ID:        input.ID,
+		Name:      input.Name,
+		Picture:   input.Picture,
+		Detail:    input.Detail,
+		Type:      input.Type,
 		CreatedAt: input.CreatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 		UpdatedAt: input.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 	}
 }
 
-func FromDomainGetAll(input []domain.Asset) []AssetResponse{
+func FromDomainGetAll(input []domain.Asset) []AssetResponse {
 	var res []AssetResponse
 
 	for _, v := range input {
 		res = append(res, AssetResponse{
-			ID: v.ID,
-			Name: v.Name,
-			Picture: v.Picture,
-			Detail: v.Detail,
+			ID:        v.ID,
+			Name:      v.Name,
+			Picture:   v.Picture,
+			Detail:    v.Detail,
+			Type:      v.Type,
 			CreatedAt: v.CreatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 			UpdatedAt: v.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 		})
