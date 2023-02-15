@@ -1,35 +1,42 @@
 package helper
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Admin struct {
 	gorm.Model
-	Name     string `gorm:"type:varchar(255)"`
-	Username string `gorm:"type:varchar(255)"`
-	Password string `gorm:"type:varchar(255)"`
+	Name     string `gorm:"type:varchar(255) type:not null"`
+	Email    string `gorm:"type:varchar(255) type:not null"`
+	Password string `gorm:"type:varchar(255) type:not null"`
 }
 
 type News struct {
 	gorm.Model
-	Title   string `gorm:"type:varchar(255)"`
-	Body    string `gorm:"type:text"`
-	Picture string `gorm:"type:varchar(255)"`
-	Type string `gorm:"type:enum('draft', 'online')"`
+	Title   string `gorm:"type:varchar(255) type:not null"`
+	Body    string `gorm:"type:text type:not null"`
+	Picture string `gorm:"type:varchar(255) type:not null"`
+	Status  string `gorm:"type:enum('draft', 'online', 'archive')"`
 }
 
 type Wakaf struct {
 	gorm.Model
-	Title    string `gorm:"type:varchar(255)"`
-	Category string `gorm:"type:varchar(255)"`
-	Picture  string `gorm:"type:varchar(255)"`
+	Title      string `gorm:"type:varchar(255) type:not null"`
+	Category   string `gorm:"type:varchar(255) type:not null"`
+	Picture    string `gorm:"type:varchar(255) type:not null"`
+	Collected  int    `gorm:"type:int(11) type:not null"`
+	FundTarget int    `gorm:"type:int(11) type:not null"`
+	DateTarget *time.Time 
 }
 
 type Asset struct {
 	gorm.Model
-	Name    string `gorm:"varchar(255)"`
-	Picture string `gorm:"varchar(255)"`
-	Detail  string `gorm:"varchar(255)"`
-	Type string `gorm:"type:enum('draft', 'online')"`
+	Name    string `gorm:"varchar(255) type:not null"`
+	Picture string `gorm:"varchar(255) type:not null"`
+	Detail  string `gorm:"varchar(255) type:not null"`
+	Status  string `gorm:"type:enum('draft', 'online', 'archive')"`
 }
 
 func InitMigrate(db *gorm.DB) {

@@ -22,12 +22,12 @@ func New(e *echo.Echo, data domain.UsecaseInterface) {
 		AssetService: data,
 	}
 
-	e.POST("admin/asset", handler.AddAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.GET("admin/asset", handler.GetAllAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.GET("admin/asset/:id_asset", handler.GetAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.PUT("admin/asset/:id_asset", handler.UpdateAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.DELETE("admin/asset/:id_asset", handler.DeleteAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.PUT("admin/asset/online/:id_asset", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.POST("/admin/asset", handler.AddAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.GET("/admin/asset", handler.GetAllAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.GET("/admin/asset/:id_asset", handler.GetAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.PUT("/admin/asset/:id_asset", handler.UpdateAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.DELETE("/admin/asset/:id_asset", handler.DeleteAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.PUT("/admin/asset/online/:id_asset", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 }
 
 func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {

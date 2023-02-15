@@ -22,12 +22,12 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 		NewsServices: data,
 	}
 
-	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))               // ADD NEWS
-	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))             // GET ALL NEWS
-	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // GET SINGLE NEWS
-	e.PUT("/admin/news/:id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.DELETE("/admin/news/:id_news", handler.DeleteNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.PUT("admin/news/online/:id_news", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))                 // ADD NEWS
+	e.GET("/admin/news", handler.GetAllNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))               // GET ALL NEWS
+	e.GET("/admin/news/:id_news", handler.GetSingleNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // GET SINGLE NEWS
+	e.PUT("/admin/news/:id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))      // EDIT NEWS
+	e.DELETE("/admin/news/:id_news", handler.DeleteNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // DELETE NEWS
+	e.PUT("/admin/news/online/:id_news", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // FROM DRAFT TO ONLINE
 }
 
 func (news *NewsDelivery) AddNews() echo.HandlerFunc {
@@ -103,7 +103,7 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		id := c.Param("id_news")
-		cnvId, err:= strconv.Atoi(id)
+		cnvId, err := strconv.Atoi(id)
 		if err != nil {
 			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
@@ -124,7 +124,7 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 		input.Picture = filename
 		cnvInput := ToDomainAddNews(input)
 		res, err := news.NewsServices.UpdateNews(cnvId, cnvInput)
-		if err != nil {	
+		if err != nil {
 			log.Print(err.Error())
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
@@ -135,7 +135,7 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 func (news *NewsDelivery) DeleteNews() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id_news")
-		cnvId, err:= strconv.Atoi(id)
+		cnvId, err := strconv.Atoi(id)
 		if err != nil {
 			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))

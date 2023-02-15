@@ -21,9 +21,9 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 		WakafService: data,
 	}
 
-	e.POST("admin/wakaf", handler.AddWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))                 // INSERT WAKAF
-	e.GET("admin/wakaf", handler.GetAllWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))               // GET ALL WAKAF
-	e.PUT("admin/wakaf/:id_wakaf", handler.UpdateWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))     // UPDATE WAKAF
+	e.POST("/admin/wakaf", handler.AddWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))                 // INSERT WAKAF
+	e.GET("/admin/wakaf", handler.GetAllWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))               // GET ALL WAKAF
+	e.PUT("/admin/wakaf/:id_wakaf", handler.UpdateWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))     // UPDATE WAKAF
 	e.DELETE("/admin/wakaf/:id_wakaf", handler.DeleteWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // DELETE WAKAF
 }
 
