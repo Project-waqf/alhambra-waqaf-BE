@@ -1,19 +1,18 @@
 package factory
 
 import (
-	AdminRepository "wakaf/features/admin/repository"
-	AdminServices "wakaf/features/admin/services"
 	AdminDelivery "wakaf/features/admin/delivery"
-	NewsRepository "wakaf/features/news/repository"
-	NewsServices "wakaf/features/news/services"
-	NewsDelivery "wakaf/features/news/delivery"
-	WakafRepository "wakaf/features/wakaf/repository"
-	WakafServices "wakaf/features/wakaf/services"
-	WakafDelivery "wakaf/features/wakaf/delivery"
+	AdminRepository "wakaf/features/admin/repository"
+	AdminServices "wakaf/features/admin/usecase"
+	AssetDelivery "wakaf/features/asset/delivery"
 	AssetRepository "wakaf/features/asset/repository"
 	AssetServices "wakaf/features/asset/services"
-	AssetDelivery "wakaf/features/asset/delivery"
-	
+	NewsDelivery "wakaf/features/news/delivery"
+	NewsRepository "wakaf/features/news/repository"
+	NewsServices "wakaf/features/news/services"
+	WakafDelivery "wakaf/features/wakaf/delivery"
+	WakafRepository "wakaf/features/wakaf/repository"
+	WakafServices "wakaf/features/wakaf/services"
 
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"

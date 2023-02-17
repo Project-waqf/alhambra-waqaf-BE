@@ -3,15 +3,21 @@ package delivery
 import (
 	"log"
 	"net/http"
+	"strings"
 	"wakaf/features/admin/domain"
-	"wakaf/helper"
-	"wakaf/middlewares"
+	"wakaf/pkg/helper"
+
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
-type AdminDelivery struct{
+type AdminDelivery struct {
 	AdminServices domain.UseCaseInterface
 }
+
+var (
+	logger = helper.Logger()
+)
 
 func New(e *echo.Echo, data domain.UseCaseInterface) {
 
@@ -20,10 +26,11 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	}
 
 	e.POST("/admin/login", handler.Login())
+	e.POST("/admin/register", handler.Register())
 
 }
 
-func (delivery *AdminDelivery) Login() echo.HandlerFunc{
+func (delivery *AdminDelivery) Login() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input Login
 		err := c.Bind(&input)
@@ -38,8 +45,29 @@ func (delivery *AdminDelivery) Login() echo.HandlerFunc{
 			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}
-		loginRes := FromDomainLogin(res)
-		loginRes.Token, _= middlewares.CreateToken(int(res.ID), res.Username)
-		return c.JSON(http.StatusOK, helper.Success("Login success", loginRes))
+
+		return c.JSON(http.StatusOK, helper.Success("Login success", FromDomainLogin(res)))
+	}
+}
+
+func (d *AdminDelivery) Register() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input Register
+		err := c.Bind(&input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		cnv := ToDomainRegister(input)
+
+		err = d.AdminServices.Register(cnv)
+		if err != nil {
+			logger.Error("Register", zap.Any("Register Failed", err.Error()))
+			if strings.Contains(err.Error(), "email has taken") {
+				return c.JSON(http.StatusBadRequest, helper.Failed("Register failed"))
+			}
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusCreated, helper.Success("Register success", input))
 	}
 }

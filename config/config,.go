@@ -17,6 +17,8 @@ type AppConfig struct {
 	DB_USERNAME string
 	DB_PASSWORD string
 	DB_NAME     string
+	SALT1 string
+	SALT2 string
 	SECRET_JWT  string
 }
 
@@ -38,7 +40,7 @@ func initConfig() *AppConfig {
 
 	var defaultConfig AppConfig
 
-	if err := godotenv.Load("config.env"); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		log.Fatal(err)
 	}
 
@@ -58,6 +60,8 @@ func initConfig() *AppConfig {
 	defaultConfig.DB_USERNAME = os.Getenv("DB_USERNAME")
 	defaultConfig.DB_PASSWORD = os.Getenv("DB_PASSWORD")
 	defaultConfig.SECRET_JWT = os.Getenv("SECRET_JWT")
+	defaultConfig.SALT1 = os.Getenv("SALT1")
+	defaultConfig.SALT2 = os.Getenv("SALT2")
 
 	return &defaultConfig
 }

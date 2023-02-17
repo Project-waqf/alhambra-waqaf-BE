@@ -7,7 +7,7 @@ import (
 	"strings"
 	"wakaf/config"
 	"wakaf/features/news/domain"
-	"wakaf/helper"
+	"wakaf/pkg/helper"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
