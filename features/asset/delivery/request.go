@@ -7,7 +7,7 @@ type AssetRequest struct {
 	Name    string `json:"name" form:"name"`
 	Picture string `json:"picture" form:"picture"`
 	Detail  string `json:"detail" form:"detail"`
-	Type    string `json:"type" form:"type"`
+	Status  string `json:"type" form:"status"`
 	FileId  string
 }
 
@@ -17,7 +17,7 @@ func ToDomainAdd(input AssetRequest) domain.Asset {
 		Name:    input.Name,
 		Picture: input.Picture,
 		Detail:  input.Detail,
-		Type:    input.Type,
+		Status:  input.Status,
 		FileId:  input.FileId,
 	}
 }

@@ -30,6 +30,7 @@ type Wakaf struct {
 	Collected  int        `gorm:"not null"`
 	FundTarget int        `gorm:"not null"`
 	DueDate    *time.Time `gorm:"type:datetime;not null"`
+	FileId     string     `gorm:"type:varchar(255)"`
 }
 
 type Asset struct {
@@ -38,6 +39,7 @@ type Asset struct {
 	Picture string `gorm:"varchar(255);not null"`
 	Detail  string `gorm:"longtext;not null"`
 	Status  string `gorm:"type:enum('draft', 'online', 'archive')"`
+	FileId  string `gorm:"type:varchar(255)"`
 }
 
 func InitMigrate(db *gorm.DB) {

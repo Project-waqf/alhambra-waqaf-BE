@@ -7,7 +7,7 @@ type Asset struct {
 	Name      string
 	Picture   string
 	Detail    string
-	Type      string
+	Status    string
 	FileId    string
 	CreatedAt time.Time
 	UpdatedAt time.Time

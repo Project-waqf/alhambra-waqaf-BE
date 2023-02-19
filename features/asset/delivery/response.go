@@ -7,7 +7,7 @@ type AssetResponse struct {
 	Name      string `json:"name"`
 	Picture   string `json:"picture"`
 	Detail    string `json:"detail"`
-	Type      string `json:"type"`
+	Status    string `json:"status"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
@@ -18,7 +18,7 @@ func FromDomainAdd(input domain.Asset) AssetResponse {
 		Name:      input.Name,
 		Picture:   input.Picture,
 		Detail:    input.Detail,
-		Type:      input.Type,
+		Status:    input.Status,
 		CreatedAt: input.CreatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 		UpdatedAt: input.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 	}
@@ -33,7 +33,7 @@ func FromDomainGetAll(input []domain.Asset) []AssetResponse {
 			Name:      v.Name,
 			Picture:   v.Picture,
 			Detail:    v.Detail,
-			Type:      v.Type,
+			Status:    v.Status,
 			CreatedAt: v.CreatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 			UpdatedAt: v.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 		})
