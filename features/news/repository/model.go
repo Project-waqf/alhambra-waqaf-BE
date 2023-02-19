@@ -11,25 +11,27 @@ type News struct {
 	Title   string `gorm:"type:varchar(255)"`
 	Body    string `gorm:"type:text"`
 	Picture string `gorm:"type:varchar(255)"`
+	FileId  string
 }
-
 
 func FromDomainAddNews(data domain.News) News {
 	return News{
-		Title: data.Title,
-		Body: data.Body,
+		Title:   data.Title,
+		Body:    data.Body,
 		Picture: data.Picture,
+		FileId: data.FileId,
 	}
 }
 
 func ToDomainAddNews(data News) domain.News {
 	return domain.News{
-		ID: data.ID,
-		Title: data.Title,
-		Body: data.Body,
-		Picture: data.Picture,
+		ID:        data.ID,
+		Title:     data.Title,
+		Body:      data.Body,
+		Picture:   data.Picture,
 		CreatedAt: data.CreatedAt,
 		UpdatedAt: data.UpdatedAt,
+		FileId: data.FileId,
 	}
 }
 
@@ -38,10 +40,10 @@ func ToDomainGetAll(data []News) []domain.News {
 
 	for _, v := range data {
 		res = append(res, domain.News{
-			ID: v.ID,
-			Title: v.Title,
-			Body: v.Body,
-			Picture: v.Picture,
+			ID:        v.ID,
+			Title:     v.Title,
+			Body:      v.Body,
+			Picture:   v.Picture,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 		})
@@ -51,10 +53,10 @@ func ToDomainGetAll(data []News) []domain.News {
 
 func ToDomainGet(data News) domain.News {
 	return domain.News{
-		ID: data.ID,
-		Title: data.Title,
-		Body: data.Body,
-		Picture: data.Picture,
+		ID:        data.ID,
+		Title:     data.Title,
+		Body:      data.Body,
+		Picture:   data.Picture,
 		CreatedAt: data.CreatedAt,
 		UpdatedAt: data.UpdatedAt,
 	}

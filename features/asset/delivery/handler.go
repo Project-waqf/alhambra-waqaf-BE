@@ -23,8 +23,8 @@ func New(e *echo.Echo, data domain.UsecaseInterface) {
 	}
 
 	e.POST("/admin/asset", handler.AddAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.GET("/admin/asset", handler.GetAllAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
-	e.GET("/admin/asset/:id_asset", handler.GetAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
+	e.GET("/admin/asset", handler.GetAllAsset())
+	e.GET("/admin/asset/:id_asset", handler.GetAsset())
 	e.PUT("/admin/asset/:id_asset", handler.UpdateAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 	e.DELETE("/admin/asset/:id_asset", handler.DeleteAsset(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
 	e.PUT("/admin/asset/online/:id_asset", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))
@@ -48,13 +48,14 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
-		fileName, err := helper.Upload(c, file, fileheader)
+		fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
 		if err != nil {
 			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
 		input.Picture = fileName
+		input.FileId = fileId
 		res, err := asset.AssetService.AddAsset(ToDomainAdd(input))
 		if err != nil {
 			log.Println(err)
@@ -105,11 +106,12 @@ func (asset *AssetDelivery) UpdateAsset() echo.HandlerFunc {
 
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err == nil {
-			fileName, err := helper.Upload(c, file, fileheader)
+			fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
 			if err != nil {
 				log.Println(err)
 				return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 			}
+			input.FileId = fileId
 			input.Picture = fileName
 		}
 

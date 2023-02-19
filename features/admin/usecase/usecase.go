@@ -57,3 +57,18 @@ func (u *AdminServices) Register(input domain.Admin) error {
 
 	return nil
 }
+
+func (u *AdminServices) UpdatePassword(input domain.Admin) (error) {
+
+	saltPw := config.Getconfig().SALT1 + input.Password + config.Getconfig().SALT2
+	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	input.Password = string(hash)
+	if err := u.AdminRepository.UpdatePassword(input); err != nil {
+		return err
+	}
+	return nil
+}

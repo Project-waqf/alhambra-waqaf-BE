@@ -8,6 +8,7 @@ type News struct {
 	Body      string
 	Picture   string
 	Type      string
+	FileId    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

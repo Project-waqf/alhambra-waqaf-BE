@@ -7,6 +7,7 @@ type Wakaf struct {
 	Title     string
 	Category  string
 	Picture   string
+	FileId    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

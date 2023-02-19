@@ -8,6 +8,7 @@ type Asset struct {
 	Picture   string
 	Detail    string
 	Type      string
+	FileId    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

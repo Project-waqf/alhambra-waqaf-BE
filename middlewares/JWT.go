@@ -16,6 +16,7 @@ func JWTMiddleware() echo.MiddlewareFunc {
 		SigningMethod: middleware.AlgorithmHS256,
 		SigningKey:    []byte(config.Getconfig().SECRET_JWT),
 	})
+	// middleware.JWT([])
 }
 
 func CreateToken(id int, email string) (string, error) {
@@ -32,4 +33,17 @@ func CreateToken(id int, email string) (string, error) {
 	claims["exp"] = time.Now().Add(time.Second * time.Duration(duration)).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(config.Getconfig().SECRET_JWT))
+}
+
+func DecodeToken(c echo.Context) (int, string) {
+	user := c.Get("user").(*jwt.Token)
+
+	if user.Valid {
+		claims := user.Claims.(jwt.MapClaims)
+		userId := claims["IdUser"].(float64)
+		role := claims["email"].(string)
+		return int(userId), role
+	}
+
+	return 0, ""
 }

@@ -7,13 +7,15 @@ type WakafRequest struct {
 	Title    string `json:"title" form:"title"`
 	Category string `json:"category" form:"category"`
 	Picture  string `json:"picture" form:"picture"`
+	FileId   string
 }
 
 func ToDomainAdd(input WakafRequest) domain.Wakaf {
 	return domain.Wakaf{
-		ID: input.ID,
-		Title: input.Title,
+		ID:       input.ID,
+		Title:    input.Title,
 		Category: input.Category,
-		Picture: input.Picture,
+		Picture:  input.Picture,
+		FileId:   input.FileId,
 	}
 }

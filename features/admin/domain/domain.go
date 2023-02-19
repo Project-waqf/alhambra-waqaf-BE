@@ -11,10 +11,12 @@ type Admin struct {
 type UseCaseInterface interface {
 	Login(input Admin) (Admin, error)
 	Register(input Admin) error
+	UpdatePassword(input Admin) error
 }
 
 type RepoInterface interface {
 	Login(input Admin) (Admin, error)
 	Register(input Admin) error
 	GetUser(input Admin) error 
+	UpdatePassword(input Admin) error
 }

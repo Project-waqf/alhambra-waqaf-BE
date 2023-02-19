@@ -8,6 +8,7 @@ type Login struct {
 }
 
 type Register struct {
+	Id       int
 	Name     string `json:"name" form:"name"`
 	Email    string `json:"email" form:"email"`
 	Password string `json:"password" form:"password"`
@@ -22,6 +23,7 @@ func ToDomainLogin(data Login) domain.Admin {
 
 func ToDomainRegister(data Register) domain.Admin {
 	return domain.Admin{
+		ID:  uint(data.Id),
 		Name:     data.Name,
 		Email:    data.Email,
 		Password: data.Password,

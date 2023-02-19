@@ -11,6 +11,7 @@ type Asset struct {
 	Name    string `gorm:"varchar(255)"`
 	Picture string `gorm:"varchar(255)"`
 	Detail  string `gorm:"varchar(255)"`
+	FileId  string
 	Type    string
 }
 
@@ -21,6 +22,7 @@ func FromDomainAdd(input domain.Asset) Asset {
 		Picture: input.Picture,
 		Detail:  input.Detail,
 		Type:    input.Type,
+		FileId:  input.FileId,
 	}
 }
 
@@ -33,6 +35,7 @@ func ToDomainAdd(input Asset) domain.Asset {
 		Type:      input.Type,
 		CreatedAt: input.CreatedAt,
 		UpdatedAt: input.UpdatedAt,
+		FileId:    input.FileId,
 	}
 }
 
