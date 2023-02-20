@@ -5,8 +5,6 @@ import (
 	"os"
 	"strconv"
 	"sync"
-
-	"github.com/joho/godotenv"
 )
 
 type AppConfig struct {
@@ -17,8 +15,8 @@ type AppConfig struct {
 	DB_USERNAME string
 	DB_PASSWORD string
 	DB_NAME     string
-	SALT1 string
-	SALT2 string
+	SALT1       string
+	SALT2       string
 	SECRET_JWT  string
 }
 
@@ -40,9 +38,9 @@ func initConfig() *AppConfig {
 
 	var defaultConfig AppConfig
 
-	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
-	}
+	// if err := godotenv.Load(".env"); err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	serverPort, errPortServer := strconv.Atoi(os.Getenv("SERVER_PORT"))
 	if errPortServer != nil {
