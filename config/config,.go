@@ -40,7 +40,7 @@ func initConfig() *AppConfig {
 
 	var defaultConfig AppConfig
 
-	if err := godotenv.Load(".env"); err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
 
