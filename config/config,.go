@@ -44,7 +44,7 @@ func initConfig() *AppConfig {
 
 	serverPort, errPortServer := strconv.Atoi(os.Getenv("SERVER_PORT"))
 	if errPortServer != nil {
-		log.Fatal("Error parse SERVER_PORT")
+		log.Fatal("Error parse SERVER_PORT", errPortServer)
 	}
 	dbPort, errPortDB := strconv.Atoi(os.Getenv("DB_PORT"))
 	if errPortDB != nil {
