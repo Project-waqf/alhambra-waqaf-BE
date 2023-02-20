@@ -59,7 +59,7 @@ func fileCheck(fileheader *multipart.FileHeader, tipe string) bool {
 
 func Upload(c echo.Context, file multipart.File, fileheader *multipart.FileHeader, tipe string) (string, string, error) {
 	var ur imagekit.UploadRequest
-	
+
 	// check file type
 	if isImage := fileCheck(fileheader, "image"); isImage == false {
 		return "", "", errors.New("file not an image")
@@ -128,4 +128,31 @@ func Upload(c echo.Context, file multipart.File, fileheader *multipart.FileHeade
 	return r.FileID, r.URL, nil
 }
 
-// func Delete(filename string) (string, error)
+func Delete(fileId string) error {
+
+	var fileIdArr []string
+	fileIdArr = append(fileIdArr, fileId)
+
+	ctx := context.Background()
+
+	opts := imagekit.Options{
+		PublicKey:  os.Getenv("IMAGEIO_PUBLIC"),
+		PrivateKey: os.Getenv("IMAGEIO_PRIVATE"),
+	}
+
+	ik, err := imagekit.NewClient(&opts)
+	if err != nil {
+		panic(err)
+	}
+
+	resp, err := ik.Media.DeleteFiles(ctx, &imagekit.DeleteFilesRequest{fileIdArr})
+	if err != nil {
+		return err
+	}
+	
+	if len(resp.SuccessfullyDeletedFileIDs) == 0 {
+		return errors.New("nothing file has deleted")
+	}
+
+	return nil
+}

@@ -106,6 +106,16 @@ func (asset *AssetDelivery) UpdateAsset() echo.HandlerFunc {
 
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err == nil {
+			fileIdDb, err := asset.AssetService.GetFileId(input.ID)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to get fileId"))
+			}
+
+			err = helper.Delete(fileIdDb)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+			}
+
 			fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
 			if err != nil {
 				log.Println(err)
@@ -138,6 +148,16 @@ func (asset *AssetDelivery) DeleteAsset() echo.HandlerFunc {
 		if err != nil {
 			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		fileIdDb, err := asset.AssetService.GetFileId(uint(cnvId))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to get fileId"))
+		}
+
+		err = helper.Delete(fileIdDb)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
 		}
 
 		err = asset.AssetService.DeleteAsset(uint(cnvId))

@@ -20,6 +20,7 @@ type UsecaseInterface interface {
 	UpdateAsset(id uint, input Asset) (Asset, error)
 	DeleteAsset(id uint) error
 	ToOnline(id uint) error
+	GetFileId(id uint) (string, error)
 }
 
 type RepositoryInterface interface {
@@ -29,4 +30,5 @@ type RepositoryInterface interface {
 	Edit(id uint, input Asset) (Asset, error)
 	Delete(id uint) error
 	ToOnline(id uint) error
+	GetFileId(id uint) (string, error)
 }

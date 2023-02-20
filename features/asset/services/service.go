@@ -59,3 +59,11 @@ func (asset *AssetService) ToOnline(id uint) error {
 	}
 	return nil
 }
+
+func (asset *AssetService) GetFileId(id uint) (string, error) {
+	res, err := asset.AssetRepo.GetFileId(uint(id))
+	if err != nil {
+		return "", err
+	}
+	return res, nil
+}

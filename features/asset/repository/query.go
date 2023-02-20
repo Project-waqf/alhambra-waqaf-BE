@@ -72,3 +72,12 @@ func (asset *AssetRepo) ToOnline(id uint) error {
 	}
 	return nil
 }
+
+func (asset *AssetRepo) GetFileId(id uint) (string, error) {
+	var res Asset
+
+	if err := asset.db.First(&res, id).Error; err != nil {
+		return "", err
+	}
+	return res.FileId, nil
+}
