@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"log"
 	"net/http"
 	"strings"
 	"wakaf/features/admin/domain"
@@ -43,7 +42,7 @@ func (delivery *AdminDelivery) Login() echo.HandlerFunc {
 
 		res, err := delivery.AdminServices.Login(cnv)
 		if err != nil {
-			log.Print(err)
+			logger.Error("Login", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}
 

@@ -16,7 +16,6 @@ func JWTMiddleware() echo.MiddlewareFunc {
 		SigningMethod: middleware.AlgorithmHS256,
 		SigningKey:    []byte(config.Getconfig().SECRET_JWT),
 	})
-	// middleware.JWT([])
 }
 
 func CreateToken(id int, email string) (string, error) {
