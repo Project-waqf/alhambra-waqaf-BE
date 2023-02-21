@@ -40,10 +40,10 @@ jobs:
         name: executing remote ssh using ssh key
         uses: appleboy/ssh-action@master
         with:
-          host: 194.59.165.81
-          username: root
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          port: 22
+          port: ${{ secrets.PORT }}
           script: |
             docker stop wakaf
             docker rm wakaf
