@@ -11,22 +11,25 @@ type News struct {
 	FileId    string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	Status    string
 }
 
 type UseCaseInterface interface {
 	AddNews(input News) (News, error)
-	GetAll() ([]News, error)
+	GetAll(status string) ([]News, error)
 	Get(id int) (News, error)
 	UpdateNews(id int, input News) (News, error)
 	Delete(id int) (News, error)
 	ToOnline(id int) error
+	GetFileId(id int) (string, error)
 }
 
 type RepoInterface interface {
 	Insert(input News) (News, error)
-	GetAll() ([]News, error)
+	GetAll(status string) ([]News, error)
 	Get(id int) (News, error)
 	Edit(id int, input News) (News, error)
 	Delete(id int) (News, error)
 	ToOnline(id int) error
+	GetFileId(id int) (string, error)
 }

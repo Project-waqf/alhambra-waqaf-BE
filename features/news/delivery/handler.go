@@ -1,7 +1,7 @@
 package delivery
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,11 +11,16 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/zap"
 )
 
 type NewsDelivery struct {
 	NewsServices domain.UseCaseInterface
 }
+
+var (
+	logger = helper.Logger()
+)
 
 func New(e *echo.Echo, data domain.UseCaseInterface) {
 	handler := NewsDelivery{
@@ -34,27 +39,28 @@ func (news *NewsDelivery) AddNews() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input News
 
+		err := c.Bind(&input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err != nil {
-			log.Print(err)
+			logger.Error("Error get file", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
 		fileId, filename, err := helper.Upload(c, file, fileheader, "news")
 		if err != nil {
-			log.Print(err)
+			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
-		err = c.Bind(&input)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
-		}
+		fmt.Println("INI FILE ID: ", fileId)
 
 		input.Picture = filename
 		input.FileId = fileId
-		cnv := ToDomainAddNews(input)
-		res, err := news.NewsServices.AddNews(cnv)
+		res, err := news.NewsServices.AddNews(ToDomainAddNews(input))
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
@@ -65,9 +71,9 @@ func (news *NewsDelivery) AddNews() echo.HandlerFunc {
 
 func (news *NewsDelivery) GetAllNews() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		res, err := news.NewsServices.GetAll()
+		status := c.QueryParam("status")
+		res, err := news.NewsServices.GetAll(status)
 		if err != nil {
-			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}
 		getAllResponse := FromDomainGetAll(res)
@@ -80,12 +86,10 @@ func (news *NewsDelivery) GetSingleNews() echo.HandlerFunc {
 		idTmp := c.Param("id_news")
 		id, err := strconv.Atoi(idTmp)
 		if err != nil {
-			log.Print(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		res, err := news.NewsServices.Get(id)
 		if err != nil {
-			log.Print(err.Error())
 			if strings.Contains(err.Error(), "found") {
 				return c.JSON(http.StatusNotFound, helper.Failed("Data not found"))
 			}
@@ -98,36 +102,40 @@ func (news *NewsDelivery) GetSingleNews() echo.HandlerFunc {
 func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input News
+
 		err := c.Bind(&input)
 		if err != nil {
-			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		id := c.Param("id_news")
 		cnvId, err := strconv.Atoi(id)
 		if err != nil {
-			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
 		file, fileheader, err := c.Request().FormFile("picture")
-		if err != nil {
-			log.Print(err)
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		if err == nil {
+			fileIdDb, err := news.NewsServices.GetFileId(cnvId)
+			if err != nil {
+				logger.Error("Failed to get fileId", zap.Error(err))
+				return c.JSON(http.StatusNotFound, helper.Failed("Failed to get fileId"))
+			}
+			err = helper.Delete(fileIdDb)
+			if err != nil {
+				logger.Error("Failed delete image in imagekit", zap.Error(err))
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+			}
+
+			fileId, filename, err := helper.Upload(c, file, fileheader, "news")
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+			}
+			input.FileId = fileId
+			input.Picture = filename
 		}
 
-		fileId, filename, err := helper.Upload(c, file, fileheader, "news")
+		res, err := news.NewsServices.UpdateNews(cnvId, ToDomainAddNews(input))
 		if err != nil {
-			log.Print(err)
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
-		}
-
-		input.FileId = fileId
-		input.Picture = filename
-		cnvInput := ToDomainAddNews(input)
-		res, err := news.NewsServices.UpdateNews(cnvId, cnvInput)
-		if err != nil {
-			log.Print(err.Error())
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusOK, helper.Success("Update news successfully", FromDOmainGet(res)))
@@ -139,13 +147,28 @@ func (news *NewsDelivery) DeleteNews() echo.HandlerFunc {
 		id := c.Param("id_news")
 		cnvId, err := strconv.Atoi(id)
 		if err != nil {
-			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
+
+		fileIdDb, err := news.NewsServices.GetFileId(cnvId)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to get fileId"))
+		}
+
+		err = helper.Delete(fileIdDb)
+		if err != nil {
+			logger.Error("Error delete file in imagekit", zap.Error(err))
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+		}
+
 		_, err = news.NewsServices.Delete(cnvId)
 		if err != nil {
-			log.Print(err)
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			logger.Error("Error in usecase", zap.Error(err))
+			if strings.Contains(err.Error(), "found") {
+				return c.JSON(http.StatusNotFound, helper.Failed("Data not found"))
+			} else {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
 		}
 		return c.JSON(http.StatusOK, helper.Success("Delete news successfully", nil))
 	}
@@ -156,12 +179,10 @@ func (news *NewsDelivery) ToOnline() echo.HandlerFunc {
 		id := c.Param("id_news")
 		cnvId, err := strconv.Atoi(id)
 		if err != nil {
-			log.Println(err)
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		err = news.NewsServices.ToOnline(cnvId)
 		if err != nil {
-			log.Println(err.Error())
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusCreated, helper.Success("Set news to online successfully", nil))

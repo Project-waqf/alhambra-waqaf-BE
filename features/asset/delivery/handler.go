@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,11 +10,16 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/zap"
 )
 
 type AssetDelivery struct {
 	AssetService domain.UsecaseInterface
 }
+
+var (
+	logger = helper.Logger()
+)
 
 func New(e *echo.Echo, data domain.UsecaseInterface) {
 	handler := &AssetDelivery{
@@ -37,20 +41,20 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 		err := c.Bind(&input)
 		if err != nil {
 			if err != nil {
-				log.Println(err)
+				logger.Error("Error bind data", zap.Error(err))
 				return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 			}
 		}
 
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err != nil {
-			log.Println(err)
+			logger.Error("image not found", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
 		fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
 		if err != nil {
-			log.Println(err)
+			logger.Error("Failed upload image to imagekit", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
@@ -58,7 +62,7 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 		input.FileId = fileId
 		res, err := asset.AssetService.AddAsset(ToDomainAdd(input))
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error in usecase", zap.Error(err))
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusCreated, helper.Success("Add asset successfully", FromDomainAdd(res)))
@@ -67,28 +71,34 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 
 func (asset *AssetDelivery) GetAllAsset() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		res, err := asset.AssetService.GetAllAsset()
+		status := c.QueryParam("status")
+		res, err := asset.AssetService.GetAllAsset(status)
 		if err != nil {
 			if err != nil {
-				log.Println(err)
+				logger.Error("Error in usecase", zap.Error(err))
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
 		}
-		return c.JSON(http.StatusOK, helper.Success("Add asset successfully", FromDomainGetAll(res)))
+		return c.JSON(http.StatusOK, helper.Success("Get all asset successfully", FromDomainGetAll(res)))
 	}
 }
 
 func (asset *AssetDelivery) GetAsset() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id_asset")
+		
 		cnvId, err := strconv.Atoi(id)
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error convert id", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		res, err := asset.AssetService.GetAsset(uint(cnvId))
 		if err != nil {
-			log.Println(err)
+			if strings.Contains(err.Error(), "not found") {
+				logger.Error("Data not found", zap.Error(err))			
+				return c.JSON(http.StatusNotFound, helper.Failed("Asset not found"))
+			}
+			logger.Error("Error in usecase", zap.Error(err))			
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusOK, helper.Success("Get asset successfully", FromDomainAdd(res)))
@@ -100,41 +110,42 @@ func (asset *AssetDelivery) UpdateAsset() echo.HandlerFunc {
 		var input AssetRequest
 		err := c.Bind(&input)
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error bind data", zap.Error(err))
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+		
+		id := c.Param("id_asset")
+		cnvId, err := strconv.Atoi(id)
+		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err == nil {
-			fileIdDb, err := asset.AssetService.GetFileId(input.ID)
+			fileIdDb, err := asset.AssetService.GetFileId(uint(cnvId))
 			if err != nil {
-				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to get fileId"))
+				logger.Error("Failed to get fileId", zap.Error(err))
+				return c.JSON(http.StatusNotFound, helper.Failed("Id not found"))
 			}
 
 			err = helper.Delete(fileIdDb)
 			if err != nil {
+				logger.Error("Failed delete image in imagekit", zap.Error(err))
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
 			}
 
 			fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
 			if err != nil {
-				log.Println(err)
+				logger.Error("Failed upload image to imagekit", zap.Error(err))
 				return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 			}
 			input.FileId = fileId
 			input.Picture = fileName
 		}
 
-		id := c.Param("id_asset")
-		cnvId, err := strconv.Atoi(id)
-		if err != nil {
-			log.Println(err)
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
-		}
-
 		res, err := asset.AssetService.UpdateAsset(uint(cnvId), ToDomainAdd(input))
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error in usecase", zap.Error(err))
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusCreated, helper.Success("Update asset successfully", FromDomainAdd(res)))
@@ -146,7 +157,7 @@ func (asset *AssetDelivery) DeleteAsset() echo.HandlerFunc {
 		id := c.Param("id_asset")
 		cnvId, err := strconv.Atoi(id)
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error convert id", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 
@@ -162,7 +173,7 @@ func (asset *AssetDelivery) DeleteAsset() echo.HandlerFunc {
 
 		err = asset.AssetService.DeleteAsset(uint(cnvId))
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error in usecase", zap.Error(err))
 			if strings.Contains(err.Error(), "found") {
 				return c.JSON(http.StatusNotFound, helper.Failed("Data not found"))
 			} else {
@@ -178,12 +189,12 @@ func (asset *AssetDelivery) ToOnline() echo.HandlerFunc {
 		id := c.Param("id_asset")
 		cnvId, err := strconv.Atoi(id)
 		if err != nil {
-			log.Println(err)
+			logger.Error("Error convert id", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
 		err = asset.AssetService.ToOnline(uint(cnvId))
 		if err != nil {
-			log.Println(err)
+			logger.Error("Failed change asset to online", zap.Error(err))
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusCreated, helper.Success("Set asset to online successfully", nil))

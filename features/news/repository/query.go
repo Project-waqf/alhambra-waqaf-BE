@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"log"
 	"wakaf/features/news/domain"
 
 	"gorm.io/gorm"
@@ -20,18 +19,32 @@ func New(db *gorm.DB) domain.RepoInterface {
 func (news *NewsRepository) Insert(input domain.News) (domain.News, error) {
 	cnv := FromDomainAddNews(input)
 
-	if err := news.db.Create(&cnv).Last(&cnv).Error; err != nil {
+	if err := news.db.Create(&cnv).Error; err != nil {
 		return domain.News{}, err
 	}
 
 	return ToDomainAddNews(cnv), nil
 }
 
-func (news *NewsRepository) GetAll() ([]domain.News, error) {
+func (news *NewsRepository) GetAll(status string) ([]domain.News, error) {
 	var res []News
 
-	if err := news.db.Where("status = 'online'").Find(&res).Error; err != nil {
-		return []domain.News{}, err
+	if status == "online" {
+		if err := news.db.Where("status = 'online'").Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.News{}, err
+		}
+	} else if status == "draft" {
+		if err := news.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.News{}, err
+		}
+	} else if status == "archive" {
+		if err := news.db.Where("status = 'archive'").Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.News{}, err
+		}
+	} else {
+		if err := news.db.Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.News{}, err
+		}
 	}
 
 	return ToDomainGetAll(res), nil
@@ -50,8 +63,7 @@ func (news *NewsRepository) Get(id int) (domain.News, error) {
 func (news *NewsRepository) Edit(id int, input domain.News) (domain.News, error) {
 	data := FromDomainAddNews(input)
 
-	if err := news.db.Model(&News{}).Where("id = ?", id).Updates(&data).Error; err != nil {
-		log.Print(err.Error())
+	if err := news.db.Model(&News{}).Where("id = ?", id).Updates(&data).Last(&data).Error; err != nil {
 		return domain.News{}, err
 	}
 	
@@ -82,4 +94,14 @@ func (news *NewsRepository) ToOnline(id int) error {
 		return err
 	}
 	return nil
+}
+
+func (news *NewsRepository) GetFileId(id int) (string, error) {
+	var res News 
+
+	if err := news.db.Where("id = ?", id).First(&res).Error; err != nil {
+		return "", err
+	}
+
+	return ToDomainGet(res).FileId, nil
 }

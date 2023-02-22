@@ -25,11 +25,25 @@ func (asset *AssetRepo) Insert(input domain.Asset) (domain.Asset, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (asset *AssetRepo) GetAll() ([]domain.Asset, error) {
+func (asset *AssetRepo) GetAll(status string) ([]domain.Asset, error) {
 	var res []Asset
 
-	if err := asset.db.Where("type = 'online'").Find(&res).Error; err != nil {
-		return []domain.Asset{}, err
+	if status == "online" {
+		if err := asset.db.Where("status = 'online'").Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.Asset{}, err
+		}
+	} else if status == "draft" {
+		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.Asset{}, err
+		}
+	} else if status == "archive" {
+		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.Asset{}, err
+		}
+	} else {
+		if err := asset.db.Order("updated_at DESC").Find(&res).Error; err != nil {
+			return []domain.Asset{}, err
+		}
 	}
 
 	return ToDomainGetAll(res), nil
@@ -38,16 +52,17 @@ func (asset *AssetRepo) GetAll() ([]domain.Asset, error) {
 func (asset *AssetRepo) Get(id uint) (domain.Asset, error) {
 	var res Asset
 
-	if err := asset.db.Where("type = 'online'").First(&res, "id = ?", id).Error; err != nil {
+	if err := asset.db.First(&res, "id = ?", id).Error; err != nil {
 		return domain.Asset{}, err
 	}
+
 	return ToDomainAdd(res), nil
 }
 
 func (asset *AssetRepo) Edit(id uint, input domain.Asset) (domain.Asset, error) {
 	data := FromDomainAdd(input)
 
-	if err := asset.db.Where("id = ?", id).Updates(&data).Error; err != nil {
+	if err := asset.db.Where("id = ?", id).Updates(&data).Last(&data).Error; err != nil {
 		return domain.Asset{}, err
 	}
 	data.ID = id
@@ -76,7 +91,7 @@ func (asset *AssetRepo) ToOnline(id uint) error {
 func (asset *AssetRepo) GetFileId(id uint) (string, error) {
 	var res Asset
 
-	if err := asset.db.First(&res, id).Error; err != nil {
+	if err := asset.db.Where("id = ?", id).First(&res).Error; err != nil {
 		return "", err
 	}
 	return res.FileId, nil

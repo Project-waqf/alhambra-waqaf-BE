@@ -7,6 +7,7 @@ type News struct {
 	Body    string `json:"body" form:"body"`
 	Picture string `json:"picture" form:"picture"`
 	FileId  string
+	Status string `json:"status" form:"status"`
 }
 
 func ToDomainAddNews(data News) domain.News {
@@ -15,5 +16,6 @@ func ToDomainAddNews(data News) domain.News {
 		Body:    data.Body,
 		Picture: data.Picture,
 		FileId: data.FileId,
+		Status: data.Status,
 	}
 }

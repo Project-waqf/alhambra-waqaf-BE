@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"math/rand"
 	"mime/multipart"
@@ -82,8 +81,6 @@ func Upload(c echo.Context, file multipart.File, fileheader *multipart.FileHeade
 		return "", "", err
 	}
 
-	fmt.Println(fileName)
-
 	if tipe == "news" {
 		ur = imagekit.UploadRequest{
 			File:              buf.Bytes(), // []byte OR *url.URL OR url.URL OR base64 string
@@ -145,11 +142,12 @@ func Delete(fileId string) error {
 		panic(err)
 	}
 
-	resp, err := ik.Media.DeleteFiles(ctx, &imagekit.DeleteFilesRequest{fileIdArr})
+	var req = imagekit.DeleteFilesRequest{FileIDs: fileIdArr}
+	resp, err := ik.Media.DeleteFiles(ctx, &req)
 	if err != nil {
 		return err
 	}
-	
+
 	if len(resp.SuccessfullyDeletedFileIDs) == 0 {
 		return errors.New("nothing file has deleted")
 	}

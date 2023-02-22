@@ -20,8 +20,8 @@ func (asset *AssetService) AddAsset(input domain.Asset) (domain.Asset, error) {
 	return res, nil
 }
 
-func (asset *AssetService) GetAllAsset() ([]domain.Asset, error) {
-	res, err := asset.AssetRepo.GetAll()
+func (asset *AssetService) GetAllAsset(status string) ([]domain.Asset, error) {
+	res, err := asset.AssetRepo.GetAll(status)
 	if err != nil {
 		return []domain.Asset{}, err
 	}

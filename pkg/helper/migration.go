@@ -19,6 +19,7 @@ type News struct {
 	Body    string `gorm:"type:longtext;not null"`
 	Picture string `gorm:"type:varchar(255);not null"`
 	Status  string `gorm:"type:enum('draft', 'online', 'archive')"`
+	FileId     string     `gorm:"type:varchar(255)"`
 }
 
 type Wakaf struct {

@@ -68,7 +68,7 @@ func (d *AdminDelivery) Register() echo.HandlerFunc {
 			}
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusCreated, helper.Success("Register success", input))
+		return c.JSON(http.StatusCreated, helper.Success("Register success", RegisterResponseNew{Name: input.Name, Email: input.Email, Password: input.Password}))
 	}
 }
 
