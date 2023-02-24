@@ -26,12 +26,22 @@ func (news *NewsRepository) Insert(input domain.News) (domain.News, error) {
 	return ToDomainAddNews(cnv), nil
 }
 
-func (news *NewsRepository) GetAll(status string) ([]domain.News, error) {
+func (news *NewsRepository) GetAll(status string, page int) ([]domain.News, error) {
 	var res []News
 
 	if status == "online" {
-		if err := news.db.Where("status = 'online'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.News{}, err
+		if page != 0 {
+			var offset int = 0
+			if page != 1 {
+				offset = 6 * (page - 1)
+			}
+			if err := news.db.Where("status = 'online'").Order("updated_at DESC").Limit(6).Offset(offset).Find(&res).Error; err != nil {
+				return []domain.News{}, err
+			}
+		} else {
+			if err := news.db.Where("status = 'online'").Order("updated_at DESC").Find(&res).Error; err != nil {
+				return []domain.News{}, err
+			}
 		}
 	} else if status == "draft" {
 		if err := news.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
@@ -66,7 +76,7 @@ func (news *NewsRepository) Edit(id int, input domain.News) (domain.News, error)
 	if err := news.db.Model(&News{}).Where("id = ?", id).Updates(&data).Last(&data).Error; err != nil {
 		return domain.News{}, err
 	}
-	
+
 	data.ID = uint(id)
 	return ToDomainAddNews(data), nil
 }
@@ -97,7 +107,7 @@ func (news *NewsRepository) ToOnline(id int) error {
 }
 
 func (news *NewsRepository) GetFileId(id int) (string, error) {
-	var res News 
+	var res News
 
 	if err := news.db.Where("id = ?", id).First(&res).Error; err != nil {
 		return "", err

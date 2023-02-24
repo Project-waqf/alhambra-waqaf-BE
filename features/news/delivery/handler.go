@@ -69,7 +69,16 @@ func (news *NewsDelivery) AddNews() echo.HandlerFunc {
 func (news *NewsDelivery) GetAllNews() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		status := c.QueryParam("status")
-		res, err := news.NewsServices.GetAll(status)
+		page := c.QueryParam("page")
+		var pageCnv int
+		if page != "" {
+			cnv, err := strconv.Atoi(page)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, helper.Failed("Error query parameter"))
+			}
+			pageCnv = cnv
+		}
+		res, err := news.NewsServices.GetAll(status, pageCnv)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}

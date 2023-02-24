@@ -16,7 +16,7 @@ type News struct {
 
 type UseCaseInterface interface {
 	AddNews(input News) (News, error)
-	GetAll(status string) ([]News, error)
+	GetAll(status string, page int) ([]News, error)
 	Get(id int) (News, error)
 	UpdateNews(id int, input News) (News, error)
 	Delete(id int) (News, error)
@@ -26,7 +26,7 @@ type UseCaseInterface interface {
 
 type RepoInterface interface {
 	Insert(input News) (News, error)
-	GetAll(status string) ([]News, error)
+	GetAll(status string, page int) ([]News, error)
 	Get(id int) (News, error)
 	Edit(id int, input News) (News, error)
 	Delete(id int) (News, error)
