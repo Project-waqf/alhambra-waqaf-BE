@@ -1,6 +1,11 @@
 package services
 
-import "wakaf/features/wakaf/domain"
+import (
+	"wakaf/features/wakaf/domain"
+	"wakaf/pkg/helper"
+
+	"go.uber.org/zap"
+)
 
 type WakafService struct {
 	WakafRepo domain.RepoInterface
@@ -12,17 +17,23 @@ func New(data domain.RepoInterface) domain.UseCaseInterface {
 	}
 }
 
+var (
+	logger = helper.Logger()
+)
+
 func (wakaf *WakafService) AddWakaf(input domain.Wakaf) (domain.Wakaf, error) {
 	res, err := wakaf.WakafRepo.Insert(input)
 	if err != nil {
+		logger.Error("Failed insert wakaf", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
 	return res, nil
 }
 
-func(wakaf *WakafService) GetAllWakaf() ([]domain.Wakaf, error) {
-	res, err := wakaf.WakafRepo.GetAllWakaf()
+func (wakaf *WakafService) GetAllWakaf(category string) ([]domain.Wakaf, error) {
+	res, err := wakaf.WakafRepo.GetAllWakaf(category)
 	if err != nil {
+		logger.Error("Failed get all wakaf", zap.Error(err))
 		return []domain.Wakaf{}, err
 	}
 	return res, nil
@@ -31,6 +42,7 @@ func(wakaf *WakafService) GetAllWakaf() ([]domain.Wakaf, error) {
 func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Wakaf, error) {
 	res, err := wakaf.WakafRepo.Edit(id, input)
 	if err != nil {
+		logger.Error("Failed update wakaf", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
 	return res, nil
@@ -39,6 +51,27 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 func (wakaf *WakafService) DeleteWakaf(id uint) (domain.Wakaf, error) {
 	res, err := wakaf.WakafRepo.Delete(id)
 	if err != nil {
+		logger.Error("Failed delete wakaf", zap.Error(err))
+		return domain.Wakaf{}, err
+	}
+	return res, nil
+}
+
+func (wakaf *WakafService) GetFileId(id uint) (string, error) {
+
+	res, err := wakaf.WakafRepo.GetFileId(id)
+	if err != nil {
+		logger.Error("Failed get fileId", zap.Error(err))
+		return res, err
+	}
+	return res, nil
+}
+
+func (wakaf *WakafService) GetSingleWakaf(id uint) (domain.Wakaf, error) {
+
+	res, err := wakaf.WakafRepo.GetSingleWakaf(id)
+	if err != nil {
+		logger.Error("Failed get single wakaf", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
 	return res, nil

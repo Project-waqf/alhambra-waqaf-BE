@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,8 +27,8 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	}
 
 	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))                 // ADD NEWS
-	e.GET("/admin/news", handler.GetAllNews())                                                                      // GET ALL NEWS
-	e.GET("/admin/news/:id_news", handler.GetSingleNews())                                                          // GET SINGLE NEWS
+	e.GET("/news", handler.GetAllNews())                                                                      // GET ALL NEWS
+	e.GET("/news/:id_news", handler.GetSingleNews())                                                          // GET SINGLE NEWS
 	e.PUT("/admin/news/:id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))      // EDIT NEWS
 	e.DELETE("/admin/news/:id_news", handler.DeleteNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // DELETE NEWS
 	e.PUT("/admin/news/online/:id_news", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // FROM DRAFT TO ONLINE
@@ -55,8 +54,6 @@ func (news *NewsDelivery) AddNews() echo.HandlerFunc {
 			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
-
-		fmt.Println("INI FILE ID: ", fileId)
 
 		input.Picture = filename
 		input.FileId = fileId
