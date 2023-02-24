@@ -5,8 +5,6 @@ import (
 	"os"
 	"strconv"
 	"sync"
-
-	"github.com/joho/godotenv"
 )
 
 type AppConfig struct {
@@ -40,9 +38,9 @@ func initConfig() *AppConfig {
 
 	var defaultConfig AppConfig
 
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal(err)
-	}
+	// if err := godotenv.Load(".env"); err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	serverPort, errPortServer := strconv.Atoi(os.Getenv("SERVER_PORT"))
 	if errPortServer != nil {
