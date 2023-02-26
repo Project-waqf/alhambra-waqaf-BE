@@ -25,28 +25,42 @@ func (asset *AssetRepo) Insert(input domain.Asset) (domain.Asset, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (asset *AssetRepo) GetAll(status string) ([]domain.Asset, error) {
+func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset,int, error) {
 	var res []Asset
+	var count int64
 
 	if status == "online" {
+		if page != 0 {
+			var offset int = 0
+			if page != 1 {
+				offset = 3
+			}
+			if err := asset.db.Where("status = online").Order("created_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
+				return []domain.Asset{}, 0, err
+			}
+		}
 		if err := asset.db.Where("status = 'online'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, err
+			return []domain.Asset{}, 0, err
 		}
 	} else if status == "draft" {
 		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, err
+			return []domain.Asset{}, 0, err
 		}
 	} else if status == "archive" {
 		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, err
+			return []domain.Asset{}, 0, err
 		}
 	} else {
 		if err := asset.db.Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, err
+			return []domain.Asset{}, 0, err
 		}
 	}
 
-	return ToDomainGetAll(res), nil
+	if err := asset.db.Model(&Asset{}).Count(&count).Error; err != nil {
+		return []domain.Asset{}, 0, err
+	}
+
+	return ToDomainGetAll(res), int(count), nil
 }
 
 func (asset *AssetRepo) Get(id uint) (domain.Asset, error) {

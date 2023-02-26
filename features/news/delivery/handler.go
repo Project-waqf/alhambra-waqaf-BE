@@ -27,8 +27,8 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	}
 
 	e.POST("/admin/news", handler.AddNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))                 // ADD NEWS
-	e.GET("/news", handler.GetAllNews())                                                                      // GET ALL NEWS
-	e.GET("/news/:id_news", handler.GetSingleNews())                                                          // GET SINGLE NEWS
+	e.GET("/news", handler.GetAllNews())                                                                            // GET ALL NEWS
+	e.GET("/news/:id_news", handler.GetSingleNews())                                                                // GET SINGLE NEWS
 	e.PUT("/admin/news/:id_news", handler.UpdateNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))      // EDIT NEWS
 	e.DELETE("/admin/news/:id_news", handler.DeleteNews(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))   // DELETE NEWS
 	e.PUT("/admin/news/online/:id_news", handler.ToOnline(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // FROM DRAFT TO ONLINE
@@ -78,12 +78,12 @@ func (news *NewsDelivery) GetAllNews() echo.HandlerFunc {
 			}
 			pageCnv = cnv
 		}
-		res, err := news.NewsServices.GetAll(status, pageCnv)
+		res, count, err := news.NewsServices.GetAll(status, pageCnv)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}
 		getAllResponse := FromDomainGetAll(res)
-		return c.JSON(http.StatusOK, helper.Success("Get all news Successfully", getAllResponse))
+		return c.JSON(http.StatusOK, helper.SuccessGetAll("Get all news Successfully", getAllResponse, count))
 	}
 }
 

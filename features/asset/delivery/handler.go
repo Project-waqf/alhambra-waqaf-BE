@@ -72,14 +72,19 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 func (asset *AssetDelivery) GetAllAsset() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		status := c.QueryParam("status")
-		res, err := asset.AssetService.GetAllAsset(status)
+		page := c.QueryParam("page")
+		cnvPage, err := strconv.Atoi(page)
+		if err != nil {
+			logger.Error("Failed to convert query param page")
+		}
+		res, count, err := asset.AssetService.GetAllAsset(status, cnvPage)
 		if err != nil {
 			if err != nil {
 				logger.Error("Error in usecase", zap.Error(err))
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
 		}
-		return c.JSON(http.StatusOK, helper.Success("Get all asset successfully", FromDomainGetAll(res)))
+		return c.JSON(http.StatusOK, helper.SuccessGetAll("Get all asset successfully", FromDomainGetAll(res), count))
 	}
 }
 

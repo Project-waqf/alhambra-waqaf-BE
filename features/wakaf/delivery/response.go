@@ -49,7 +49,7 @@ func FromDomainAdd(input domain.Wakaf) WakafResponse {
 
 	t1 := date(timeNow.Year(), int(timeNow.Month()), timeNow.Day())
 	t2 := date(date1[0], date1[1], date1[2])
-	days := daysBetween(t1, t2)-1
+	days := daysBetween(t1, t2)
 
 	return WakafResponse{
 		ID:         input.ID,
@@ -83,7 +83,7 @@ func FromDomainGetAll(input []domain.Wakaf) []WakafResponse {
 
 		t1 := date(timeNow.Year(), int(timeNow.Month()), timeNow.Day())
 		t2 := date(date1[0], date1[1], date1[2])
-		days := daysBetween(t1, t2)-1
+		days := daysBetween(t1, t2)
 
 		res = append(res, WakafResponse{
 			ID:         v.ID,
@@ -116,7 +116,7 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 
 	t1 := date(timeNow.Year(), int(timeNow.Month()), timeNow.Day())
 	t2 := date(date1[0], date1[1], date1[2])
-	days := daysBetween(t1, t2)-1
+	days := daysBetween(t1, t2)
 
 	return WakafResponse{
 		ID:         input.ID,

@@ -66,12 +66,17 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		category := c.QueryParam("category")
+		page := c.QueryParam("page")
+		cnvPage, err := strconv.Atoi(page)
+		if err != nil {
+			logger.Error("Failed to convert query param page")
+		}
 
-		res, err := wakaf.WakafService.GetAllWakaf(category)
+		res, count, err := wakaf.WakafService.GetAllWakaf(category, cnvPage)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusOK, helper.Success("Get all wakaf successfully", FromDomainGetAll(res)))
+		return c.JSON(http.StatusOK, helper.SuccessGetAll("Get all wakaf successfully", FromDomainGetAll(res), count))
 	}
 }
 

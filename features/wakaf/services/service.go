@@ -30,13 +30,13 @@ func (wakaf *WakafService) AddWakaf(input domain.Wakaf) (domain.Wakaf, error) {
 	return res, nil
 }
 
-func (wakaf *WakafService) GetAllWakaf(category string) ([]domain.Wakaf, error) {
-	res, err := wakaf.WakafRepo.GetAllWakaf(category)
+func (wakaf *WakafService) GetAllWakaf(category string, page int) ([]domain.Wakaf, int, error) {
+	res, count, err := wakaf.WakafRepo.GetAllWakaf(category, page)
 	if err != nil {
 		logger.Error("Failed get all wakaf", zap.Error(err))
-		return []domain.Wakaf{}, err
+		return []domain.Wakaf{}, 0, err
 	}
-	return res, nil
+	return res, count, nil
 }
 
 func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Wakaf, error) {

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"time"
 	"wakaf/features/wakaf/domain"
 
 	"gorm.io/gorm"
@@ -11,7 +12,7 @@ type WakafRepo struct {
 }
 
 func New(db *gorm.DB) domain.RepoInterface {
-	return &WakafRepo {
+	return &WakafRepo{
 		db: db,
 	}
 }
@@ -26,19 +27,43 @@ func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (wakaf *WakafRepo) GetAllWakaf(category string) ([]domain.Wakaf, error) {
+func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, int, error) {
 	var res []Wakaf
+	var count int64
+
+	today := time.Now()
+
+	var offset int = 0
+	if page != 1 {
+		offset = 9 * (page - 1)
+	}
 
 	if category != "" {
-		if err := wakaf.db.Where("category = ?", category).Find(&res).Order("created_at desc").Error; err != nil {
-			return []domain.Wakaf{}, err
+		if page != 0 {
+			if err := wakaf.db.Where("category = ? AND due_date > 0", category).Order("created_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+				return []domain.Wakaf{}, 0, err
+			}
+		} else {
+			if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+				return []domain.Wakaf{}, 0, err
+			}
 		}
 	} else {
-		if err := wakaf.db.Find(&res).Order("created_at desc").Error; err != nil {
-			return []domain.Wakaf{}, err
+		if page != 0 {
+			if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+				return []domain.Wakaf{}, 0, err
+			}
+		} else {
+			if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
+				return []domain.Wakaf{}, 0, err
+			}
 		}
 	}
-	return ToDomainGetAll(res), nil
+
+	if err := wakaf.db.Model(&Wakaf{}).Count(&count).Error; err != nil {
+		return []domain.Wakaf{}, 0, err
+	}
+	return ToDomainGetAll(res), int(count), nil
 }
 
 func (wakaf *WakafRepo) Edit(id uint, input domain.Wakaf) (domain.Wakaf, error) {
