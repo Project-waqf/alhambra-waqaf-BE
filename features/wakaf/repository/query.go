@@ -40,7 +40,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 
 	if category != "" {
 		if page != 0 {
-			if err := wakaf.db.Where("category = ? AND due_date > 0", category).Order("created_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+			if err := wakaf.db.Where("category = ? AND due_date >= 0", category).Order("created_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.Wakaf{}, 0, err
 			}
 		} else {
