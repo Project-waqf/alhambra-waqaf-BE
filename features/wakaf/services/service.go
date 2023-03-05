@@ -83,7 +83,7 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 	
 	url, orderId := paymentgateway.PayBill(input)
 	input.OrderId = orderId
-	
+	input.Status = "pending"
 	res, err := wakaf.WakafRepo.PayWakaf(input)
 	if err != nil {
 		logger.Error("Failed add donatur", zap.Error(err))

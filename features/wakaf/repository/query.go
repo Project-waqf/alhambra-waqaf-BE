@@ -111,11 +111,12 @@ func (wakaf *WakafRepo) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 
 func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error) {
 	data := FromDomainPaywakaf(input)
+	var res Donor
 
-	if err := Wakaf.db.Model(&Donor{}).Create(&data).Error; err != nil {
+	if err := Wakaf.db.Model(&Donor{}).Create(&data).Last(&res).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
-	return input, nil
+	return ToDomainPayment(res), nil
 }
 func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
 	data := FromDomainPaywakaf(input)

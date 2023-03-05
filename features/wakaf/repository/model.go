@@ -115,5 +115,6 @@ func ToDomainPayment(input Donor) domain.PayWakaf {
 		OrderId:     input.OrderId,
 		Status:      input.Status,
 		PaymentType: input.PaymentType,
+		CreatedAt:   input.CreatedAt,
 	}
 }
