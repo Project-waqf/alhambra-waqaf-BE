@@ -13,13 +13,10 @@ import (
 
 func PayBill(input domain.PayWakaf) (string, string) {
 	// 1. Initiate Snap client
-	var s = snap.Client{
-		ServerKey:  os.Getenv("SERVER_KEY"),
-		HttpClient: midtrans.GetHttpClient(midtrans.Sandbox),
-		Env:        midtrans.Sandbox,
-	}
+	var s = snap.Client{}
+	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
 	// Use to midtrans.Production if you want Production Environment (accept real transaction).
-	var orderId = "ORDER-" + (time.Now().Format("02 Jan 06 15:04")) + fmt.Sprintf("%f", rand.Float64())
+	var orderId = "ORDER-" + (time.Now().Format("02-Jan-06 15:04")) + fmt.Sprintf("%f", rand.Float64())
 
 	// 2. Initiate Snap request param
 	req := &snap.Request{
