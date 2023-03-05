@@ -19,6 +19,15 @@ type WakafResponse struct {
 	DueDate    int    `json:"due_date"`
 }
 
+type PayWakafRes struct {
+	IdWakaf     uint   `json:"id_wakaf"`
+	Name        string `json:"name"`
+	GrossAmount int    `json:"gross_amount"`
+	Doa         string `json:"doa"`
+	CreatedAt   string `json:"created_at"`
+	RedirectURL string `json:"redirect_url"`
+}
+
 func date(year, month, day int) time.Time {
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }
@@ -128,5 +137,16 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 		DueDate:    days,
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
+	}
+}
+
+func FromDomainPaywakaf(input domain.PayWakaf) PayWakafRes {
+	return PayWakafRes{
+		IdWakaf: uint(input.IdWakaf),
+		Name: input.Name,
+		GrossAmount: input.GrossAmount,
+		Doa: input.Doa,
+		CreatedAt: input.CreatedAt.Format("02/01/2006 15:04"),
+		RedirectURL: input.RedirectURL,
 	}
 }

@@ -16,6 +16,18 @@ type Wakaf struct {
 	UpdatedAt  time.Time
 }
 
+type PayWakaf struct {
+	IdWakaf     int
+	Name        string
+	GrossAmount int
+	Doa         string
+	CreatedAt   time.Time
+	RedirectURL string
+	OrderId     string
+	Status      string
+	PaymentType string
+}
+
 type UseCaseInterface interface {
 	AddWakaf(input Wakaf) (Wakaf, error)
 	GetAllWakaf(category string, page int) ([]Wakaf, int, error)
@@ -23,6 +35,8 @@ type UseCaseInterface interface {
 	DeleteWakaf(id uint) (Wakaf, error)
 	GetFileId(id uint) (string, error)
 	GetSingleWakaf(id uint) (Wakaf, error)
+	PayWakaf(input PayWakaf) (PayWakaf, error)
+	UpdatePayment(input PayWakaf) (PayWakaf, error)
 }
 
 type RepoInterface interface {
@@ -32,4 +46,6 @@ type RepoInterface interface {
 	Delete(id uint) (Wakaf, error)
 	GetFileId(id uint) (string, error)
 	GetSingleWakaf(id uint) (Wakaf, error)
+	PayWakaf(input PayWakaf) (PayWakaf, error)
+	UpdatePayment(input PayWakaf) (PayWakaf, error)
 }

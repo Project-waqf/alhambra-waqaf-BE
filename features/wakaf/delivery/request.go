@@ -18,9 +18,22 @@ type WakafRequest struct {
 	FileId     string
 }
 
+type PayWakafReq struct {
+	IdWakaf     int    `json:"id_wakaf" form:"id_wakaf"`
+	Name        string `json:"name" form:"name"`
+	GrossAmount int    `json:"gross_amount" form:"gross_amount"`
+	Doa         string `json:"doa" form:"doa"`
+}
+
+type CallbackMidtrans struct {
+	PaymentType       string `json:"payment_type"`
+	TransactionStatus string `json:"transaction_status"`
+	OrderId           string `json:"order_id"`
+}
+
 func ToDomainAdd(input WakafRequest) domain.Wakaf {
 	var format = "2006-01-02"
-	date, err := time.Parse(format + " 15:04:05", input.DueDate + " 23:59:59")
+	date, err := time.Parse(format+" 15:04:05", input.DueDate+" 23:59:59")
 	if err != nil {
 		logger.Error("Error parse due date", zap.Error(err))
 		return domain.Wakaf{}
@@ -35,5 +48,22 @@ func ToDomainAdd(input WakafRequest) domain.Wakaf {
 		Detail:     input.Detail,
 		FundTarget: input.FundTarget,
 		DueDate:    &date,
+	}
+}
+
+func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
+	return domain.PayWakaf{
+		IdWakaf:     input.IdWakaf,
+		Name:        input.Name,
+		GrossAmount: input.GrossAmount,
+		Doa:         input.Doa,
+	}
+}
+
+func ToDomainCallback(input CallbackMidtrans) domain.PayWakaf {
+	return domain.PayWakaf{
+		OrderId: input.OrderId,
+		PaymentType: input.PaymentType,
+		Status: input.TransactionStatus,
 	}
 }

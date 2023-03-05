@@ -22,10 +22,12 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	}
 
 	e.POST("/admin/wakaf", handler.AddWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))                // INSERT WAKAF
-	e.GET("/wakaf", handler.GetAllWakaf())                                                                     // GET ALL WAKAF
+	e.GET("/wakaf", handler.GetAllWakaf())                                                                           // GET ALL WAKAF
 	e.PUT("/admin/wakaf/:id_wakaf", handler.UpdateWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))    // UPDATE WAKAF
 	e.DELETE("/admin/wakaf/:id_wakaf", handler.DeleteWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // DELETE WAKAF
 	e.GET("/wakaf/:id_wakaf", handler.GetSingleWakaf())
+	e.POST("/wakaf/pay/:id_wakaf", handler.PayWakaf())
+	e.POST("/wakaf/payment/callback", handler.PaymentCallback())
 }
 
 var (
@@ -171,5 +173,39 @@ func (wakaf *WakafDelivery) GetSingleWakaf() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, FromDomainGet(res))
+	}
+}
+
+func (wakaf *WakafDelivery) PayWakaf() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input PayWakafReq
+
+		if err := c.Bind(&input); err != nil {
+			logger.Error("Error bind data", zap.Error(err))
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		res, err := wakaf.WakafService.PayWakaf(ToDomainPayWakaf(input))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusOK, FromDomainPaywakaf(res))
+	}
+}
+
+func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input CallbackMidtrans
+
+		if err := c.Bind(&input); err != nil {
+			logger.Error("Error bind data", zap.Error(err))
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+		return c.JSON(http.StatusCreated, helper.Success("Update payment successfull", res))
 	}
 }

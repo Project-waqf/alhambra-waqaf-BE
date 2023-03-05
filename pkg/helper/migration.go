@@ -19,7 +19,7 @@ type News struct {
 	Body    string `gorm:"type:longtext;not null"`
 	Picture string `gorm:"type:varchar(255);not null"`
 	Status  string `gorm:"type:enum('draft', 'online', 'archive')"`
-	FileId     string     `gorm:"type:varchar(255)"`
+	FileId  string `gorm:"type:varchar(255)"`
 }
 
 type Wakaf struct {
@@ -32,6 +32,7 @@ type Wakaf struct {
 	FundTarget int        `gorm:"not null"`
 	DueDate    *time.Time `gorm:"type:datetime;not null"`
 	FileId     string     `gorm:"type:varchar(255)"`
+	Donor      []Donor    `gorm:"foreignKey:IdWakaf"`
 }
 
 type Asset struct {
@@ -43,9 +44,21 @@ type Asset struct {
 	FileId  string `gorm:"type:varchar(255)"`
 }
 
+type Donor struct {
+	gorm.Model
+	IdWakaf     uint
+	Name        string `gorm:"type:varchar(255);not null"`
+	Doa         string `gorm:"type:varchar(255)"`
+	GrossAmount string `gorm:"type:int(13);not null"`
+	Status      string `gorm:"type:varchar(20)"`
+	OrderId     string `gorm:"type:varchar(255)"`
+	PaymentType string `gorm:"type:varchar(255)"`
+}
+
 func InitMigrate(db *gorm.DB) {
 	db.AutoMigrate(&Admin{})
 	db.AutoMigrate(&News{})
 	db.AutoMigrate(&Wakaf{})
 	db.AutoMigrate(&Asset{})
+	db.AutoMigrate(Donor{})
 }

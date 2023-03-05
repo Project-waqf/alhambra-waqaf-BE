@@ -3,6 +3,7 @@ package services
 import (
 	"wakaf/features/wakaf/domain"
 	"wakaf/pkg/helper"
+	paymentgateway "wakaf/utils/payment-gateway"
 
 	"go.uber.org/zap"
 )
@@ -74,5 +75,31 @@ func (wakaf *WakafService) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 		logger.Error("Failed get single wakaf", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
+	return res, nil
+}
+
+func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error) {
+
+	
+	url, orderId := paymentgateway.PayBill(input)
+	input.OrderId = orderId
+	
+	res, err := wakaf.WakafRepo.PayWakaf(input)
+	if err != nil {
+		logger.Error("Failed add donatur", zap.Error(err))
+		return domain.PayWakaf{}, err
+	}
+	res.RedirectURL = url
+	return res, nil
+}
+
+func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
+
+	res, err := wakaf.WakafRepo.UpdatePayment(input)
+	if err != nil {
+		logger.Error("Failed update payment", zap.Error(err))
+		return domain.PayWakaf{}, err
+	}
+	
 	return res, nil
 }

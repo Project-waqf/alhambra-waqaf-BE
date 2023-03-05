@@ -21,6 +21,17 @@ type Wakaf struct {
 	UpdatedAt  time.Time
 }
 
+type Donor struct {
+	gorm.Model
+	IdWakaf     uint
+	Name        string
+	Doa         string
+	GrossAmount int
+	Status      string
+	PaymentType string
+	OrderId     string
+}
+
 func FromDomainAdd(input domain.Wakaf) Wakaf {
 	return Wakaf{
 		Model:      gorm.Model{ID: input.ID},
@@ -32,6 +43,15 @@ func FromDomainAdd(input domain.Wakaf) Wakaf {
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
 		DueDate:    input.DueDate,
+	}
+}
+
+func FromDomainPaywakaf(input domain.PayWakaf) Donor {
+	return Donor{
+		IdWakaf:     uint(input.IdWakaf),
+		Name:        input.Name,
+		GrossAmount: input.GrossAmount,
+		Status:      input.Status,
 	}
 }
 
@@ -83,5 +103,17 @@ func ToDomainGet(input Wakaf) domain.Wakaf {
 		FundTarget: input.FundTarget,
 		DueDate:    input.DueDate,
 		Collected:  input.Collected,
+	}
+}
+
+func ToDomainPayment(input Donor) domain.PayWakaf {
+	return domain.PayWakaf{
+		IdWakaf:     int(input.IdWakaf),
+		Name:        input.Name,
+		GrossAmount: input.GrossAmount,
+		Doa:         input.Doa,
+		OrderId:     input.OrderId,
+		Status:      input.Status,
+		PaymentType: input.PaymentType,
 	}
 }

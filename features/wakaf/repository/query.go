@@ -108,3 +108,21 @@ func (wakaf *WakafRepo) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 
 	return ToDomainGet(data), nil
 }
+
+func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error) {
+	data := FromDomainPaywakaf(input)
+
+	if err := Wakaf.db.Model(&Donor{}).Create(&data).Error; err != nil {
+		return domain.PayWakaf{}, err
+	}
+	return input, nil
+}
+func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
+	data := FromDomainPaywakaf(input)
+	var res Donor
+
+	if err := Wakaf.db.Model(&Donor{}).Where("order_id = ?", input.OrderId).Update("status", data.Status).Update("payment_type", data.PaymentType).Last(&res).Error; err != nil {
+		return domain.PayWakaf{}, err
+	}
+	return ToDomainPayment(res), nil
+}
