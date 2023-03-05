@@ -57,6 +57,7 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 		Name:        input.Name,
 		GrossAmount: input.GrossAmount,
 		Doa:         input.Doa,
+		
 	}
 }
 

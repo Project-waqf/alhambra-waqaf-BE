@@ -51,6 +51,9 @@ func FromDomainPaywakaf(input domain.PayWakaf) Donor {
 		IdWakaf:     uint(input.IdWakaf),
 		Name:        input.Name,
 		GrossAmount: input.GrossAmount,
+		Doa:         input.Doa,
+		PaymentType: input.PaymentType,
+		OrderId:     input.OrderId,
 		Status:      input.Status,
 	}
 }
