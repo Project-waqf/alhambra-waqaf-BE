@@ -122,7 +122,7 @@ func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, e
 	data := FromDomainPaywakaf(input)
 	var res Donor
 
-	if err := Wakaf.db.Model(&Donor{}).Where("order_id = ?", input.OrderId).Update("status", data.Status).Update("payment_type", data.PaymentType).Last(&res).Error; err != nil {
+	if err := Wakaf.db.Model(&Donor{}).Where("order_id = ?", input.OrderId).Update("status", data.Status).Update("payment_type", input.PaymentType).Last(&res).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 	return ToDomainPayment(res), nil
