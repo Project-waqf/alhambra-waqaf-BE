@@ -26,7 +26,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.PUT("/admin/wakaf/:id_wakaf", handler.UpdateWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT)))    // UPDATE WAKAF
 	e.DELETE("/admin/wakaf/:id_wakaf", handler.DeleteWakaf(), middleware.JWT([]byte(config.Getconfig().SECRET_JWT))) // DELETE WAKAF
 	e.GET("/wakaf/:id_wakaf", handler.GetSingleWakaf())
-	e.POST("/wakaf/pay/:id_wakaf", handler.PayWakaf())
+	e.POST("/wakaf/pay", handler.PayWakaf())
 	e.POST("/wakaf/payment/callback", handler.PaymentCallback())
 }
 
