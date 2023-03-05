@@ -206,6 +206,6 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusCreated, helper.Success("Update payment successfull", res))
+		return c.JSON(http.StatusOK, helper.Success("Update payment successfull", res))
 	}
 }
