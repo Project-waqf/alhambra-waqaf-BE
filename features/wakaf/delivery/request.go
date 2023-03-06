@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"strconv"
 	"time"
 	"wakaf/features/wakaf/domain"
 
@@ -29,7 +30,7 @@ type CallbackMidtrans struct {
 	PaymentType       string `json:"payment_type"`
 	TransactionStatus string `json:"transaction_status"`
 	OrderId           string `json:"order_id"`
-	GrossAmount       int    `json:"gross_amount"`
+	GrossAmount       string `json:"gross_amount"`
 }
 
 func ToDomainAdd(input WakafRequest) domain.Wakaf {
@@ -62,10 +63,11 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 }
 
 func ToDomainCallback(input CallbackMidtrans) domain.PayWakaf {
+	cnv, _ := strconv.Atoi(input.GrossAmount)
 	return domain.PayWakaf{
 		OrderId:     input.OrderId,
 		PaymentType: input.PaymentType,
 		Status:      input.TransactionStatus,
-		GrossAmount: input.GrossAmount,
+		GrossAmount: cnv,
 	}
 }
