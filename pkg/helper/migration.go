@@ -60,5 +60,5 @@ func InitMigrate(db *gorm.DB) {
 	db.AutoMigrate(&News{})
 	db.AutoMigrate(&Wakaf{})
 	db.AutoMigrate(&Asset{})
-	db.AutoMigrate(Donor{})
+	db.AutoMigrate(&Donor{})
 }
