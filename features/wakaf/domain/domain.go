@@ -10,6 +10,7 @@ type Wakaf struct {
 	FileId     string
 	Detail     string
 	FundTarget int
+	IsComplete bool
 	DueDate    *time.Time
 	Collected  int
 	CreatedAt  time.Time

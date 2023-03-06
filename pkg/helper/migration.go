@@ -32,6 +32,7 @@ type Wakaf struct {
 	FundTarget int        `gorm:"not null"`
 	DueDate    *time.Time `gorm:"type:datetime;not null"`
 	FileId     string     `gorm:"type:varchar(255)"`
+	IsComplete bool       `gorm:"type:boolean"`
 	Donor      []Donor    `gorm:"foreignKey:IdWakaf"`
 }
 

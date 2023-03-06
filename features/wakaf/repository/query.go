@@ -20,7 +20,8 @@ func New(db *gorm.DB) domain.RepoInterface {
 func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	input.Collected = 0
 	data := FromDomainAdd(input)
-
+	data.IsComplete = false
+	
 	if err := wakaf.db.Create(&data).Last(&data).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
@@ -40,21 +41,21 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 
 	if category != "" {
 		if page != 0 {
-			if err := wakaf.db.Where("category = ? AND due_date >= 0", category).Order("created_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+			if err := wakaf.db.Where("category = ? AND due_date >= 0 AND is_complete != 1", category).Order("created_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.Wakaf{}, 0, err
 			}
 		} else {
-			if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+			if err := wakaf.db.Where("category = ? AND due_date >= ? AND is_complete != 1", category, today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.Wakaf{}, 0, err
 			}
 		}
 	} else {
 		if page != 0 {
-			if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+			if err := wakaf.db.Where("due_date >= ? AND is_complete != 1", today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.Wakaf{}, 0, err
 			}
 		} else {
-			if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
+			if err := wakaf.db.Where("due_date >= ? AND is_complete != 1", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
 				return []domain.Wakaf{}, 0, err
 			}
 		}
@@ -126,7 +127,7 @@ func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, e
 
 	if err := Wakaf.db.Exec("UPDATE wakafs set collected = collected + ? WHERE id = ?", input.GrossAmount, input.IdWakaf).Error; err != nil {
 		return domain.PayWakaf{}, nil
-	}
+	}	
 
 	if err := Wakaf.db.Table("donors").Where("order_id = ?", input.OrderId).Updates(Donor{Status: input.Status, PaymentType: input.PaymentType}).Last(&res).Error; err != nil {
 		return domain.PayWakaf{}, err
