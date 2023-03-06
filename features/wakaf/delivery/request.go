@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 	"wakaf/features/wakaf/domain"
 
@@ -64,12 +63,11 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 }
 
 func ToDomainCallback(input CallbackMidtrans) domain.PayWakaf {
-	cnv, _ := strconv.Atoi(input.GrossAmount)
-	fmt.Println("INI GROSS AMOUNT : ", cnv)
+	fmt.Println("INI GROSS AMOUNT : ", input.GrossAmount)
 	return domain.PayWakaf{
 		OrderId:     input.OrderId,
 		PaymentType: input.PaymentType,
 		Status:      input.TransactionStatus,
-		GrossAmount: cnv,
+		GrossAmount: 0,
 	}
 }
