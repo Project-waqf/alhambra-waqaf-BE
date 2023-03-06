@@ -80,6 +80,11 @@ func (wakaf *WakafService) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 
 func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error) {
 
+	resWakaf, err := wakaf.WakafRepo.GetSingleWakaf(uint(input.IdWakaf))
+
+	if (resWakaf.Collected + input.GrossAmount) > resWakaf.FundTarget {
+		input.GrossAmount = resWakaf.FundTarget - resWakaf.Collected
+	}
 	
 	url, orderId := paymentgateway.PayBill(input)
 	input.OrderId = orderId
