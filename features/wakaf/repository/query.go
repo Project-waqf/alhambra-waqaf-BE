@@ -113,7 +113,7 @@ func (wakaf *WakafRepo) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error) {
 	data := FromDomainPaywakaf(input)
 	var res Donor
-
+	data.GrossAmount = 0
 	if err := Wakaf.db.Model(&Donor{}).Create(&data).Last(&res).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
