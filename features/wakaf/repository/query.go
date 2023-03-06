@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"time"
 	"wakaf/features/wakaf/domain"
 
@@ -122,15 +121,19 @@ func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error)
 	return ToDomainPayment(res), nil
 }
 
-func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
+func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
 	// data := FromDomainPaywakaf(input)
 	var res Donor
-	fmt.Println("INI DATA", input.GrossAmount, input.IdWakaf)
-	if err := Wakaf.db.Exec("UPDATE wakafs SET collected = collected + ? WHERE id = ?", input.GrossAmount, input.IdWakaf).Error; err != nil {
-		return domain.PayWakaf{}, nil
-	}	
+	var id_wakaf int
 
-	if err := Wakaf.db.Table("donors").Where("order_id = ?", input.OrderId).Updates(Donor{Status: input.Status, PaymentType: input.PaymentType}).Last(&res).Error; err != nil {
+	if err := wk.db.Model(&Wakaf{}).Select("id_wakaf").Where("order_id", input.OrderId).Scan(&id_wakaf).Error; err != nil {
+		return domain.PayWakaf{}, err
+	}
+	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + ? WHERE id = ?", input.GrossAmount, id_wakaf).Error; err != nil {
+		return domain.PayWakaf{}, nil
+	}
+
+	if err := wk.db.Table("donors").Where("order_id = ?", input.OrderId).Updates(Donor{Status: input.Status, PaymentType: input.PaymentType}).Last(&res).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 	return ToDomainPayment(res), nil
