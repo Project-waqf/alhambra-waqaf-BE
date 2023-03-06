@@ -129,8 +129,13 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 	if err := wk.db.Model(&Donor{}).Select("id_wakaf").Where("order_id", input.OrderId).Scan(&id_wakaf).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
+	
 	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + ? WHERE id = ?", input.GrossAmount, id_wakaf).Error; err != nil {
-		return domain.PayWakaf{}, nil
+		return domain.PayWakaf{}, err
+	}
+
+	if err := wk.db.Model(&Wakaf{}).Update("is_complete", true).Where("collected = fund_target AND id = ", id_wakaf).Error; err != nil {
+		return domain.PayWakaf{}, err
 	}
 
 	if err := wk.db.Table("donors").Where("order_id = ?", input.OrderId).Updates(Donor{Status: input.Status, PaymentType: input.PaymentType}).Last(&res).Error; err != nil {
