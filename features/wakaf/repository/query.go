@@ -134,7 +134,7 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 		return domain.PayWakaf{}, err
 	}
 
-	if err := wk.db.Model(&Wakaf{}).Update("is_complete", true).Where("collected = fund_target AND id = ", id_wakaf).Error; err != nil {
+	if err := wk.db.Model(&Wakaf{}).Update("is_complete", 1).Where("collected = fund_target AND id = ", id_wakaf).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 
