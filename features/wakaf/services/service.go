@@ -85,7 +85,7 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 	if (resWakaf.Collected + input.GrossAmount) > resWakaf.FundTarget {
 		input.GrossAmount = resWakaf.FundTarget - resWakaf.Collected
 	}
-	
+
 	url, orderId := paymentgateway.PayBill(input)
 	input.OrderId = orderId
 	input.Status = "pending"
@@ -105,6 +105,6 @@ func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf
 		logger.Error("Failed update payment", zap.Error(err))
 		return domain.PayWakaf{}, err
 	}
-	
+
 	return res, nil
 }

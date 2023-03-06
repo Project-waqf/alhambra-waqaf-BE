@@ -29,6 +29,7 @@ type CallbackMidtrans struct {
 	PaymentType       string `json:"payment_type"`
 	TransactionStatus string `json:"transaction_status"`
 	OrderId           string `json:"order_id"`
+	GrossAmount       int    `json:"gross_amount"`
 }
 
 func ToDomainAdd(input WakafRequest) domain.Wakaf {
@@ -57,14 +58,14 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 		Name:        input.Name,
 		GrossAmount: input.GrossAmount,
 		Doa:         input.Doa,
-		
 	}
 }
 
 func ToDomainCallback(input CallbackMidtrans) domain.PayWakaf {
 	return domain.PayWakaf{
-		OrderId: input.OrderId,
+		OrderId:     input.OrderId,
 		PaymentType: input.PaymentType,
-		Status: input.TransactionStatus,
+		Status:      input.TransactionStatus,
+		GrossAmount: input.GrossAmount,
 	}
 }
