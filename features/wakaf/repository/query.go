@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"time"
 	"wakaf/features/wakaf/domain"
 
@@ -21,7 +22,7 @@ func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	input.Collected = 0
 	data := FromDomainAdd(input)
 	data.IsComplete = false
-	
+
 	if err := wakaf.db.Create(&data).Last(&data).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
@@ -124,8 +125,8 @@ func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error)
 func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
 	// data := FromDomainPaywakaf(input)
 	var res Donor
-
-	if err := Wakaf.db.Exec("UPDATE wakafs set collected = collected + ? WHERE id = ?", input.GrossAmount, input.IdWakaf).Error; err != nil {
+	fmt.Println("INI DATA", input.GrossAmount, input.IdWakaf)
+	if err := Wakaf.db.Exec("UPDATE wakafs SET collected = collected + ? WHERE id = ?", input.GrossAmount, input.IdWakaf).Error; err != nil {
 		return domain.PayWakaf{}, nil
 	}	
 
