@@ -121,7 +121,7 @@ func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error)
 }
 
 func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
-	data := FromDomainPaywakaf(input)
+	// data := FromDomainPaywakaf(input)
 	var res Donor
 
 	if input.Status == "settlement" {
@@ -130,7 +130,7 @@ func (Wakaf *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, e
 		}
 	}
 
-	if err := Wakaf.db.Model(&Donor{}).Where("order_id = ?", input.OrderId).Update("status", data.Status).Update("payment_type", input.PaymentType).Last(&res).Error; err != nil {
+	if err := Wakaf.db.Table("donors").Where("order_id = ?", input.OrderId).Updates(Donor{Status: input.Status, PaymentType: input.PaymentType}).Last(&res).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 	return ToDomainPayment(res), nil
