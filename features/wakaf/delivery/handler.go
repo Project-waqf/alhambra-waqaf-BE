@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"wakaf/config"
@@ -197,10 +198,12 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input CallbackMidtrans
 
+		
 		if err := c.Bind(&input); err != nil {
 			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
+		fmt.Println("[DEBUG] Data Callback", input)
 
 		res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
 		if err != nil {
