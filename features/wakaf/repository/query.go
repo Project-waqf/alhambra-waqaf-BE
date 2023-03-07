@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"time"
 	"wakaf/features/wakaf/domain"
 
@@ -126,13 +125,11 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 	var res Donor
 	var id_wakaf int
 
-		fmt.Println("TAMBAH COLLECTED QUERY ", input.GrossAmount)
-
 	if err := wk.db.Model(&Donor{}).Select("id_wakaf").Where("order_id", input.OrderId).Scan(&id_wakaf).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
-	
-	if err := wk.db.Exec("UPDATE wakafs SET collected + ? WHERE id = ?", input.GrossAmount, id_wakaf).Error; err != nil {
+
+	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + ? WHERE id = ?", input.GrossAmount, id_wakaf).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 
