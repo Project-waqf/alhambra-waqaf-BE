@@ -132,7 +132,7 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 
 	fmt.Println("[DEBUG] id_wakaf : ", id_wakaf)
 
-	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + @gross_amount WHERE id = @id_wakaf", sql.Named("gross_amount", input.GrossAmount), sql.Named("id_wakaf", input.IdWakaf)).Error; err != nil {
+	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + @gross_amount WHERE id = @id_wakaf", sql.Named("gross_amount", input.GrossAmount), sql.Named("id_wakaf", id_wakaf)).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 
