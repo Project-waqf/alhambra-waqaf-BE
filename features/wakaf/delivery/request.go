@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -66,6 +67,7 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 func ToDomainCallback(input CallbackMidtrans) domain.PayWakaf {
 	split := strings.Split(input.GrossAmount, ".")
 	cnv, _ := strconv.Atoi(split[0])
+	fmt.Println("TAMBAH COLLECTED REQ ", cnv)
 	return domain.PayWakaf{
 		OrderId:     input.OrderId,
 		PaymentType: input.PaymentType,

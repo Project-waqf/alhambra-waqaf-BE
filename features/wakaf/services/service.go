@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"wakaf/features/wakaf/domain"
 	"wakaf/pkg/helper"
 	paymentgateway "wakaf/utils/payment-gateway"
@@ -86,8 +85,6 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 	if (resWakaf.Collected + input.GrossAmount) > resWakaf.FundTarget {
 		input.GrossAmount = resWakaf.FundTarget - resWakaf.Collected
 	}
-
-	fmt.Println("INI GROSS AMOUNT: ", input.GrossAmount)
 
 	url, orderId := paymentgateway.PayBill(input)
 	input.OrderId = orderId
