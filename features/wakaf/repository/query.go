@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"time"
 	"wakaf/features/wakaf/domain"
 
@@ -121,7 +122,6 @@ func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error)
 }
 
 func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
-	// data := FromDomainPaywakaf(input)
 	var res Donor
 	var id_wakaf int
 
@@ -129,11 +129,11 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 		return domain.PayWakaf{}, err
 	}
 
-	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + ? WHERE id = ?", input.GrossAmount, id_wakaf).Error; err != nil {
+	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + @gross_amount WHERE id = ?", sql.Named("gross_amount", input.GrossAmount), id_wakaf).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 
-	if err := wk.db.Model(&Wakaf{}).Delete(&Wakaf{}).Where("collected >= fund_target").Error; err != nil {
+	if err := wk.db.Model(&Wakaf{}).Where("collected >= fund_target").Where("id = ?", id_wakaf).Delete(&Wakaf{}).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 
