@@ -10,6 +10,7 @@ import (
 type WakafResponse struct {
 	ID         uint   `json:"id"`
 	Title      string `json:"title"`
+	Detail     string `json:"detail"`
 	Category   string `json:"category"`
 	Picture    string `json:"picture"`
 	CreatedAt  string `json:"created_at"`
@@ -130,6 +131,7 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 	return WakafResponse{
 		ID:         input.ID,
 		Title:      input.Title,
+		Detail:     input.Detail,
 		Category:   input.Category,
 		Picture:    input.Picture,
 		CreatedAt:  input.CreatedAt.Format("02-01-2006"),
@@ -142,11 +144,11 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 
 func FromDomainPaywakaf(input domain.PayWakaf) PayWakafRes {
 	return PayWakafRes{
-		IdWakaf: uint(input.IdWakaf),
-		Name: input.Name,
+		IdWakaf:     uint(input.IdWakaf),
+		Name:        input.Name,
 		GrossAmount: input.GrossAmount,
-		Doa: input.Doa,
-		CreatedAt: input.CreatedAt.Format("02/01/2006 15:04"),
+		Doa:         input.Doa,
+		CreatedAt:   input.CreatedAt.Format("02/01/2006 15:04"),
 		RedirectURL: input.RedirectURL,
 	}
 }
