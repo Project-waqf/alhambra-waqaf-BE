@@ -20,6 +20,10 @@ type RegisterResponseNew struct {
 	Password string `json:"password" form:"password"`
 }
 
+type Forgot struct {
+	Email string `json:"email" form:"email"`
+}
+
 func ToDomainLogin(data Login) domain.Admin {
 	return domain.Admin{
 		Email:    data.Email,
@@ -29,7 +33,7 @@ func ToDomainLogin(data Login) domain.Admin {
 
 func ToDomainRegister(data Register) domain.Admin {
 	return domain.Admin{
-		ID:  uint(data.Id),
+		ID:       uint(data.Id),
 		Name:     data.Name,
 		Email:    data.Email,
 		Password: data.Password,

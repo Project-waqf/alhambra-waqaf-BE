@@ -27,6 +27,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 
 	e.POST("/admin/login", handler.Login())
 	e.POST("/admin/register", handler.Register())
+	e.POST("/admin/forgot", handler.Forgot())
 	e.PUT("/admin/update/password", handler.Edit(), middlewares.JWTMiddleware())
 }
 
@@ -91,5 +92,22 @@ func (d *AdminDelivery) Edit() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Update Password Failed"))
 		}
 		return c.JSON(http.StatusCreated, helper.Success("Update Password success", nil))
+	}
+}
+
+func (d *AdminDelivery) Forgot() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input Forgot
+
+		err := c.Bind(&input)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		res, err := d.AdminServices.ForgotSendEmail(input.Email)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Reset Password Failed"))
+		}
+		return c.JSON(http.StatusCreated, helper.Success("Reset Password success", res))
 	}
 }

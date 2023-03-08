@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"fmt"
 	"wakaf/features/admin/domain"
 
 	"gorm.io/gorm"
@@ -48,7 +47,6 @@ func (repo *AdminRepository) GetUser(data domain.Admin) error {
 
 func (repo *AdminRepository) UpdatePassword(data domain.Admin) error {
 	if res := repo.db.Model(Admin{}).Where("id = ?", data.ID).Update("password", data.Password).RowsAffected; res == 0 {
-		fmt.Println("INI ROW", res)
 		return errors.New("not row affected")
 	}
 	return nil
