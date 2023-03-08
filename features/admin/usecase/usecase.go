@@ -84,9 +84,8 @@ func (u *AdminServices) UpdatePassword(input domain.Admin) error {
 	return nil
 }
 
-func (u *AdminServices) ForgotSendEmail(input string) (domain.Admin, error) {
-	data := domain.Admin{Email: input}
-	res, err := u.AdminRepository.Login(data)
+func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error) {
+	res, err := u.AdminRepository.Login(input)
 	if err != nil {
 		return domain.Admin{}, err
 	}
@@ -101,7 +100,7 @@ func (u *AdminServices) ForgotSendEmail(input string) (domain.Admin, error) {
 		DB:       0,
 	})
 
-	if err := saveToRedis(redis, input, otp); err != nil {
+	if err := saveToRedis(redis, input.Email, otp); err != nil {
 		logger.Error("Failed to save data redis",  zap.Error(err))
 		return domain.Admin{}, err
 	}

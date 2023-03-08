@@ -12,7 +12,7 @@ type UseCaseInterface interface {
 	Login(input Admin) (Admin, error)
 	Register(input Admin) error
 	UpdatePassword(input Admin) error
-	ForgotSendEmail(input string) (Admin, error)
+	ForgotSendEmail(input Admin) (Admin, error)
 }
 
 type RepoInterface interface {
