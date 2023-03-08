@@ -96,7 +96,7 @@ func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error
 	// Save To Redis
 	redis := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		Password: "alhambra",
+		Password: "",
 		DB:       0,
 	})
 
