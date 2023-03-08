@@ -66,10 +66,11 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 func ToDomainCallback(input CallbackMidtrans) domain.PayWakaf {
 	split := strings.Split(input.GrossAmount, ".")
 	cnv, _ := strconv.Atoi(split[0])
+	cnvNew := cnv / 2
 	return domain.PayWakaf{
 		OrderId:     input.OrderId,
 		PaymentType: input.PaymentType,
 		Status:      input.TransactionStatus,
-		GrossAmount: cnv,
+		GrossAmount: cnvNew,
 	}
 }
