@@ -106,6 +106,9 @@ func (d *AdminDelivery) Forgot() echo.HandlerFunc {
 
 		res, err := d.AdminServices.ForgotSendEmail(domain.Admin{Email: input.Email})
 		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				return c.JSON(http.StatusNotFound, helper.Failed("Email not found"))
+			}
 			return c.JSON(http.StatusBadRequest, helper.Failed("Reset Password Failed"))
 		}
 		return c.JSON(http.StatusCreated, helper.Success("Reset Password success", res))
