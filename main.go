@@ -2,12 +2,16 @@ package main
 
 import (
 	// "fmt"
+	"context"
 	"fmt"
 	"wakaf/config"
 	"wakaf/factory"
 	"wakaf/pkg/helper"
 	"wakaf/utils/database/mysql"
+	"wakaf/utils/database/redis"
+
 	"github.com/labstack/echo/v4/middleware"
+	"go.uber.org/zap"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,6 +19,11 @@ import (
 func main() {
 	config := config.Getconfig()
 	db := mysql.InitDBmysql(config)
+	redis := redis.InitRedis(config)
+
+	var log = helper.Logger()
+	log.Info("Connecting Redis", zap.Any("PING", redis.Ping(context.Background())))
+	log.Info("Connecting MYSQL", zap.Any("Error", db.Error))
 
 	helper.InitMigrate(db)
 
@@ -28,6 +37,6 @@ func main() {
 	}))
 
 
-	factory.InitFactory(e, db)
+	factory.InitFactory(e, db, &redis)
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", config.SERVER_PORT)))
 }

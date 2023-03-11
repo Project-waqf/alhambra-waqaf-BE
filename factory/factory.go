@@ -14,13 +14,14 @@ import (
 	WakafRepository "wakaf/features/wakaf/repository"
 	WakafServices "wakaf/features/wakaf/services"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-func InitFactory(e *echo.Echo, db *gorm.DB) {
+func InitFactory(e *echo.Echo, db *gorm.DB, redis *redis.Client) {
 	// ADMIN
-	adminRepoFactory := AdminRepository.New(db)
+	adminRepoFactory := AdminRepository.New(db, redis)
 	adminServiceFactory := AdminServices.New(adminRepoFactory)
 	AdminDelivery.New(e, adminServiceFactory)
 

@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -9,14 +8,12 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"time"
 	"wakaf/config"
 	"wakaf/features/admin/domain"
 	"wakaf/middlewares"
 	"wakaf/pkg/helper"
 	"wakaf/utils/email"
 
-	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -77,6 +74,7 @@ func (u *AdminServices) Register(input domain.Admin) error {
 
 func (u *AdminServices) UpdatePassword(input domain.Admin) error {
 
+	// Encrypt Password
 	saltPw := config.Getconfig().SALT1 + input.Password + config.Getconfig().SALT2
 	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
 	if err != nil {
@@ -97,16 +95,10 @@ func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error
 	}
 
 	// Save To Redis
-	redis := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
-		Password: "",
-		DB:       0,
-	})
-
-	token := encrypt([]byte("ini adalah kunci ya gest"), input.Email)
-
-	if err := saveToRedis(redis, input.Email, token); err != nil {
-		logger.Error("Failed to save data redis",  zap.Error(err))
+	token := encrypt([]byte(os.Getenv("SECRET_KEY")), input.Email)
+	err = u.AdminRepository.SaveRedis(input.Email, token)
+	if err != nil {
+		logger.Error("Error save to redis", zap.Error(err))
 		return domain.Admin{}, err
 	}
 
@@ -116,6 +108,27 @@ func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error
 	}
 
 	return res, nil
+}
+
+func (u *AdminServices) ForgotUpdate(token, password string) error {
+
+	email, err := u.AdminRepository.GetFromRedis(token)
+	if err != nil {
+		return err
+	}
+
+	// Encrypt Password
+	saltPw := config.Getconfig().SALT1 + password + config.Getconfig().SALT2
+	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	err = u.AdminRepository.UpdatePassword(domain.Admin{Email: email, Password: string(hash)})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func encrypt(key []byte, email string) string {
@@ -166,13 +179,4 @@ func decrypt(key []byte, cryptoText string) string {
 	stream.XORKeyStream(ciphertext, ciphertext)
 
 	return fmt.Sprintf("%s", ciphertext)
-}
-
-func saveToRedis(c *redis.Client, email, token string) error {
-	logger.Info("Redis Connection", zap.Any("PING", c.Ping(context.Background())))
-	cmd := c.Set(context.Background(), token, email, time.Duration(5)*time.Minute)
-	if cmd.Err() != nil {
-		return cmd.Err()
-	}
-	return nil
 }

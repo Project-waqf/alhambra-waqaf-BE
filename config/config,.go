@@ -18,6 +18,8 @@ type AppConfig struct {
 	SALT1       string
 	SALT2       string
 	SECRET_JWT  string
+	REDIS_HOST  string
+	REDIS_PORT  string
 }
 
 var lock = &sync.Mutex{}
@@ -60,6 +62,8 @@ func initConfig() *AppConfig {
 	defaultConfig.SECRET_JWT = os.Getenv("SECRET_JWT")
 	defaultConfig.SALT1 = os.Getenv("SALT1")
 	defaultConfig.SALT2 = os.Getenv("SALT2")
+	defaultConfig.REDIS_HOST = os.Getenv("REDIS_HOST")
+	defaultConfig.REDIS_PORT = os.Getenv("REDIS_PORT")
 
 	return &defaultConfig
 }

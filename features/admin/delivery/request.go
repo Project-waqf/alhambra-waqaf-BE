@@ -20,6 +20,11 @@ type RegisterResponseNew struct {
 	Password string `json:"password" form:"password"`
 }
 
+type ForgotUpdate struct {
+	Token    string `json:"token"`
+	Password string `json:"password"`
+}
+
 type RequestForgotPassword struct {
 	Id    int    `json:"id"`
 	Name  string `json:"name"`
@@ -48,8 +53,8 @@ func ToDomainRegister(data Register) domain.Admin {
 
 func FromDomainForgot(data domain.Admin) RequestForgotPassword {
 	return RequestForgotPassword{
-		Id: int(data.ID),
-		Name: data.Name,
+		Id:    int(data.ID),
+		Name:  data.Name,
 		Email: data.Email,
 	}
 }

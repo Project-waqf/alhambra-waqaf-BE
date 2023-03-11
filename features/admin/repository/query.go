@@ -1,19 +1,24 @@
 package repository
 
 import (
+	"context"
 	"errors"
+	"time"
 	"wakaf/features/admin/domain"
 
+	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 )
 
 type AdminRepository struct {
 	db *gorm.DB
+	redis *redis.Client
 }
 
-func New(db *gorm.DB) domain.RepoInterface {
+func New(db *gorm.DB, redis *redis.Client) domain.RepoInterface {
 	return &AdminRepository{
 		db: db,
+		redis: redis,
 	}
 }
 
@@ -48,6 +53,24 @@ func (repo *AdminRepository) GetUser(data domain.Admin) error {
 func (repo *AdminRepository) UpdatePassword(data domain.Admin) error {
 	if res := repo.db.Model(Admin{}).Where("id = ?", data.ID).Update("password", data.Password).RowsAffected; res == 0 {
 		return errors.New("not row affected")
+	}
+	return nil
+}
+
+func (repo *AdminRepository) GetFromRedis(token string) (string, error) {
+
+	res, err := repo.redis.Get(context.Background(), token).Result()
+	if err != nil {
+		return "", err
+	}
+	return res, nil
+}
+
+func (repo *AdminRepository) SaveRedis(email, token string) error {
+	
+	err := repo.redis.Set(context.Background(), token, email, time.Duration(1 * time.Hour)).Err()
+	if err != nil {
+		return err
 	}
 	return nil
 }

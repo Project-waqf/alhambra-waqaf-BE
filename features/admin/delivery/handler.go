@@ -29,6 +29,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.POST("/admin/register", handler.Register())
 	e.POST("/admin/forgot", handler.Forgot())
 	e.PUT("/admin/update/password", handler.Edit(), middlewares.JWTMiddleware())
+	e.POST("/admin/forgot/update", handler.UpdateForgot())
 }
 
 func (delivery *AdminDelivery) Login() echo.HandlerFunc {
@@ -109,8 +110,26 @@ func (d *AdminDelivery) Forgot() echo.HandlerFunc {
 			if strings.Contains(err.Error(), "not found") {
 				return c.JSON(http.StatusNotFound, helper.Failed("Email not found"))
 			}
+			return c.JSON(http.StatusBadRequest, helper.Failed("Send Email Failed"))
+		}
+		return c.JSON(http.StatusCreated, helper.Success("Send Email success", res))
+	}
+}
+
+func (d *AdminDelivery) UpdateForgot() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var input ForgotUpdate
+		err := c.Bind(&input)
+		if err != nil {
+			logger.Error("Error bind data", zap.Error(err))
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		err = d.AdminServices.ForgotUpdate(input.Token, input.Password)
+		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Reset Password Failed"))
 		}
-		return c.JSON(http.StatusCreated, helper.Success("Reset Password success", res))
+
+		return c.JSON(http.StatusCreated, helper.Success("Reset Password success", nil))
 	}
 }
