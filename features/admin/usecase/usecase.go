@@ -2,13 +2,19 @@ package services
 
 import (
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
+	"fmt"
 	"io"
+	"os"
 	"time"
 	"wakaf/config"
 	"wakaf/features/admin/domain"
 	"wakaf/middlewares"
 	"wakaf/pkg/helper"
+	"wakaf/utils/email"
 
 	"github.com/go-redis/redis/v8"
 	"go.uber.org/zap"
@@ -90,41 +96,81 @@ func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error
 		return domain.Admin{}, err
 	}
 
-	// Generate OTP
-	otp := encodeToString(6)
-
 	// Save To Redis
 	redis := redis.NewClient(&redis.Options{
-		Addr:     "172.17.0.4:6379",
+		Addr:     os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
 		Password: "",
 		DB:       0,
 	})
 
-	if err := saveToRedis(redis, input.Email, otp); err != nil {
+	token := encrypt([]byte("ini adalah kunci ya gest"), input.Email)
+
+	if err := saveToRedis(redis, input.Email, token); err != nil {
 		logger.Error("Failed to save data redis",  zap.Error(err))
+		return domain.Admin{}, err
+	}
+
+	if err := email.SendOtpGmail(input.Email, token); err != nil {
+		logger.Error("Failed to send email", zap.Error(err))
 		return domain.Admin{}, err
 	}
 
 	return res, nil
 }
 
-func encodeToString(max int) string {
-	b := make([]byte, max)
-	n, err := io.ReadAtLeast(rand.Reader, b, max)
-	if n != max {
+func encrypt(key []byte, email string) string {
+	// key := []byte(keyText)
+	plaintext := []byte(email)
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		logger.Error("error new chipper", zap.Error(err))
 		panic(err)
 	}
-	for i := 0; i < len(b); i++ {
-		b[i] = table[int(b[i])%len(table)]
+
+	// The IV needs to be unique, but not secure. Therefore it's common to
+	// include it at the beginning of the ciphertext.
+	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
+	iv := ciphertext[:aes.BlockSize]
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		logger.Error("error chippertext", zap.Error(err))
+		panic(err)
 	}
-	return string(b)
+
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
+
+	// convert to base64
+	return base64.URLEncoding.EncodeToString(ciphertext)
 }
 
-var table = [...]byte{'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
+func decrypt(key []byte, cryptoText string) string {
+	ciphertext, _ := base64.URLEncoding.DecodeString(cryptoText)
 
-func saveToRedis(c *redis.Client, email, otp string) error {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		panic(err)
+	}
+
+	// The IV needs to be unique, but not secure. Therefore it's common to
+	// include it at the beginning of the ciphertext.
+	if len(ciphertext) < aes.BlockSize {
+		panic("ciphertext too short")
+	}
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+
+	// XORKeyStream can work in-place if the two arguments are the same.
+	stream.XORKeyStream(ciphertext, ciphertext)
+
+	return fmt.Sprintf("%s", ciphertext)
+}
+
+func saveToRedis(c *redis.Client, email, token string) error {
 	logger.Info("Redis Connection", zap.Any("PING", c.Ping(context.Background())))
-	cmd := c.Set(context.Background(), email, otp, time.Duration(5)*time.Minute)
+	cmd := c.Set(context.Background(), token, email, time.Duration(5)*time.Minute)
 	if cmd.Err() != nil {
 		return cmd.Err()
 	}

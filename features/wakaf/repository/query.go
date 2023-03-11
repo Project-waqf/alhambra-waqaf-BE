@@ -52,7 +52,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 			}
 		}
 			
-		if err := wakaf.db.Model(&Wakaf{}).Count(&count).Where("category = ? AND due_date >= ?", category, today).Error; err != nil {
+		if err := wakaf.db.Model(&Wakaf{}).Where("category = ? AND due_date >= ?", category, today).Count(&count).Error; err != nil {
 			return []domain.Wakaf{}, 0, err
 		}
 	} else {
@@ -65,10 +65,11 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 				return []domain.Wakaf{}, 0, err
 			}
 		}
-		if err := wakaf.db.Model(&Wakaf{}).Count(&count).Where("due_date >= ?", today).Error; err != nil {
+		if err := wakaf.db.Model(&Wakaf{}).Where("due_date >= ?", today).Count(&count).Error; err != nil {
 			return []domain.Wakaf{}, 0, err
 		}
 	}
+
 
 	return ToDomainGetAll(res), int(count), nil
 }
