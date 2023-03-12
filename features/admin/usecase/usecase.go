@@ -106,7 +106,7 @@ func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error
 		logger.Error("Failed to send email", zap.Error(err))
 		return domain.Admin{}, err
 	}
-
+	res.Token = token
 	return res, nil
 }
 

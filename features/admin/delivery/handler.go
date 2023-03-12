@@ -112,7 +112,7 @@ func (d *AdminDelivery) Forgot() echo.HandlerFunc {
 			}
 			return c.JSON(http.StatusBadRequest, helper.Failed("Send Email Failed"))
 		}
-		return c.JSON(http.StatusCreated, helper.Success("Send Email success", res))
+		return c.JSON(http.StatusOK, helper.Success("Send Email success", FromDomainLogin(res)))
 	}
 }
 
