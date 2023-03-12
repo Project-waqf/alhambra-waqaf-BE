@@ -95,6 +95,7 @@ func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error
 	}
 
 	// Save To Redis
+	fmt.Println("INI SECRET KEYS", os.Getenv("SECRET_KEY"))
 	token := encrypt([]byte(os.Getenv("SECRET_KEY")), input.Email)
 	err = u.AdminRepository.SaveRedis(input.Email, token)
 	if err != nil {
