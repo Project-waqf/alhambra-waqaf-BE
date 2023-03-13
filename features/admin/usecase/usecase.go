@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -114,18 +115,21 @@ func (u *AdminServices) ForgotUpdate(token, password string) error {
 
 	email, err := u.AdminRepository.GetFromRedis(token)
 	if err != nil {
-		return err
+		logger.Error("Failed get token from reds", zap.Error(err))
+		return errors.New("token not valid")
 	}
 
 	// Encrypt Password
 	saltPw := config.Getconfig().SALT1 + password + config.Getconfig().SALT2
 	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
 	if err != nil {
+		logger.Error("failed encrypt password", zap.Error(err))
 		return err
 	}
 
 	err = u.AdminRepository.UpdatePassword(domain.Admin{Email: email, Password: string(hash)})
 	if err != nil {
+		logger.Error("Failed udpate password", zap.Error(err))
 		return err
 	}
 	return nil

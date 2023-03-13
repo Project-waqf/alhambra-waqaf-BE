@@ -127,6 +127,9 @@ func (d *AdminDelivery) UpdateForgot() echo.HandlerFunc {
 
 		err = d.AdminServices.ForgotUpdate(input.Token, input.Password)
 		if err != nil {
+			if strings.Contains(err.Error(), "token not valid") {
+				return c.JSON(http.StatusBadRequest, helper.Failed("Token not valid"))
+			}
 			return c.JSON(http.StatusBadRequest, helper.Failed("Reset Password Failed"))
 		}
 
