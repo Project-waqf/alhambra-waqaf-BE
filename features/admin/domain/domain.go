@@ -23,4 +23,5 @@ type RepoInterface interface {
 	UpdatePassword(input Admin) error
 	GetFromRedis(email string) (string, error)
 	SaveRedis(email, token string) (error)
+	UpdatePasswordByEmail(input Admin) (error)
 }

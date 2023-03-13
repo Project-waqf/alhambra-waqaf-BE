@@ -129,7 +129,7 @@ func (u *AdminServices) ForgotUpdate(token, password string) error {
 
 	err = u.AdminRepository.UpdatePassword(domain.Admin{Email: email, Password: string(hash)})
 	if err != nil {
-		logger.Error("Failed udpate password", zap.Error(err))
+		logger.Error("Failed update password", zap.Error(err))
 		return err
 	}
 	return nil

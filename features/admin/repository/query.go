@@ -74,3 +74,10 @@ func (repo *AdminRepository) SaveRedis(email, token string) error {
 	}
 	return nil
 }
+
+func (repo *AdminRepository) UpdatePasswordByEmail(input domain.Admin) error {
+	if res := repo.db.Model(Admin{}).Where("email = ?", input.Email).Update("password", input.Password).RowsAffected; res == 0 {
+		return errors.New("not row affected")
+	}
+	return nil
+}
