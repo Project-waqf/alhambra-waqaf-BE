@@ -22,7 +22,7 @@ type RegisterResponseNew struct {
 
 type ForgotUpdate struct {
 	Token    string `json:"token" form:"token"`
-	Password string `json:"password" form:"token"`
+	Password string `json:"password" form:"password"`
 }
 
 type Forgot struct {
