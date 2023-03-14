@@ -119,13 +119,17 @@ func (u *AdminServices) ForgotUpdate(token, password string) error {
 
 	// Encrypt Password
 	saltPw := password
+	fmt.Println("INI PASSWORD ", saltPw)
 	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
 	if err != nil {
 		logger.Error("failed encrypt password", zap.Error(err))
 		return err
 	}
-
-	err = u.AdminRepository.UpdatePasswordByEmail(domain.Admin{Email: email, Password: string(hash)})
+	var input = domain.Admin{
+		Email: email,
+		Password: string(hash),
+	}
+	err = u.AdminRepository.UpdatePasswordByEmail(input)
 	if err != nil {
 		logger.Error("Failed update password", zap.Error(err))
 		return err
