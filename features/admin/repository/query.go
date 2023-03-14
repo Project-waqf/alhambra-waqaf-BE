@@ -81,3 +81,11 @@ func (repo *AdminRepository) UpdatePasswordByEmail(input domain.Admin) error {
 	}
 	return nil
 }
+
+func (repo *AdminRepository) DeleteToken(token string) error {
+
+	if err := repo.redis.Del(context.Background(), token).Err(); err != nil {
+		return err
+	}
+	return nil
+}
