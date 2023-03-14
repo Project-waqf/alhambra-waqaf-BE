@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"wakaf/config"
 	"wakaf/features/admin/domain"
 	"wakaf/middlewares"
 	"wakaf/pkg/helper"
@@ -38,8 +37,7 @@ func (service *AdminServices) Login(input domain.Admin) (domain.Admin, error) {
 	if err != nil {
 		return domain.Admin{}, err
 	}
-	
-	if err := bcrypt.CompareHashAndPassword([]byte(res.Password), []byte( config.Getconfig().SALT1 + input.Password + config.Getconfig().SALT2)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(res.Password), []byte(input.Password)); err != nil {
 		return domain.Admin{}, err
 	}
 
@@ -58,7 +56,7 @@ func (u *AdminServices) Register(input domain.Admin) error {
 		return err
 	}
 
-	saltPw := config.Getconfig().SALT1 + input.Password + config.Getconfig().SALT2
+	saltPw := input.Password
 	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -76,7 +74,7 @@ func (u *AdminServices) Register(input domain.Admin) error {
 func (u *AdminServices) UpdatePassword(input domain.Admin) error {
 
 	// Encrypt Password
-	saltPw := config.Getconfig().SALT1 + input.Password + config.Getconfig().SALT2
+	saltPw := input.Password
 	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -120,7 +118,7 @@ func (u *AdminServices) ForgotUpdate(token, password string) error {
 	}
 
 	// Encrypt Password
-	saltPw := config.Getconfig().SALT1 + password + config.Getconfig().SALT2
+	saltPw := password
 	hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
 	if err != nil {
 		logger.Error("failed encrypt password", zap.Error(err))
