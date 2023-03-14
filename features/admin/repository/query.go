@@ -11,13 +11,13 @@ import (
 )
 
 type AdminRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
 	redis *redis.Client
 }
 
 func New(db *gorm.DB, redis *redis.Client) domain.RepoInterface {
 	return &AdminRepository{
-		db: db,
+		db:    db,
 		redis: redis,
 	}
 }
@@ -25,7 +25,7 @@ func New(db *gorm.DB, redis *redis.Client) domain.RepoInterface {
 func (repo *AdminRepository) Login(data domain.Admin) (domain.Admin, error) {
 	input := FromDomainLogin(data)
 
-	if err := repo.db.Where("email = ?", input.Email).First(&input).Error; err != nil {
+	if err := repo.db.Model(&Admin{}).Where("email = ?", input.Email).Scan(&input).Error; err != nil {
 		return domain.Admin{}, err
 	}
 
@@ -67,8 +67,8 @@ func (repo *AdminRepository) GetFromRedis(token string) (string, error) {
 }
 
 func (repo *AdminRepository) SaveRedis(email, token string) error {
-	
-	err := repo.redis.Set(context.Background(), token, email, time.Duration(1 * time.Hour)).Err()
+
+	err := repo.redis.Set(context.Background(), token, email, time.Duration(1*time.Hour)).Err()
 	if err != nil {
 		return err
 	}

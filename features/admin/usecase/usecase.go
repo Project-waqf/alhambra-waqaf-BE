@@ -38,8 +38,8 @@ func (service *AdminServices) Login(input domain.Admin) (domain.Admin, error) {
 	if err != nil {
 		return domain.Admin{}, err
 	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(res.Password), []byte(config.Getconfig().SALT1+input.Password+config.Getconfig().SALT2)); err != nil {
+	
+	if err := bcrypt.CompareHashAndPassword([]byte(res.Password), []byte( config.Getconfig().SALT1 + input.Password + config.Getconfig().SALT2)); err != nil {
 		return domain.Admin{}, err
 	}
 
@@ -127,7 +127,7 @@ func (u *AdminServices) ForgotUpdate(token, password string) error {
 		return err
 	}
 
-	err = u.AdminRepository.UpdatePassword(domain.Admin{Email: email, Password: string(hash)})
+	err = u.AdminRepository.UpdatePasswordByEmail(domain.Admin{Email: email, Password: string(hash)})
 	if err != nil {
 		logger.Error("Failed update password", zap.Error(err))
 		return err

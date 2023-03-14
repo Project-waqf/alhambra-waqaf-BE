@@ -30,9 +30,9 @@ func FromDomainRegister(input domain.Admin) Admin {
 
 func ToDomainLogin(input Admin) domain.Admin {
 	return domain.Admin{
-		ID:    input.ID,
-		Name:  input.Name,
-		Email: input.Email,
+		ID:       input.ID,
+		Name:     input.Name,
+		Email:    input.Email,
 		Password: input.Password,
 	}
 }
