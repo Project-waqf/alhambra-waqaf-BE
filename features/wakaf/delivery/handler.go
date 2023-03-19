@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"wakaf/config"
 	"wakaf/features/wakaf/domain"
 	"wakaf/pkg/helper"
@@ -188,6 +189,9 @@ func (wakaf *WakafDelivery) PayWakaf() echo.HandlerFunc {
 
 		res, err := wakaf.WakafService.PayWakaf(ToDomainPayWakaf(input))
 		if err != nil {
+			if strings.Contains(err.Error(), "not found") {
+				return c.JSON(http.StatusNotFound, helper.Failed("Funding has completed"))
+			}
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 		return c.JSON(http.StatusOK, FromDomainPaywakaf(res))
