@@ -207,7 +207,12 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
+		
 		fmt.Println("[DEBUG] Data Callback", input)
+
+		if input.FraudStatus == "deny" {
+			return c.JSON(http.StatusBadRequest, helper.Failed("Failed transaction"))
+		}
 
 		res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
 		if err != nil {

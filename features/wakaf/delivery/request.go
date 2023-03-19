@@ -32,6 +32,7 @@ type CallbackMidtrans struct {
 	TransactionStatus string `json:"transaction_status"`
 	OrderId           string `json:"order_id"`
 	GrossAmount       string `json:"gross_amount"`
+	FraudStatus       string `json:"fraud_status"`
 }
 
 func ToDomainAdd(input WakafRequest) domain.Wakaf {
@@ -66,11 +67,10 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 func ToDomainCallback(input CallbackMidtrans) domain.PayWakaf {
 	split := strings.Split(input.GrossAmount, ".")
 	cnv, _ := strconv.Atoi(split[0])
-	cnvNew := cnv / 2
 	return domain.PayWakaf{
 		OrderId:     input.OrderId,
 		PaymentType: input.PaymentType,
 		Status:      input.TransactionStatus,
-		GrossAmount: cnvNew,
+		GrossAmount: cnv,
 	}
 }
