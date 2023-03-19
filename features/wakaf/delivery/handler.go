@@ -201,14 +201,27 @@ func (wakaf *WakafDelivery) PayWakaf() echo.HandlerFunc {
 func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input CallbackMidtrans
-
+		
 		if err := c.Bind(&input); err != nil {
 			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
-
+		
 		fmt.Println("[DEBUG] Data Callback", input)
 
+		// Fraud Check 
+		if input.FraudStatus == "deny" || input.FraudStatus == "challenge" {
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+
+			err := wakaf.WakafService.DenyTransaction(input.OrderId)
+			if err != nil {
+				logger.Error("Failed to deny transaction")
+			}
+			logger.Error("Failed payment")
+			return c.JSON(http.StatusOK, helper.Failed("Failed transaction"))
+		}
+
+		// Transaction Status Check
 		switch input.TransactionStatus {
 		case "pending":
 			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
@@ -230,16 +243,6 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
 		}
 
-		if input.FraudStatus == "deny" {
-			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
-
-			err := wakaf.WakafService.DenyTransaction(input.OrderId)
-			if err != nil {
-				logger.Error("Failed to deny transaction")
-			}
-			logger.Error("Failed payment")
-			return c.JSON(http.StatusOK, helper.Failed("Failed transaction"))
-		}
 
 		res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
 		if err != nil {

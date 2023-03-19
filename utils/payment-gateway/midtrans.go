@@ -29,6 +29,7 @@ func PayBill(input domain.PayWakaf) (string, string) {
 		CreditCard: &snap.CreditCardDetails{
 			Secure: true,
 		},
+		EnabledPayments: snap.AllSnapPaymentType,
 		CustomerDetail: &midtrans.CustomerDetails{
 			FName: input.Name,
 		},
