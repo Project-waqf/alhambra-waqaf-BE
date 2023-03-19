@@ -231,6 +231,12 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 		}
 
 		if input.FraudStatus == "deny" {
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+
+			err := wakaf.WakafService.DenyTransaction(input.OrderId)
+			if err != nil {
+				logger.Error("Failed to deny transaction")
+			}
 			logger.Error("Failed payment")
 			return c.JSON(http.StatusOK, helper.Failed("Failed transaction"))
 		}

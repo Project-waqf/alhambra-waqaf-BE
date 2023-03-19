@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+	"strings"
 	"wakaf/features/wakaf/domain"
 	"wakaf/pkg/helper"
 	paymentgateway "wakaf/utils/payment-gateway"
@@ -110,4 +112,19 @@ func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf
 	}
 
 	return res, nil
+}
+
+func (wakaf *WakafService) DenyTransaction(input string) error {
+
+	res, err := paymentgateway.DenyTransaction(input)
+	if err != nil {
+		return err
+	}
+
+	if !strings.Contains(res, "200") {
+		var err = errors.New("Failed to deny transacton")
+		logger.Error(err.Error())
+		return err
+	}
+	return nil
 }

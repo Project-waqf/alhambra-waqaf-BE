@@ -38,6 +38,7 @@ type UseCaseInterface interface {
 	GetSingleWakaf(id uint) (Wakaf, error)
 	PayWakaf(input PayWakaf) (PayWakaf, error)
 	UpdatePayment(input PayWakaf) (PayWakaf, error)
+	DenyTransaction(input string) error
 }
 
 type RepoInterface interface {

@@ -2,7 +2,9 @@ package paymentgateway
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"net/http"
 	"os"
 	"time"
 	"wakaf/features/wakaf/domain"
@@ -35,4 +37,23 @@ func PayBill(input domain.PayWakaf) (string, string) {
 	// 3. Execute request create Snap transaction to Midtrans Snap API
 	snapResp, _ := s.CreateTransaction(req)
 	return snapResp.RedirectURL, orderId
+}
+
+func DenyTransaction(input string) (string, error) {
+	url := fmt.Sprintf("https://api.sandbox.midtrans.com/v2/%s/deny", input)
+
+	req, _ := http.NewRequest("POST", url, nil)
+
+	req.Header.Add("accept", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	return string(body), nil
+
 }
