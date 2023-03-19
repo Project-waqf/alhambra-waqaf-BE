@@ -213,6 +213,9 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 		case "pending":
 			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
+		case "deny":
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
 		case "cancel":
 			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
