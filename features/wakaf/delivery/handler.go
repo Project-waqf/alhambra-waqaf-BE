@@ -207,11 +207,15 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
-		
+
 		fmt.Println("[DEBUG] Data Callback", input)
 
-		if input.FraudStatus == "deny" {
-			return c.JSON(http.StatusBadRequest, helper.Failed("Failed transaction"))
+		if input.FraudStatus == "pending" {
+			logger.Info("Pending payment")
+			return c.JSON(http.StatusOK, helper.Failed("Waiting approve"))
+		} else if input.FraudStatus == "deny" {	
+			logger.Error("Failed payment")
+			return c.JSON(http.StatusOK, helper.Failed("Failed transaction"))
 		}
 
 		res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
