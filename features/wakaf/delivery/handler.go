@@ -202,7 +202,6 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input CallbackMidtrans
 
-		
 		if err := c.Bind(&input); err != nil {
 			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
@@ -210,10 +209,25 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 
 		fmt.Println("[DEBUG] Data Callback", input)
 
-		if input.FraudStatus == "pending" {
-			logger.Info("Pending payment")
-			return c.JSON(http.StatusOK, helper.Failed("Waiting approve"))
-		} else if input.FraudStatus == "deny" {	
+		switch input.TransactionStatus {
+		case "pending":
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
+		case "cancel":
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
+		case "expire":
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
+		case "refund":
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
+		case "authorize":
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
+		}
+
+		if input.FraudStatus == "deny" {
 			logger.Error("Failed payment")
 			return c.JSON(http.StatusOK, helper.Failed("Failed transaction"))
 		}
@@ -222,6 +236,8 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
+
+		logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 		return c.JSON(http.StatusOK, helper.Success("Update payment successfull", res))
 	}
 }
