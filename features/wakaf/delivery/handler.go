@@ -188,6 +188,9 @@ func (wakaf *WakafDelivery) PayWakaf() echo.HandlerFunc {
 		}
 
 		res, err := wakaf.WakafService.PayWakaf(ToDomainPayWakaf(input))
+		if res.RedirectURL == "" {
+			return c.JSON(http.StatusOK, helper.Failed("Funding has completed"))
+		}
 		if err != nil {
 			if strings.Contains(err.Error(), "not found") {
 				return c.JSON(http.StatusNotFound, helper.Failed("Funding has completed"))
