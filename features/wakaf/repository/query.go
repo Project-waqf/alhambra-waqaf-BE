@@ -22,7 +22,6 @@ func New(db *gorm.DB) domain.RepoInterface {
 func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	input.Collected = 0
 	data := FromDomainAdd(input)
-	data.IsComplete = false
 
 	if err := wakaf.db.Create(&data).Last(&data).Error; err != nil {
 		return domain.Wakaf{}, err
