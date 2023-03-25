@@ -149,3 +149,13 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 	}
 	return ToDomainPayment(res), nil
 }
+
+func (wk *WakafRepo) Search(input string) ([]domain.Wakaf, error) {
+	var res []Wakaf
+
+	if err := wk.db.Where("title like ?", "%" + input + "%").Find(&res).Error; err != nil {
+		return []domain.Wakaf{}, err
+	}
+	
+	return ToDomainGetAll(res), nil
+}

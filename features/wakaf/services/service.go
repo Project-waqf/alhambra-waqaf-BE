@@ -131,3 +131,12 @@ func (wakaf *WakafService) DenyTransaction(input string) error {
 	}
 	return nil
 }
+
+func (wakaf *WakafService) SearchWakaf(input string) ([]domain.Wakaf, int, error) {
+
+	res, err := wakaf.WakafRepo.Search(input)
+	if err != nil {
+		return nil, 0, err
+	}
+	return res, len(res), nil
+}

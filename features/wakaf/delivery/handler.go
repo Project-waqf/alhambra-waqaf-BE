@@ -69,18 +69,31 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 
 func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		category := c.QueryParam("category")
-		page := c.QueryParam("page")
-		cnvPage, err := strconv.Atoi(page)
-		if err != nil {
-			logger.Error("Failed to convert query param page")
-		}
+		search := c.QueryParam("search")
 
-		res, count, err := wakaf.WakafService.GetAllWakaf(category, cnvPage)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		var response map[string]interface{}
+
+		if search != "" {
+			res, count, err := wakaf.WakafService.SearchWakaf(search)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+			response = helper.SuccessGetAll("Success search wakaf", FromDomainGetAll(res), count)
+		} else {
+			category := c.QueryParam("category")
+			page := c.QueryParam("page")
+			cnvPage, err := strconv.Atoi(page)
+			if err != nil {
+				logger.Error("Failed to convert query param page")
+			}
+			
+			res, count, err := wakaf.WakafService.GetAllWakaf(category, cnvPage)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+			response = helper.SuccessGetAll("Get all wakaf successfully", FromDomainGetAll(res), count)
 		}
-		return c.JSON(http.StatusOK, helper.SuccessGetAll("Get all wakaf successfully", FromDomainGetAll(res), count))
+		return c.JSON(http.StatusOK, response)
 	}
 }
 
