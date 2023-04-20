@@ -159,3 +159,20 @@ func (wk *WakafRepo) Search(input string) ([]domain.Wakaf, error) {
 	
 	return ToDomainGetAll(res), nil
 }
+
+func (wk *WakafRepo) GetSummary() (int, int, int, error) {
+	var count, sum, wakif int64
+
+	if err := wk.db.Model(&Wakaf{}).Count(&count).Error; err != nil {
+		return 0, 0, 0, err
+	}
+
+	if err := wk.db.Raw("SELECT sum(collected) as sum_collected FROM wakafs").Scan(&sum).Error; err != nil {
+		return 0, 0, 0, err
+	}
+
+	if err := wk.db.Model(&Donor{}).Where("status = ?", "settlement").Count(&wakif).Error; err != nil {
+		return 0, 0, 0, err
+	}
+	return int(count), int(sum), int(wakif), nil
+}

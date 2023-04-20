@@ -30,6 +30,10 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.GET("/wakaf/:id_wakaf", handler.GetSingleWakaf())
 	e.POST("/wakaf/pay", handler.PayWakaf())
 	e.POST("/wakaf/payment/callback", handler.PaymentCallback())
+	e.GET("/wakaf/summary", handler.SummaryWakaf())
+	e.GET("/wakaf/payment/finish",  func(c echo.Context) error {
+		return c.Redirect(http.StatusMovedPermanently, "https://wakafalhambra.com")
+	})
 }
 
 var (
@@ -85,6 +89,7 @@ func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 			cnvPage, err := strconv.Atoi(page)
 			if err != nil {
 				logger.Error("Failed to convert query param page")
+				cnvPage = 1
 			}
 			
 			res, count, err := wakaf.WakafService.GetAllWakaf(category, cnvPage)
@@ -264,5 +269,17 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 
 		logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 		return c.JSON(http.StatusOK, helper.Success("Update payment successfull", res))
+	}
+}
+
+func (wakaf *WakafDelivery) SummaryWakaf() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		count, sum, wakif, err := wakaf.WakafService.GetSummary()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		}
+
+		return c.JSON(http.StatusOK, helper.Success("Success get summary", SummaryWakaf(count, sum, wakif)))
 	}
 }

@@ -125,7 +125,7 @@ func (wakaf *WakafService) DenyTransaction(input string) error {
 	}
 
 	if !strings.Contains(res, "200") {
-		var err = errors.New("Failed to deny transacton")
+		var err = errors.New("failed to deny transacton")
 		logger.Error(err.Error())
 		return err
 	}
@@ -139,4 +139,14 @@ func (wakaf *WakafService) SearchWakaf(input string) ([]domain.Wakaf, int, error
 		return nil, 0, err
 	}
 	return res, len(res), nil
+}
+
+func (wakaf *WakafService) GetSummary() (int, int, int, error) {
+	
+	count, sum, wakif, err := wakaf.WakafRepo.GetSummary()
+	if err != nil {
+		logger.Error("Failed get summary wakaf", zap.Error(err))
+		return 0, 0, 0, err
+	}
+	return count, sum, wakif, nil
 }
