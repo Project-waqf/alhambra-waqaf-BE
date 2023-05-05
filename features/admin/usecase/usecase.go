@@ -37,8 +37,9 @@ func (service *AdminServices) Login(input domain.Admin) (domain.Admin, error) {
 	if err != nil {
 		return domain.Admin{}, err
 	}
+
 	if err := bcrypt.CompareHashAndPassword([]byte(res.Password), []byte(input.Password)); err != nil {
-		return domain.Admin{}, err
+		return domain.Admin{}, errors.New("password invalid")
 	}
 
 	token, err := middlewares.CreateToken(int(res.ID), res.Email)

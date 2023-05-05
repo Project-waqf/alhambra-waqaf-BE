@@ -23,9 +23,9 @@ func New(db *gorm.DB, redis *redis.Client) domain.RepoInterface {
 }
 
 func (repo *AdminRepository) Login(data domain.Admin) (domain.Admin, error) {
-	input := FromDomainLogin(data)
+	var input Admin
 
-	if err := repo.db.Model(&Admin{}).Where("email = ?", input.Email).Scan(&input).Error; err != nil {
+	if err := repo.db.Model(&Admin{}).Where("email = ?", data.Email).First(&input).Error; err != nil {
 		return domain.Admin{}, err
 	}
 

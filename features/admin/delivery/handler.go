@@ -45,7 +45,18 @@ func (delivery *AdminDelivery) Login() echo.HandlerFunc {
 		res, err := delivery.AdminServices.Login(cnv)
 		if err != nil {
 			logger.Error("Login", zap.Error(err))
-			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
+			if strings.Contains(err.Error(), "not found") {
+				ret := echo.ErrNotFound
+				ret.Message = "email not found"
+				ret.Code = http.StatusNotFound
+				ret.Internal = err
+				return ret
+			} else if strings.Contains(err.Error(), "password invalid") {
+				ret := echo.ErrUnauthorized
+				ret.Message = "wrong password"
+				return ret
+			}
+			return echo.ErrBadRequest
 		}
 
 		return c.JSON(http.StatusOK, helper.Success("Login success", FromDomainLogin(res)))
