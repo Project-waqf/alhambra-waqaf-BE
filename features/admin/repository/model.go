@@ -11,6 +11,8 @@ type Admin struct {
 	Name     string
 	Email    string
 	Password string
+	Image    string
+	FileId   string
 }
 
 func FromDomainLogin(input domain.Admin) Admin {
@@ -34,5 +36,7 @@ func ToDomainLogin(input Admin) domain.Admin {
 		Name:     input.Name,
 		Email:    input.Email,
 		Password: input.Password,
+		Image:    input.Image,
+		FileId:   input.FileId,
 	}
 }

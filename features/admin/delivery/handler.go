@@ -28,8 +28,9 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.POST("/admin/login", handler.Login())
 	e.POST("/admin/register", handler.Register())
 	e.POST("/admin/forgot", handler.Forgot())
-	e.PUT("/admin/update/password", handler.Edit(), middlewares.JWTMiddleware())
+	e.PUT("/admin/profile", handler.Edit(), middlewares.JWTMiddleware())
 	e.POST("/admin/forgot/update", handler.UpdateForgot())
+	e.PUT("/admin/profile/image", handler.UpdateImage(), middlewares.JWTMiddleware())
 }
 
 func (delivery *AdminDelivery) Login() echo.HandlerFunc {
@@ -87,7 +88,6 @@ func (d *AdminDelivery) Register() echo.HandlerFunc {
 
 func (d *AdminDelivery) Edit() echo.HandlerFunc {
 	return func(c echo.Context) error {
-
 		var input Register
 
 		err := c.Bind(&input)
@@ -98,12 +98,12 @@ func (d *AdminDelivery) Edit() echo.HandlerFunc {
 		id, _ := middlewares.DecodeToken(c)
 		input.Id = id
 		cnv := ToDomainRegister(input)
-		err = d.AdminServices.UpdatePassword(cnv)
+		res, err := d.AdminServices.UpdateProfile(cnv)
 		if err != nil {
-			logger.Error("Update", zap.Any("Update Password Failed", err.Error()))
-			return c.JSON(http.StatusBadRequest, helper.Failed("Update Password Failed"))
+			logger.Error("Update profile failed", zap.Error(err))
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Update Password Failed"))
 		}
-		return c.JSON(http.StatusCreated, helper.Success("Update Password success", nil))
+		return c.JSON(http.StatusCreated, helper.Success("Update Password success", FromDomainProfile(res)))
 	}
 }
 
@@ -145,5 +145,52 @@ func (d *AdminDelivery) UpdateForgot() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusCreated, helper.Success("Reset Password success", nil))
+	}
+}
+
+func (d *AdminDelivery) UpdateImage() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id, _ := middlewares.DecodeToken(c)
+
+		resProfile, err := d.AdminServices.GetProfile(uint(id))
+		if err != nil {
+			logger.Error("Error get profile admin", zap.Error(err))
+			ret := echo.ErrInternalServerError
+			ret.Message = "Error get profile admin"
+			return ret
+		}
+
+		// Delete image in imagekit if exist
+		if resProfile.Image != "" {
+			if err := helper.Delete(resProfile.FileId); err != nil {
+				return echo.ErrInternalServerError
+			}
+		}
+		
+		file, fileheader, err := c.Request().FormFile("picture")
+		if err != nil {
+			logger.Error("Error get picture", zap.Error(err))
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		fileId, dest, err := helper.Upload(c, file, fileheader, "profile")
+		if err != nil {
+			logger.Error("Error upload images", zap.Error(err))
+			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+		
+		var input = domain.Admin{
+			ID: uint(id),
+			Image: dest,
+			FileId: fileId,
+		}
+
+		err = d.AdminServices.UpdateImage(input)
+		if err != nil {
+			ret := echo.ErrInternalServerError
+			ret.Message = "Failed update profile image"
+			return ret
+		}
+		return c.JSON(http.StatusCreated, helper.Success("Success update profile images", dest))
 	}
 }

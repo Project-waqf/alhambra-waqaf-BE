@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 	"wakaf/features/admin/domain"
 
@@ -85,6 +86,34 @@ func (repo *AdminRepository) UpdatePasswordByEmail(input domain.Admin) error {
 func (repo *AdminRepository) DeleteToken(token string) error {
 
 	if err := repo.redis.Del(context.Background(), token).Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *AdminRepository) UpdateProfile(data domain.Admin) (domain.Admin, error) {
+	if err := repo.db.Model(Admin{}).Where("id = ?", data.ID).Updates(map[string]interface{}{"name": data.Name, "email": data.Email, "password": data.Password}).Error; err != nil {
+		return domain.Admin{}, err
+	}
+	fmt.Println("INI DATA", data)
+	return data, nil
+}
+
+func (repo *AdminRepository) GetUserById(id uint) (domain.Admin, error) {
+	var res Admin
+
+	if err := repo.db.Where("id = ?", id).First(&res).Error; err != nil {
+		return domain.Admin{}, err
+	}
+	return ToDomainLogin(res), nil
+}
+
+func(repo *AdminRepository) UpdateImage(input domain.Admin) error {
+
+	if err := repo.db.Model(Admin{}).Where("id = ?", input.ID).Updates(map[string]interface{}{
+		"image": input.Image,
+		"file_id": input.FileId,
+	}).Error; err != nil {
 		return err
 	}
 	return nil

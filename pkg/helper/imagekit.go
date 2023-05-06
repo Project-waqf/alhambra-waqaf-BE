@@ -60,7 +60,7 @@ func Upload(c echo.Context, file multipart.File, fileheader *multipart.FileHeade
 	var ur imagekit.UploadRequest
 
 	// check file type
-	if isImage := fileCheck(fileheader, "image"); isImage == false {
+	if isImage := fileCheck(fileheader, "image"); !isImage {
 		return "", "", errors.New("file not an image")
 	}
 
@@ -110,6 +110,17 @@ func Upload(c echo.Context, file multipart.File, fileheader *multipart.FileHeade
 			UseUniqueFileName: false,
 			Tags:              []string{},
 			Folder:            "/asset",
+			IsPrivateFile:     false,
+			CustomCoordinates: "",
+			ResponseFields:    nil,
+		}
+	} else if tipe == "profile" {
+		ur = imagekit.UploadRequest{
+			File:              buf.Bytes(), // []byte OR *url.URL OR url.URL OR base64 string
+			FileName:          fileName,
+			UseUniqueFileName: false,
+			Tags:              []string{},
+			Folder:            "/profile",
 			IsPrivateFile:     false,
 			CustomCoordinates: "",
 			ResponseFields:    nil,

@@ -143,6 +143,54 @@ func (u *AdminServices) ForgotUpdate(token, password string) error {
 	return nil
 }
 
+func (u *AdminServices) UpdateProfile(input domain.Admin) (domain.Admin, error) {
+
+	resUser, err := u.AdminRepository.GetUserById(input.ID)
+
+	if input.Email == "" {
+		input.Email = resUser.Email
+	}
+
+	if input.Name == "" {
+		input.Name = resUser.Name
+	}
+
+	if input.Password == "" {
+		input.Password = resUser.Password
+	} else {
+		saltPw := input.Password
+		hash, err := bcrypt.GenerateFromPassword([]byte(saltPw), bcrypt.DefaultCost)
+		if err != nil {
+			return domain.Admin{}, errors.New("error when encode password")
+		}
+		input.Password = string(hash)
+	}
+
+	res, err := u.AdminRepository.UpdateProfile(input)
+	if err != nil {
+		return domain.Admin{}, err
+	}
+	return res, nil
+}
+
+func (u *AdminServices) UpdateImage(input domain.Admin) error {
+
+	err := u.AdminRepository.UpdateImage(input)
+	if err != nil {
+		return  err
+	}
+	return nil
+}
+
+func (u *AdminServices) GetProfile(id uint) (domain.Admin, error) {
+	
+	res, err := u.AdminRepository.GetUserById(id)
+	if err != nil {
+		return domain.Admin{}, err
+	}
+	return res, nil
+}
+
 func encrypt(key []byte, email string) string {
 	// key := []byte(keyText)
 	plaintext := []byte(email)

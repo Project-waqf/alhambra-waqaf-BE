@@ -11,6 +11,8 @@ type Admin struct {
 	Name     string `gorm:"type:varchar(255);not null"`
 	Email    string `gorm:"type:varchar(255);not null"`
 	Password string `gorm:"type:varchar(255);not null"`
+	Image    string `gorm:"type:varchar(255);not null"`
+	FileId   string `gorm:"type:varchar(255);not null"`
 }
 
 type News struct {
