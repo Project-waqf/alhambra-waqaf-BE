@@ -34,6 +34,7 @@ type PayWakaf struct {
 	OrderId     string
 	Status      string
 	PaymentType string
+	Token       string
 }
 
 type UseCaseInterface interface {

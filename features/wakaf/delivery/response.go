@@ -23,7 +23,7 @@ type WakafResponse struct {
 
 type Donor struct {
 	Name string `json:"name"`
-	Fund int `json:"fund"`
+	Fund int    `json:"fund"`
 	Doa  string `json:"doa"`
 }
 
@@ -34,6 +34,7 @@ type PayWakafRes struct {
 	Doa         string `json:"doa"`
 	CreatedAt   string `json:"created_at"`
 	RedirectURL string `json:"redirect_url"`
+	Token       string `json:"token"`
 }
 
 type SummaryWakafRes struct {
@@ -142,12 +143,12 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 	days := daysBetween(t1, t2)
 
 	var newDonors []Donor
-	
+
 	for _, v := range input.Donors {
-		tmp := Donor {
+		tmp := Donor{
 			Name: v.Name,
 			Fund: v.Fund,
-			Doa: v.Doa,
+			Doa:  v.Doa,
 		}
 		newDonors = append(newDonors, tmp)
 	}
@@ -163,7 +164,7 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 		DueDate:    days,
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
-		Donors:        newDonors,
+		Donors:     newDonors,
 	}
 }
 
@@ -175,6 +176,7 @@ func FromDomainPaywakaf(input domain.PayWakaf) PayWakafRes {
 		Doa:         input.Doa,
 		CreatedAt:   input.CreatedAt.Format("02/01/2006 15:04"),
 		RedirectURL: input.RedirectURL,
+		Token: input.Token,
 	}
 }
 

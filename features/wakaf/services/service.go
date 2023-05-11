@@ -91,10 +91,10 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 		input.GrossAmount = resWakaf.FundTarget - resWakaf.Collected
 	}
 
-	url, orderId := paymentgateway.PayBill(input)
+	snapResp, orderId := paymentgateway.PayBill(input)
 	input.OrderId = orderId
 	input.Status = "pending"
-	if url == "" {
+	if snapResp.RedirectURL == "" {
 		return domain.PayWakaf{}, errors.New("completed")
 	}
 	res, err := wakaf.WakafRepo.PayWakaf(input)
@@ -102,7 +102,8 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 		logger.Error("Failed add donatur", zap.Error(err))
 		return domain.PayWakaf{}, err
 	}
-	res.RedirectURL = url
+	res.RedirectURL = snapResp.RedirectURL
+	res.Token = snapResp.Token
 	return res, nil
 }
 

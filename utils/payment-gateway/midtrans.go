@@ -13,7 +13,7 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 )
 
-func PayBill(input domain.PayWakaf) (string, string) {
+func PayBill(input domain.PayWakaf) (*snap.Response, string) {
 	// 1. Initiate Snap client
 	var s = snap.Client{}
 	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
@@ -62,7 +62,7 @@ func PayBill(input domain.PayWakaf) (string, string) {
 
 	// 3. Execute request create Snap transaction to Midtrans Snap API
 	snapResp, _ := s.CreateTransaction(req)
-	return snapResp.RedirectURL, orderId
+	return snapResp, orderId
 }
 
 func DenyTransaction(input string) (string, error) {
