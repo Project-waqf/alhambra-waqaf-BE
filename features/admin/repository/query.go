@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 	"wakaf/features/admin/domain"
 
@@ -95,7 +94,6 @@ func (repo *AdminRepository) UpdateProfile(data domain.Admin) (domain.Admin, err
 	if err := repo.db.Model(Admin{}).Where("id = ?", data.ID).Updates(map[string]interface{}{"name": data.Name, "email": data.Email, "password": data.Password}).Error; err != nil {
 		return domain.Admin{}, err
 	}
-	fmt.Println("INI DATA", data)
 	return data, nil
 }
 
@@ -108,10 +106,10 @@ func (repo *AdminRepository) GetUserById(id uint) (domain.Admin, error) {
 	return ToDomainLogin(res), nil
 }
 
-func(repo *AdminRepository) UpdateImage(input domain.Admin) error {
+func (repo *AdminRepository) UpdateImage(input domain.Admin) error {
 
 	if err := repo.db.Model(Admin{}).Where("id = ?", input.ID).Updates(map[string]interface{}{
-		"image": input.Image,
+		"image":   input.Image,
 		"file_id": input.FileId,
 	}).Error; err != nil {
 		return err

@@ -21,6 +21,12 @@ type Wakaf struct {
 	UpdatedAt  time.Time
 }
 
+type Donors struct {
+	Name string
+	Fund int `gorm:"column:gross_amount"`
+	Doa  string
+}
+
 type Donor struct {
 	gorm.Model
 	IdWakaf     uint
@@ -30,6 +36,10 @@ type Donor struct {
 	Status      string
 	PaymentType string
 	OrderId     string
+}
+
+type Doa struct {
+	Doa string
 }
 
 func FromDomainAdd(input domain.Wakaf) Wakaf {
@@ -94,7 +104,18 @@ func ToDomainGetAll(input []Wakaf) []domain.Wakaf {
 	return res
 }
 
-func ToDomainGet(input Wakaf) domain.Wakaf {
+func ToDomainGet(input Wakaf, donors *[]Donors) domain.Wakaf {
+	var newDonors []domain.Donors
+
+	for _, v := range *donors {
+		var tmp = domain.Donors{
+			Name: v.Name,
+			Fund: v.Fund,
+			Doa: v.Doa,
+		}
+		newDonors = append(newDonors, tmp)
+	}
+	
 	return domain.Wakaf{
 		ID:         input.ID,
 		Title:      input.Title,
@@ -106,6 +127,7 @@ func ToDomainGet(input Wakaf) domain.Wakaf {
 		FundTarget: input.FundTarget,
 		DueDate:    input.DueDate,
 		Collected:  input.Collected,
+		Donors:     newDonors,
 	}
 }
 

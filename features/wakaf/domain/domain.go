@@ -15,6 +15,13 @@ type Wakaf struct {
 	Collected  int
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+	Donors     []Donors
+}
+
+type Donors struct {
+	Name string
+	Fund int
+	Doa  string
 }
 
 type PayWakaf struct {

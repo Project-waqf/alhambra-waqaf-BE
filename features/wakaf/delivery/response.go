@@ -8,16 +8,23 @@ import (
 )
 
 type WakafResponse struct {
-	ID         uint   `json:"id"`
-	Title      string `json:"title"`
-	Detail     string `json:"detail"`
-	Category   string `json:"category"`
-	Picture    string `json:"picture"`
-	CreatedAt  string `json:"created_at"`
-	UpdatedAt  string `json:"updated_at"`
-	Collected  int    `json:"collected"`
-	FundTarget int    `json:"fund_target"`
-	DueDate    int    `json:"due_date"`
+	ID         uint    `json:"id"`
+	Title      string  `json:"title"`
+	Detail     string  `json:"detail"`
+	Category   string  `json:"category"`
+	Picture    string  `json:"picture"`
+	CreatedAt  string  `json:"created_at"`
+	UpdatedAt  string  `json:"updated_at"`
+	Collected  int     `json:"collected"`
+	FundTarget int     `json:"fund_target"`
+	DueDate    int     `json:"due_date"`
+	Donors     []Donor `json:"donors"`
+}
+
+type Donor struct {
+	Name string `json:"name"`
+	Fund int `json:"fund"`
+	Doa  string `json:"doa"`
 }
 
 type PayWakafRes struct {
@@ -134,6 +141,17 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 	t2 := date(date1[0], date1[1], date1[2])
 	days := daysBetween(t1, t2)
 
+	var newDonors []Donor
+	
+	for _, v := range input.Donors {
+		tmp := Donor {
+			Name: v.Name,
+			Fund: v.Fund,
+			Doa: v.Doa,
+		}
+		newDonors = append(newDonors, tmp)
+	}
+
 	return WakafResponse{
 		ID:         input.ID,
 		Title:      input.Title,
@@ -145,6 +163,7 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 		DueDate:    days,
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
+		Donors:        newDonors,
 	}
 }
 
@@ -162,7 +181,7 @@ func FromDomainPaywakaf(input domain.PayWakaf) PayWakafRes {
 func SummaryWakaf(count, sum, wakif int) SummaryWakafRes {
 	return SummaryWakafRes{
 		TotalProgram: count,
-		TotalWakaf: sum,
-		TotalWakif: wakif,
+		TotalWakaf:   sum,
+		TotalWakif:   wakif,
 	}
 }

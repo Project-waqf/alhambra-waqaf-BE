@@ -39,7 +39,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 	if page != 1 {
 		offset = 9 * (page - 1)
 	}
-	
+
 	if category != "" {
 		if page != 0 {
 			if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("created_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
@@ -50,7 +50,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 				return []domain.Wakaf{}, 0, err
 			}
 		}
-			
+
 		if err := wakaf.db.Model(&Wakaf{}).Where("category = ? AND due_date >= ?", category, today).Count(&count).Error; err != nil {
 			return []domain.Wakaf{}, 0, err
 		}
@@ -68,7 +68,6 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 			return []domain.Wakaf{}, 0, err
 		}
 	}
-
 
 	return ToDomainGetAll(res), int(count), nil
 }
@@ -94,7 +93,7 @@ func (wakaf *WakafRepo) Delete(id uint) (domain.Wakaf, error) {
 	if err := wakaf.db.Delete(&Wakaf{}, "id = ?", id).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
-	return ToDomainGet(data), nil
+	return ToDomainGet(data, nil), nil
 }
 
 func (wakaf *WakafRepo) GetFileId(id uint) (string, error) {
@@ -108,12 +107,17 @@ func (wakaf *WakafRepo) GetFileId(id uint) (string, error) {
 
 func (wakaf *WakafRepo) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 	var data Wakaf
+	var donors []Donors
 
 	if err := wakaf.db.Where("id = ?", id).First(&data).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
 
-	return ToDomainGet(data), nil
+	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa").Where("id_wakaf = ?", id).Scan(&donors).Error; err != nil {
+		return domain.Wakaf{}, err
+	}
+
+	return ToDomainGet(data, &donors), nil
 }
 
 func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error) {
@@ -153,10 +157,10 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 func (wk *WakafRepo) Search(input string) ([]domain.Wakaf, error) {
 	var res []Wakaf
 
-	if err := wk.db.Where("title like ?", "%" + input + "%").Find(&res).Error; err != nil {
+	if err := wk.db.Where("title like ?", "%"+input+"%").Find(&res).Error; err != nil {
 		return []domain.Wakaf{}, err
 	}
-	
+
 	return ToDomainGetAll(res), nil
 }
 
