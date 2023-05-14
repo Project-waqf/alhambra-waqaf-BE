@@ -36,6 +36,6 @@ func main() {
 	}))
 
 
-	factory.InitFactory(e, db, &redis)
+	factory.InitFactory(e, db, &redis, &log)
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", config.SERVER_PORT)))
 }

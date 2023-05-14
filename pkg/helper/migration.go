@@ -57,7 +57,15 @@ type Donor struct {
 	PaymentType string `gorm:"type:varchar(255)"`
 }
 
+type Partner struct {
+	gorm.Model
+	Name    string `gorm:"type:varchar(255);not null"`
+	Picture string `gorm:"varchar(255);not null"`
+	FileId  string `gorm:"type:varchar(255)"`
+}
+
 func InitMigrate(db *gorm.DB) {
+	db.AutoMigrate(&Partner{})
 	db.AutoMigrate(&Admin{})
 	db.AutoMigrate(&News{})
 	db.AutoMigrate(&Wakaf{})

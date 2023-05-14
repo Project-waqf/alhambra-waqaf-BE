@@ -125,6 +125,17 @@ func Upload(c echo.Context, file multipart.File, fileheader *multipart.FileHeade
 			CustomCoordinates: "",
 			ResponseFields:    nil,
 		}
+	} else if tipe == "partner" {
+		ur = imagekit.UploadRequest{
+			File:              buf.Bytes(), // []byte OR *url.URL OR url.URL OR base64 string
+			FileName:          fileName,
+			UseUniqueFileName: false,
+			Tags:              []string{},
+			Folder:            "/partner",
+			IsPrivateFile:     false,
+			CustomCoordinates: "",
+			ResponseFields:    nil,
+		}
 	}
 
 	ctx := context.Background()
