@@ -13,13 +13,17 @@ import (
 	WakafDelivery "wakaf/features/wakaf/delivery"
 	WakafRepository "wakaf/features/wakaf/repository"
 	WakafServices "wakaf/features/wakaf/services"
+	PartnerDelivery "wakaf/features/partners/delivery"
+	PartnerRepository "wakaf/features/partners/repository"
+	ParnterServices "wakaf/features/partners/services"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-func InitFactory(e *echo.Echo, db *gorm.DB, redis *redis.Client) {
+func InitFactory(e *echo.Echo, db *gorm.DB, redis *redis.Client, logger *zap.Logger) {
 	// ADMIN
 	adminRepoFactory := AdminRepository.New(db, redis)
 	adminServiceFactory := AdminServices.New(adminRepoFactory)
@@ -39,4 +43,9 @@ func InitFactory(e *echo.Echo, db *gorm.DB, redis *redis.Client) {
 	assetRepoFactory := AssetRepository.New(db)
 	assetServiceFactory := AssetServices.New(assetRepoFactory)
 	AssetDelivery.New(e, assetServiceFactory)
+
+	// PARTNER
+	partnerRepoFactory := PartnerRepository.New(db)
+	partnerServiceFactory := ParnterServices.New(partnerRepoFactory, logger)
+	PartnerDelivery.New(e, partnerServiceFactory, logger)
 }
