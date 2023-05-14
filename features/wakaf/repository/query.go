@@ -117,7 +117,7 @@ func (wakaf *WakafRepo) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 		return domain.Wakaf{}, err
 	}
 
-	return ToDomainGet(data, &donors), nil
+	return ToDomainGet(data, donors), nil
 }
 
 func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error) {

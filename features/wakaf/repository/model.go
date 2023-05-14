@@ -104,10 +104,10 @@ func ToDomainGetAll(input []Wakaf) []domain.Wakaf {
 	return res
 }
 
-func ToDomainGet(input Wakaf, donors *[]Donors) domain.Wakaf {
+func ToDomainGet(input Wakaf, donors []Donors) domain.Wakaf {
 	var newDonors []domain.Donors
 
-	for _, v := range *donors {
+	for _, v := range donors {
 		var tmp = domain.Donors{
 			Name: v.Name,
 			Fund: v.Fund,
