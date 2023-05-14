@@ -35,7 +35,7 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset,int, err
 			if page != 1 {
 				offset = 3
 			}
-			if err := asset.db.Where("status = online").Order("created_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
+			if err := asset.db.Where("status = 'online'").Order("created_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.Asset{}, 0, err
 			}
 		}
