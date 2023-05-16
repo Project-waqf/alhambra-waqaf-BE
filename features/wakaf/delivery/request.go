@@ -22,6 +22,7 @@ type WakafRequest struct {
 
 type PayWakafReq struct {
 	IdWakaf     int    `json:"id_wakaf" form:"id_wakaf"`
+	Email       string `json:"email" form:"email"`
 	Name        string `json:"name" form:"name"`
 	GrossAmount int    `json:"gross_amount" form:"gross_amount"`
 	Doa         string `json:"doa" form:"doa"`
@@ -59,6 +60,7 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 	return domain.PayWakaf{
 		IdWakaf:     input.IdWakaf,
 		Name:        input.Name,
+		Email:       input.Email,
 		GrossAmount: input.GrossAmount,
 		Doa:         input.Doa,
 	}

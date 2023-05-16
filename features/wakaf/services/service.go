@@ -91,10 +91,11 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 		input.GrossAmount = resWakaf.FundTarget - resWakaf.Collected
 	}
 
-	snapResp, orderId := paymentgateway.PayBill(input)
+	snapResp, orderId := paymentgateway.Midtrans(input)
 	input.OrderId = orderId
 	input.Status = "pending"
 	if snapResp.RedirectURL == "" {
+		logger.Info("Failed get redirect url because transaction has completed")
 		return domain.PayWakaf{}, errors.New("completed")
 	}
 	res, err := wakaf.WakafRepo.PayWakaf(input)

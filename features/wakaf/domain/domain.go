@@ -27,6 +27,7 @@ type Donors struct {
 type PayWakaf struct {
 	IdWakaf     int
 	Name        string
+	Email       string
 	GrossAmount int
 	Doa         string
 	CreatedAt   time.Time

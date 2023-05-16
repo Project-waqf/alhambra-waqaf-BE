@@ -2,7 +2,7 @@ package paymentgateway
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math/rand"
 	"net/http"
 	"os"
@@ -13,7 +13,7 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 )
 
-func PayBill(input domain.PayWakaf) (*snap.Response, string) {
+func Midtrans(input domain.PayWakaf) (*snap.Response, string) {
 	// 1. Initiate Snap client
 	var s = snap.Client{}
 	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
@@ -57,6 +57,7 @@ func PayBill(input domain.PayWakaf) (*snap.Response, string) {
 		},
 		CustomerDetail: &midtrans.CustomerDetails{
 			FName: input.Name,
+			Email: input.Email,
 		},
 	}
 
@@ -78,7 +79,7 @@ func DenyTransaction(input string) (string, error) {
 	}
 
 	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+	body, _ := io.ReadAll(res.Body)
 
 	return string(body), nil
 
