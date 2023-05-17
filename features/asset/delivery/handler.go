@@ -48,14 +48,14 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err != nil {
-			logger.Error("image not found", zap.Error(err))
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+			logger.Error("Error get image", zap.Error(err))
 		}
 
 		fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
 		if err != nil {
-			logger.Error("Failed upload image to imagekit", zap.Error(err))
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+			logger.Error("Failed upload image", zap.Error(err))
+			fileName = ""
+			fileId = ""
 		}
 
 		input.Picture = fileName
