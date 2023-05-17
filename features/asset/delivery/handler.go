@@ -47,19 +47,19 @@ func (asset *AssetDelivery) AddAsset() echo.HandlerFunc {
 		}
 
 		file, fileheader, err := c.Request().FormFile("picture")
-		if err != nil {
+		if err == nil {
 			logger.Error("Error get image", zap.Error(err))
+			fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
+			if err != nil {
+				logger.Error("Failed upload image", zap.Error(err))
+				fileName = ""
+				fileId = ""
+			}
+			input.Picture = fileName
+			input.FileId = fileId
 		}
 
-		fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
-		if err != nil {
-			logger.Error("Failed upload image", zap.Error(err))
-			fileName = ""
-			fileId = ""
-		}
 
-		input.Picture = fileName
-		input.FileId = fileId
 		res, err := asset.AssetService.AddAsset(ToDomainAdd(input))
 		if err != nil {
 			logger.Error("Error in usecase", zap.Error(err))

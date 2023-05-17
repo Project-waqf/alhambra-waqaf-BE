@@ -44,19 +44,18 @@ func (news *NewsDelivery) AddNews() echo.HandlerFunc {
 		}
 
 		file, fileheader, err := c.Request().FormFile("picture")
-		if err != nil {
+		if err == nil {
 			logger.Error("Error get file", zap.Error(err))
+			fileId, filename, err := helper.Upload(c, file, fileheader, "news")
+			if err != nil {
+				logger.Error("Error upload image", zap.Error(err))
+				filename = ""
+				fileId = ""
+			}
+			input.Picture = filename
+			input.FileId = fileId
 		}
 
-		fileId, filename, err := helper.Upload(c, file, fileheader, "news")
-		if err != nil {
-			logger.Error("Error upload image", zap.Error(err))
-			filename = ""
-			fileId = ""
-		}
-
-		input.Picture = filename
-		input.FileId = fileId
 		res, err := news.NewsServices.AddNews(ToDomainAddNews(input))
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))

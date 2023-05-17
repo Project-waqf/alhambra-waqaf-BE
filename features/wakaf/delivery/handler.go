@@ -53,16 +53,16 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 		file, fileheader, err := c.Request().FormFile("picture")
 		if err != nil {
 			logger.Error("Error get picture", zap.Error(err))
-		}
-		fileId, dest, err := helper.Upload(c, file, fileheader, "wakaf")
-		if err != nil {
-			logger.Error("Error upload images", zap.Error(err))
-			dest = ""
-			fileId = ""
+			fileId, dest, err := helper.Upload(c, file, fileheader, "wakaf")
+			if err != nil {
+				logger.Error("Error upload images", zap.Error(err))
+				dest = ""
+				fileId = ""
+			}
+			input.Picture = dest
+			input.FileId = fileId
 		}
 
-		input.Picture = dest
-		input.FileId = fileId
 		res, err := wakaf.WakafService.AddWakaf(ToDomainAdd(input))
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
