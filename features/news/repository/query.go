@@ -34,9 +34,9 @@ func (news *NewsRepository) GetAll(status string, page int) ([]domain.News, int,
 		if page != 0 {
 			var offset int = 0
 			if page != 1 {
-				offset = 6 * (page - 1)
+				offset = 10 * (page - 1)
 			}
-			if err := news.db.Where("status = 'online'").Order("updated_at DESC").Limit(6).Offset(offset).Find(&res).Error; err != nil {
+			if err := news.db.Where("status = 'online'").Order("updated_at DESC").Limit(10).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.News{}, 0, err
 			}
 		} else {
