@@ -156,14 +156,12 @@ func (news *NewsDelivery) DeleteNews() echo.HandlerFunc {
 		}
 
 		fileIdDb, err := news.NewsServices.GetFileId(cnvId)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to get fileId"))
-		}
-
-		err = helper.Delete(fileIdDb)
-		if err != nil {
-			logger.Error("Error delete file in imagekit", zap.Error(err))
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+		if err == nil && fileIdDb != "" {
+			err = helper.Delete(fileIdDb)
+			if err != nil {
+				logger.Error("Error delete file in imagekit", zap.Error(err))
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+			}
 		}
 
 		_, err = news.NewsServices.Delete(cnvId)

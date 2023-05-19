@@ -160,14 +160,13 @@ func (wakaf *WakafDelivery) DeleteWakaf() echo.HandlerFunc {
 		}
 
 		fileIdDb, err := wakaf.WakafService.GetFileId(uint(cnvId))
-		if err != nil {
-			logger.Error("Failed to get fileId", zap.Error(err))
-			return c.JSON(http.StatusNotFound, helper.Failed("Failed to get fileId"))
-		}
-		err = helper.Delete(fileIdDb)
-		if err != nil {
-			logger.Error("Failed delete image in imagekit", zap.Error(err))
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+		if err == nil && fileIdDb == "" {
+			logger.Info("Failed to get fileId", zap.Error(err))
+			err = helper.Delete(fileIdDb)
+			if err != nil {
+				logger.Error("Failed delete image in imagekit", zap.Error(err))
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+			}
 		}
 
 		_, err = wakaf.WakafService.DeleteWakaf(uint(cnvId))

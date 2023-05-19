@@ -167,14 +167,13 @@ func (asset *AssetDelivery) DeleteAsset() echo.HandlerFunc {
 		}
 
 		fileIdDb, err := asset.AssetService.GetFileId(uint(cnvId))
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to get fileId"))
+		if err == nil && fileIdDb == "" {
+			err = helper.Delete(fileIdDb)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+			}
 		}
 
-		err = helper.Delete(fileIdDb)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
-		}
 
 		err = asset.AssetService.DeleteAsset(uint(cnvId))
 		if err != nil {
