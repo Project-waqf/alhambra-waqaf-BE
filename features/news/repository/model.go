@@ -11,7 +11,7 @@ type News struct {
 	Title   string `gorm:"type:varchar(255)"`
 	Body    string `gorm:"type:text"`
 	Picture string `gorm:"type:varchar(255)"`
-	Status  string 
+	Status  string
 	FileId  string
 }
 
@@ -47,6 +47,7 @@ func ToDomainGetAll(data []News) []domain.News {
 			Title:     v.Title,
 			Body:      v.Body,
 			Picture:   v.Picture,
+			Status:    v.Status,
 			CreatedAt: v.CreatedAt,
 			UpdatedAt: v.UpdatedAt,
 		})
@@ -62,6 +63,6 @@ func ToDomainGet(data News) domain.News {
 		Picture:   data.Picture,
 		CreatedAt: data.CreatedAt,
 		UpdatedAt: data.UpdatedAt,
-		FileId: data.FileId,
+		FileId:    data.FileId,
 	}
 }
