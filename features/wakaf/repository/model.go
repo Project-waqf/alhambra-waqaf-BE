@@ -16,7 +16,8 @@ type Wakaf struct {
 	Collected  int
 	FundTarget int
 	FileId     string
-	DueDate    *time.Time
+	Status     string
+	DueDate    time.Time
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
@@ -53,6 +54,7 @@ func FromDomainAdd(input domain.Wakaf) Wakaf {
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
 		DueDate:    input.DueDate,
+		Status:     input.Status,
 	}
 }
 
@@ -81,6 +83,7 @@ func ToDomainAdd(input Wakaf) domain.Wakaf {
 		FundTarget: input.FundTarget,
 		DueDate:    input.DueDate,
 		Collected:  input.Collected,
+		Status:     input.Status,
 	}
 }
 
@@ -99,6 +102,7 @@ func ToDomainGetAll(input []Wakaf) []domain.Wakaf {
 			FundTarget: v.FundTarget,
 			DueDate:    v.DueDate,
 			Collected:  v.Collected,
+			Status:     v.Status,
 		})
 	}
 	return res
@@ -111,11 +115,11 @@ func ToDomainGet(input Wakaf, donors []Donors) domain.Wakaf {
 		var tmp = domain.Donors{
 			Name: v.Name,
 			Fund: v.Fund,
-			Doa: v.Doa,
+			Doa:  v.Doa,
 		}
 		newDonors = append(newDonors, tmp)
 	}
-	
+
 	return domain.Wakaf{
 		ID:         input.ID,
 		Title:      input.Title,

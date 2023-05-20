@@ -11,8 +11,9 @@ type Wakaf struct {
 	Detail     string
 	FundTarget int
 	IsComplete bool
-	DueDate    *time.Time
+	DueDate    time.Time
 	Collected  int
+	Status     string
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	Donors     []Donors
@@ -40,7 +41,7 @@ type PayWakaf struct {
 
 type UseCaseInterface interface {
 	AddWakaf(input Wakaf) (Wakaf, error)
-	GetAllWakaf(category string, page int) ([]Wakaf, int, error)
+	GetAllWakaf(category string, page int, isUser bool) ([]Wakaf, int, int, int, error)
 	UpdateWakaf(id uint, input Wakaf) (Wakaf, error)
 	DeleteWakaf(id uint) (Wakaf, error)
 	GetFileId(id uint) (string, error)
@@ -48,19 +49,19 @@ type UseCaseInterface interface {
 	PayWakaf(input PayWakaf) (PayWakaf, error)
 	UpdatePayment(input PayWakaf) (PayWakaf, error)
 	DenyTransaction(input string) error
-	SearchWakaf(input string) ([]Wakaf, int, error)
+	SearchWakaf(input string) ([]Wakaf, int, int, int, error)
 	GetSummary() (int, int, int, error)
 }
 
 type RepoInterface interface {
 	Insert(input Wakaf) (Wakaf, error)
-	GetAllWakaf(category string, page int) ([]Wakaf, int, error)
+	GetAllWakaf(category string, page int, isUser bool) ([]Wakaf, int, int, int, error)
 	Edit(id uint, input Wakaf) (Wakaf, error)
 	Delete(id uint) (Wakaf, error)
 	GetFileId(id uint) (string, error)
 	GetSingleWakaf(id uint) (Wakaf, error)
 	PayWakaf(input PayWakaf) (PayWakaf, error)
 	UpdatePayment(input PayWakaf) (PayWakaf, error)
-	Search(input string) ([]Wakaf, error)
+	Search(input string) ([]Wakaf, int, int, int, error)
 	GetSummary() (int, int, int, error)
 }

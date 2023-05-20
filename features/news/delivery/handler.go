@@ -77,12 +77,12 @@ func (news *NewsDelivery) GetAllNews() echo.HandlerFunc {
 			}
 			pageCnv = cnv
 		}
-		res, count, err := news.NewsServices.GetAll(status, pageCnv)
+		res, countOnline, countDraft, countArchive, err := news.NewsServices.GetAll(status, pageCnv)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}
 		getAllResponse := FromDomainGetAll(res)
-		return c.JSON(http.StatusOK, helper.SuccessGetAll("Get all news Successfully", getAllResponse, count))
+		return c.JSON(http.StatusOK, helper.SuccessGetAll("Get all news Successfully", getAllResponse, countOnline, countDraft, countArchive))
 	}
 }
 

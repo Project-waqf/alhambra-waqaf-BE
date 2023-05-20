@@ -16,6 +16,7 @@ type WakafRequest struct {
 	Detail     string `json:"detail" form:"detail"`
 	Picture    string `json:"picture" form:"picture"`
 	FundTarget int    `json:"fund_target" form:"fund_target"`
+	Status     string `json:"status" form:"status"`
 	DueDate    string `json:"due_date" form:"due_date"`
 	FileId     string
 }
@@ -52,7 +53,8 @@ func ToDomainAdd(input WakafRequest) domain.Wakaf {
 		FileId:     input.FileId,
 		Detail:     input.Detail,
 		FundTarget: input.FundTarget,
-		DueDate:    &date,
+		DueDate:    date,
+		Status:     input.Status,
 	}
 }
 

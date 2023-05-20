@@ -31,7 +31,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.POST("/wakaf/pay", handler.PayWakaf())
 	e.POST("/wakaf/payment/callback", handler.PaymentCallback())
 	e.GET("/wakaf/summary", handler.SummaryWakaf())
-	e.GET("/wakaf/payment/finish",  func(c echo.Context) error {
+	e.GET("/wakaf/payment/finish", func(c echo.Context) error {
 		return c.Redirect(http.StatusMovedPermanently, "https://wakafalhambra.com")
 	})
 }
@@ -51,7 +51,7 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 		}
 
 		file, fileheader, err := c.Request().FormFile("picture")
-		if err != nil {
+		if err == nil {
 			logger.Error("Error get picture", zap.Error(err))
 			fileId, dest, err := helper.Upload(c, file, fileheader, "wakaf")
 			if err != nil {
@@ -74,15 +74,20 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		search := c.QueryParam("search")
-
+		isAdminParam := c.QueryParam("isUser")
+		var isAdmin = true
+		if isAdminParam == "false"  {
+			isAdmin = false
+		}
+		fmt.Print(isAdmin)
 		var response map[string]interface{}
 
 		if search != "" {
-			res, count, err := wakaf.WakafService.SearchWakaf(search)
+			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.SearchWakaf(search)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
-			response = helper.SuccessGetAll("Success search wakaf", FromDomainGetAll(res), count)
+			response = helper.SuccessGetAll("Success search wakaf", FromDomainGetAll(res), countOnline, countDraft, countArchive)
 		} else {
 			category := c.QueryParam("category")
 			page := c.QueryParam("page")
@@ -91,12 +96,12 @@ func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 				logger.Error("Failed to convert query param page")
 				cnvPage = 1
 			}
-			
-			res, count, err := wakaf.WakafService.GetAllWakaf(category, cnvPage)
+
+			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.GetAllWakaf(category, cnvPage, isAdmin)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
-			response = helper.SuccessGetAll("Get all wakaf successfully", FromDomainGetAll(res), count)
+			response = helper.SuccessGetAll("Get all wakaf successfully", FromDomainGetAll(res), countOnline, countDraft, countArchive)
 		}
 		return c.JSON(http.StatusOK, response)
 	}
@@ -218,15 +223,15 @@ func (wakaf *WakafDelivery) PayWakaf() echo.HandlerFunc {
 func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var input CallbackMidtrans
-		
+
 		if err := c.Bind(&input); err != nil {
 			logger.Error("Error bind data", zap.Error(err))
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
 		}
-		
+
 		fmt.Println("[DEBUG] Data Callback", input)
 
-		// Fraud Check 
+		// Fraud Check
 		if input.FraudStatus == "deny" || input.FraudStatus == "challenge" {
 			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 
@@ -259,7 +264,6 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
 		}
-
 
 		res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
 		if err != nil {

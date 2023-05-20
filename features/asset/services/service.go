@@ -20,12 +20,12 @@ func (asset *AssetService) AddAsset(input domain.Asset) (domain.Asset, error) {
 	return res, nil
 }
 
-func (asset *AssetService) GetAllAsset(status string, page int) ([]domain.Asset, int, error) {
-	res, count, err := asset.AssetRepo.GetAll(status, page)
+func (asset *AssetService) GetAllAsset(status string, page int) ([]domain.Asset, int, int, int, error) {
+	res, countOnline, countDraft, countArchive, err := asset.AssetRepo.GetAll(status, page)
 	if err != nil {
-		return []domain.Asset{}, 0, err
+		return []domain.Asset{}, 0, 0, 0, err
 	}
-	return res, count, nil
+	return res, countOnline, countDraft, countArchive, nil
 }
 
 func (asset *AssetService) GetAsset(id uint) (domain.Asset, error) {

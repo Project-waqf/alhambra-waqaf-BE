@@ -8,38 +8,42 @@ import (
 
 type Partner struct {
 	gorm.Model
-	Name    string
-	Picture string
-	FileId  string
+	Name        string
+	PictureName string
+	Picture     string
+	FileId      string
 }
 
 func FromDomainCreatePartner(input *domain.Partner) Partner {
 	return Partner{
-		Name:    input.Name,
-		Picture: input.Picture,
-		FileId:  input.FileId,
+		Name:        input.Name,
+		PictureName: input.PictureName,
+		Picture:     input.Picture,
+		FileId:      input.FileId,
 	}
 }
 
 func ToDomainCreatePartner(input Partner) *domain.Partner {
 	return &domain.Partner{
-		Id:        input.ID,
-		Name:      input.Name,
-		Picture:   input.Picture,
-		FileId:    input.FileId,
-		CreatedAt: input.CreatedAt,
-		UpdateAt:  input.UpdatedAt,
+		Id:          input.ID,
+		Name:        input.Name,
+		PictureName: input.PictureName,
+		Picture:     input.Picture,
+		FileId:      input.FileId,
+		CreatedAt:   input.CreatedAt,
+		UpdateAt:    input.UpdatedAt,
 	}
 }
 
 func ToDomainGetPartner(input Partner) *domain.Partner {
 	return &domain.Partner{
-		Id:        input.ID,
-		Name:      input.Name,
-		Picture:   input.Picture,
-		FileId:    input.FileId,
-		CreatedAt: input.CreatedAt,
-		UpdateAt:  input.UpdatedAt,
+		Id:          input.ID,
+		Name:        input.Name,
+		PictureName: input.PictureName,
+		Picture:     input.Picture,
+		FileId:      input.FileId,
+		CreatedAt:   input.CreatedAt,
+		UpdateAt:    input.UpdatedAt,
 	}
 }
 

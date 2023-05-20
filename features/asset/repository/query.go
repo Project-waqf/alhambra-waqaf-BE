@@ -25,9 +25,9 @@ func (asset *AssetRepo) Insert(input domain.Asset) (domain.Asset, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset,int, error) {
+func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, int, int, error) {
 	var res []Asset
-	var count int64
+	var countOnline, countDraft, countArchive int64
 
 	if status == "online" {
 		if page != 0 {
@@ -36,31 +36,37 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset,int, err
 				offset = 3
 			}
 			if err := asset.db.Where("status = 'online'").Order("created_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
-				return []domain.Asset{}, 0, err
+				return []domain.Asset{}, 0, 0, 0, err
 			}
 		}
 		if err := asset.db.Where("status = 'online'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, err
+			return []domain.Asset{}, 0, 0, 0, err
 		}
 	} else if status == "draft" {
 		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, err
+			return []domain.Asset{}, 0, 0, 0, err
 		}
 	} else if status == "archive" {
 		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, err
+			return []domain.Asset{}, 0, 0, 0, err
 		}
 	} else {
 		if err := asset.db.Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, err
+			return []domain.Asset{}, 0, 0, 0, err
 		}
 	}
 
-	if err := asset.db.Model(&Asset{}).Count(&count).Error; err != nil {
-		return []domain.Asset{}, 0, err
+	for _, v := range res {
+		if v.Status == "online" {
+			countOnline += 1
+		} else if v.Status == "draft" {
+			countDraft += 1
+		} else {
+			countArchive += 1
+		}
 	}
 
-	return ToDomainGetAll(res), int(count), nil
+	return ToDomainGetAll(res), int(countOnline), int(countDraft), int(countArchive), nil
 }
 
 func (asset *AssetRepo) Get(id uint) (domain.Asset, error) {

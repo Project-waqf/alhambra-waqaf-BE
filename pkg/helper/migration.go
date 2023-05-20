@@ -34,6 +34,7 @@ type Wakaf struct {
 	FundTarget int        `gorm:"not null"`
 	DueDate    *time.Time `gorm:"type:datetime;not null"`
 	FileId     string     `gorm:"type:varchar(255)"`
+	Status     string     `gorm:"type:enum('draft', 'online', 'archive'); not null"`
 	Donor      []Donor    `gorm:"foreignKey:IdWakaf"`
 }
 
@@ -59,9 +60,10 @@ type Donor struct {
 
 type Partner struct {
 	gorm.Model
-	Name    string `gorm:"type:varchar(255);not null"`
-	Picture string `gorm:"varchar(255);not null"`
-	FileId  string `gorm:"type:varchar(255)"`
+	Name        string `gorm:"type:varchar(255);not null"`
+	PictureName string `gorm:"type:varchar(255);not null"`
+	Picture     string `gorm:"varchar(255);not null"`
+	FileId      string `gorm:"type:varchar(255)"`
 }
 
 func InitMigrate(db *gorm.DB) {

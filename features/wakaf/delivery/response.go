@@ -18,6 +18,7 @@ type WakafResponse struct {
 	Collected  int     `json:"collected"`
 	FundTarget int     `json:"fund_target"`
 	DueDate    int     `json:"due_date"`
+	Status     string  `json:"status"`
 	Donors     []Donor `json:"donors"`
 }
 
@@ -84,7 +85,9 @@ func FromDomainAdd(input domain.Wakaf) WakafResponse {
 		UpdatedAt:  input.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
+		Detail:     input.Detail,
 		DueDate:    days,
+		Status:     input.Status,
 	}
 }
 
@@ -109,6 +112,10 @@ func FromDomainGetAll(input []domain.Wakaf) []WakafResponse {
 		t2 := date(date1[0], date1[1], date1[2])
 		days := daysBetween(t1, t2)
 
+		if timeNow.After(v.DueDate) {
+			days = 0
+		}
+
 		res = append(res, WakafResponse{
 			ID:         v.ID,
 			Title:      v.Title,
@@ -119,6 +126,7 @@ func FromDomainGetAll(input []domain.Wakaf) []WakafResponse {
 			DueDate:    days,
 			Collected:  v.Collected,
 			FundTarget: v.FundTarget,
+			Status:     v.Status,
 		})
 	}
 	return res
@@ -176,7 +184,7 @@ func FromDomainPaywakaf(input domain.PayWakaf) PayWakafRes {
 		Doa:         input.Doa,
 		CreatedAt:   input.CreatedAt.Format("02/01/2006 15:04"),
 		RedirectURL: input.RedirectURL,
-		Token: input.Token,
+		Token:       input.Token,
 	}
 }
 

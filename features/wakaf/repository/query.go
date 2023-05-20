@@ -29,9 +29,9 @@ func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, int, error) {
+func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool) ([]domain.Wakaf, int, int, int, error) {
 	var res []Wakaf
-	var count int64
+	var countOnline, countDraft, countArchive int64
 
 	today := time.Now()
 
@@ -42,34 +42,61 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int) ([]domain.Wakaf, 
 
 	if category != "" {
 		if page != 0 {
-			if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("created_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
-				return []domain.Wakaf{}, 0, err
+			if isUser {
+				if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("updated_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
+			} else {
+				if err := wakaf.db.Where("category = ?", category, today).Order("updated_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
 			}
 		} else {
-			if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
-				return []domain.Wakaf{}, 0, err
+			if isUser {
+				if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("updated_at desc").Limit(9).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
+			} else {
+				if err := wakaf.db.Where("category = ?", category, today).Order("updated_at desc").Limit(9).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}	
 			}
-		}
-
-		if err := wakaf.db.Model(&Wakaf{}).Where("category = ? AND due_date >= ?", category, today).Count(&count).Error; err != nil {
-			return []domain.Wakaf{}, 0, err
 		}
 	} else {
 		if page != 0 {
-			if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
-				return []domain.Wakaf{}, 0, err
+			if isUser {
+				if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
+			} else {
+				if err := wakaf.db.Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
 			}
 		} else {
-			if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
-				return []domain.Wakaf{}, 0, err
+			if isUser {
+				if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
+			} else {
+				if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
 			}
-		}
-		if err := wakaf.db.Model(&Wakaf{}).Where("due_date >= ?", today).Count(&count).Error; err != nil {
-			return []domain.Wakaf{}, 0, err
 		}
 	}
 
-	return ToDomainGetAll(res), int(count), nil
+	for _, v := range res {
+		if v.Status == "online" {
+			countOnline += 1
+		} else if v.Status == "draft" {
+			countDraft += 1
+		} else {
+			countArchive += 1
+		}
+	}
+
+	return ToDomainGetAll(res), int(countOnline), int(countDraft), int(countArchive), nil
 }
 
 func (wakaf *WakafRepo) Edit(id uint, input domain.Wakaf) (domain.Wakaf, error) {
@@ -154,14 +181,25 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 	return ToDomainPayment(res), nil
 }
 
-func (wk *WakafRepo) Search(input string) ([]domain.Wakaf, error) {
+func (wk *WakafRepo) Search(input string) ([]domain.Wakaf, int, int, int, error) {
 	var res []Wakaf
+	var countOnline, countDraft, countArchive int
 
 	if err := wk.db.Where("title like ?", "%"+input+"%").Find(&res).Error; err != nil {
-		return []domain.Wakaf{}, err
+		return []domain.Wakaf{}, 0, 0, 0, err
 	}
 
-	return ToDomainGetAll(res), nil
+	for _, v := range res {
+		if v.Status == "online" {
+			countOnline += 1
+		} else if v.Status == "draft" {
+			countDraft += 1
+		} else {
+			countArchive += 1
+		}
+	}
+
+	return ToDomainGetAll(res), countOnline, countDraft, countArchive, nil
 }
 
 func (wk *WakafRepo) GetSummary() (int, int, int, error) {

@@ -3,12 +3,13 @@ package domain
 import "time"
 
 type Partner struct {
-	Id        uint
-	Name      string
-	Picture   string
-	FileId    string
-	CreatedAt time.Time
-	UpdateAt  time.Time
+	Id          uint
+	Name        string
+	Picture     string
+	PictureName string
+	FileId      string
+	CreatedAt   time.Time
+	UpdateAt    time.Time
 }
 
 type UseCaseInterface interface {

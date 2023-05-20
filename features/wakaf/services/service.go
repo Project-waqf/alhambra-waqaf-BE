@@ -33,13 +33,13 @@ func (wakaf *WakafService) AddWakaf(input domain.Wakaf) (domain.Wakaf, error) {
 	return res, nil
 }
 
-func (wakaf *WakafService) GetAllWakaf(category string, page int) ([]domain.Wakaf, int, error) {
-	res, count, err := wakaf.WakafRepo.GetAllWakaf(category, page)
+func (wakaf *WakafService) GetAllWakaf(category string, page int, isUser bool) ([]domain.Wakaf, int, int, int, error) {
+	res, countOnline, countDraft, countArchive, err := wakaf.WakafRepo.GetAllWakaf(category, page, isUser)
 	if err != nil {
 		logger.Error("Failed get all wakaf", zap.Error(err))
-		return []domain.Wakaf{}, 0, err
+		return []domain.Wakaf{}, 0, 0, 0, err
 	}
-	return res, count, nil
+	return res, countOnline, countDraft, countArchive, nil
 }
 
 func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Wakaf, error) {
@@ -134,13 +134,13 @@ func (wakaf *WakafService) DenyTransaction(input string) error {
 	return nil
 }
 
-func (wakaf *WakafService) SearchWakaf(input string) ([]domain.Wakaf, int, error) {
+func (wakaf *WakafService) SearchWakaf(input string) ([]domain.Wakaf, int, int, int, error) {
 
-	res, err := wakaf.WakafRepo.Search(input)
+	res, countOnline, countDraft, countArchive, err := wakaf.WakafRepo.Search(input)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, 0, err
 	}
-	return res, len(res), nil
+	return res, countOnline, countDraft, countArchive, nil
 }
 
 func (wakaf *WakafService) GetSummary() (int, int, int, error) {

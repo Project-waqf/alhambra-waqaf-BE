@@ -13,10 +13,12 @@ func Failed(msg string) map[string]string {
 	}
 }
 
-func SuccessGetAll(msg string, data interface{}, count int) map[string]interface{} {
+func SuccessGetAll(msg string, data interface{}, countOnline, countDraft, countArchive int) map[string]interface{} {
 	return map[string]interface{}{
 		"message": msg,
 		"data": data,
-		"total_data": count,
+		"total_online": countOnline,
+		"total_draft": countDraft,
+		"total_archive": countArchive,
 	}
 }

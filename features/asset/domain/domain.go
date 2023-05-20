@@ -15,7 +15,7 @@ type Asset struct {
 
 type UsecaseInterface interface {
 	AddAsset(input Asset) (Asset, error)
-	GetAllAsset(status string, page int) ([]Asset, int, error)
+	GetAllAsset(status string, page int) ([]Asset, int, int, int, error)
 	GetAsset(id uint ) (Asset, error)
 	UpdateAsset(id uint, input Asset) (Asset, error)
 	DeleteAsset(id uint) error
@@ -25,7 +25,7 @@ type UsecaseInterface interface {
 
 type RepositoryInterface interface {
 	Insert(input Asset) (Asset, error)
-	GetAll(status string, page int) ([]Asset, int, error)
+	GetAll(status string, page int) ([]Asset, int, int, int, error)
 	Get(id uint) (Asset, error)
 	Edit(id uint, input Asset) (Asset, error)
 	Delete(id uint) error
