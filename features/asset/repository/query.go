@@ -56,15 +56,18 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, in
 		}
 	}
 
-	for _, v := range res {
-		if v.Status == "online" {
-			countOnline += 1
-		} else if v.Status == "draft" {
-			countDraft += 1
-		} else {
-			countArchive += 1
-		}
+	if err := asset.db.Model(&Asset{}).Where("status = ?", "online").Count(&countOnline).Error; err != nil {
+		return []domain.Asset{}, 0, 0, 0, err
 	}
+
+	if err := asset.db.Model(&Asset{}).Where("status = ?", "draft").Count(&countDraft).Error; err != nil {
+		return []domain.Asset{}, 0, 0, 0, err
+	}
+
+	if err := asset.db.Model(&Asset{}).Where("status = ?", "archive").Count(&countArchive).Error; err != nil {
+		return []domain.Asset{}, 0, 0, 0, err
+	}
+
 
 	return ToDomainGetAll(res), int(countOnline), int(countDraft), int(countArchive), nil
 }

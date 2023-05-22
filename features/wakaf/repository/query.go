@@ -87,15 +87,18 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 		}
 	}
 
-	for _, v := range res {
-		if v.Status == "online" {
-			countOnline += 1
-		} else if v.Status == "draft" {
-			countDraft += 1
-		} else {
-			countArchive += 1
-		}
+	if err := wakaf.db.Model(&Wakaf{}).Where("status = ?", "online").Count(&countOnline).Error; err != nil {
+		return []domain.Wakaf{}, 0, 0, 0, err
 	}
+
+	if err := wakaf.db.Model(&Wakaf{}).Where("status = ?", "draft").Count(&countDraft).Error; err != nil {
+		return []domain.Wakaf{}, 0, 0, 0, err
+	}
+
+	if err := wakaf.db.Model(&Wakaf{}).Where("status = ?", "archive").Count(&countArchive).Error; err != nil {
+		return []domain.Wakaf{}, 0, 0, 0, err
+	}
+
 
 	if status != "" {
 		for i := 0; i < len(res); i++ {

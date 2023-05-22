@@ -58,15 +58,18 @@ func (news *NewsRepository) GetAll(status string, page int) ([]domain.News, int,
 		}
 	}
 
-	for _, v := range res {
-		if v.Status == "online" {
-			countOnline += 1
-		} else if v.Status == "draft" {
-			countDraft += 1
-		} else {
-			countArchive += 1
-		}
+	if err := news.db.Model(&News{}).Where("status = ?", "online").Count(&countOnline).Error; err != nil {
+		return []domain.News{}, 0, 0, 0, err
 	}
+
+	if err := news.db.Model(&News{}).Where("status = ?", "draft").Count(&countDraft).Error; err != nil {
+		return []domain.News{}, 0, 0, 0, err
+	}
+
+	if err := news.db.Model(&News{}).Where("status = ?", "archive").Count(&countArchive).Error; err != nil {
+		return []domain.News{}, 0, 0, 0, err
+	}
+
 	return ToDomainGetAll(res), int(countOnline), int(countDraft), int(countArchive), nil
 }
 
