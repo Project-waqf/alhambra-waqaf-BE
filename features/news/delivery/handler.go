@@ -100,7 +100,7 @@ func (news *NewsDelivery) GetSingleNews() echo.HandlerFunc {
 			}
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusOK, helper.Success("Get news successfully", FromDOmainGet(res)))
+		return c.JSON(http.StatusOK, helper.Success("Get news successfully", FromDomainGet(res)))
 	}
 }
 
@@ -143,7 +143,7 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
-		return c.JSON(http.StatusOK, helper.Success("Update news successfully", FromDOmainGet(res)))
+		return c.JSON(http.StatusOK, helper.Success("Update news successfully", FromDomainGet(res)))
 	}
 }
 

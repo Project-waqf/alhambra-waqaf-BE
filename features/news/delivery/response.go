@@ -32,7 +32,7 @@ func FromDomainGetAll(data []domain.News) []NewsResponse {
 	var res []NewsResponse
 
 	for _, v := range data {
-		newCreated := v.CreatedAt.Format("Monday, 02-01-2006 T15:04:05")
+		newCreated := v.CreatedAt.Format("02 January 2006")
 		newUpdated := v.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05")
 		res = append(res, NewsResponse{
 			ID:        v.ID,
@@ -47,8 +47,8 @@ func FromDomainGetAll(data []domain.News) []NewsResponse {
 	return res
 }
 
-func FromDOmainGet(data domain.News) NewsResponse {
-	newCreated := data.CreatedAt.Format("Monday, 02-01-2006 T15:04:05")
+func FromDomainGet(data domain.News) NewsResponse {
+	newCreated := data.CreatedAt.Format("02 January 2006")
 	newUpdated := data.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05")
 	return NewsResponse{
 		ID:        data.ID,

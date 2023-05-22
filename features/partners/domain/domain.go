@@ -8,6 +8,7 @@ type Partner struct {
 	Picture     string
 	PictureName string
 	FileId      string
+	Link        string
 	CreatedAt   time.Time
 	UpdateAt    time.Time
 }

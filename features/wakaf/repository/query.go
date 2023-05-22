@@ -29,8 +29,9 @@ func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool) ([]domain.Wakaf, int, int, int, error) {
+func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, status string) ([]domain.Wakaf, int, int, int, error) {
 	var res []Wakaf
+	var resWithStatus []Wakaf
 	var countOnline, countDraft, countArchive int64
 
 	today := time.Now()
@@ -59,7 +60,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool) ([]d
 			} else {
 				if err := wakaf.db.Where("category = ?", category, today).Order("updated_at desc").Limit(9).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
-				}	
+				}
 			}
 		}
 	} else {
@@ -96,6 +97,15 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool) ([]d
 		}
 	}
 
+	if status != "" {
+		for i := 0; i < len(res); i++ {
+			if res[i].Status == status {
+				resWithStatus = append(resWithStatus,res[i])
+			}
+		}
+		return ToDomainGetAll(resWithStatus), int(countOnline), int(countDraft), int(countArchive), nil
+	}
+	
 	return ToDomainGetAll(res), int(countOnline), int(countDraft), int(countArchive), nil
 }
 

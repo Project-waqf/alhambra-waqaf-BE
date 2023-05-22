@@ -19,7 +19,7 @@ func FromDomainAdd(input domain.Asset) AssetResponse {
 		Picture:   input.Picture,
 		Detail:    input.Detail,
 		Status:    input.Status,
-		CreatedAt: input.CreatedAt.Format("Monday, 02-01-2006 T15:04:05"),
+		CreatedAt: input.CreatedAt.Format("02 January 2006"),
 		UpdatedAt: input.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 	}
 }
@@ -34,7 +34,7 @@ func FromDomainGetAll(input []domain.Asset) []AssetResponse {
 			Picture:   v.Picture,
 			Detail:    v.Detail,
 			Status:    v.Status,
-			CreatedAt: v.CreatedAt.Format("Monday, 02-01-2006 T15:04:05"),
+			CreatedAt: v.CreatedAt.Format("02 January 2006"),
 			UpdatedAt: v.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
 		})
 	}

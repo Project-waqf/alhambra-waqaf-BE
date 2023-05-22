@@ -74,30 +74,32 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		search := c.QueryParam("search")
+		
 		isAdminParam := c.QueryParam("isUser")
 		var isAdmin = true
 		if isAdminParam == "false"  {
 			isAdmin = false
 		}
-		fmt.Print(isAdmin)
 		var response map[string]interface{}
-
+		
 		if search != "" {
 			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.SearchWakaf(search)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
 			response = helper.SuccessGetAll("Success search wakaf", FromDomainGetAll(res), countOnline, countDraft, countArchive)
-		} else {
-			category := c.QueryParam("category")
-			page := c.QueryParam("page")
-			cnvPage, err := strconv.Atoi(page)
-			if err != nil {
-				logger.Error("Failed to convert query param page")
+			} else {
+				status := c.QueryParam("status")
+				fmt.Print("ini status ", status)
+				category := c.QueryParam("category")
+				page := c.QueryParam("page")
+				cnvPage, err := strconv.Atoi(page)
+				if err != nil {
+					logger.Error("Failed to convert query param page")
 				cnvPage = 1
 			}
 
-			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.GetAllWakaf(category, cnvPage, isAdmin)
+			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.GetAllWakaf(category, cnvPage, isAdmin, status)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
