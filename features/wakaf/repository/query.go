@@ -184,10 +184,6 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 		return domain.PayWakaf{}, err
 	}
 
-	if err := wk.db.Model(&Wakaf{}).Where("collected >= fund_target").Where("id = ?", id_wakaf).Delete(&Wakaf{}).Error; err != nil {
-		return domain.PayWakaf{}, err
-	}
-
 	if err := wk.db.Table("donors").Where("order_id = ?", input.OrderId).Updates(Donor{Status: input.Status, PaymentType: input.PaymentType}).Last(&res).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
