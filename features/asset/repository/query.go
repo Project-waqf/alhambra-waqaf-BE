@@ -47,7 +47,7 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, in
 			return []domain.Asset{}, 0, 0, 0, err
 		}
 	} else if status == "archive" {
-		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
+		if err := asset.db.Where("status = 'archive'").Order("updated_at DESC").Find(&res).Error; err != nil {
 			return []domain.Asset{}, 0, 0, 0, err
 		}
 	} else {
