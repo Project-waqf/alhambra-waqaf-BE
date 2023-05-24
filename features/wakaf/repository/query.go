@@ -48,7 +48,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
-				if err := wakaf.db.Where("category = ?", category, today).Order("updated_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+				if err := wakaf.db.Where("category = ?", category).Order("updated_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			}
