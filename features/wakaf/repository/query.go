@@ -102,12 +102,19 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 
 	if status != "" {
 		for i := 0; i < len(res); i++ {
-			if res[i].Status == status {
-				resWithStatus = append(resWithStatus,res[i])
+			if isUser {		
+				if res[i].Status == status && res[i].Collected == res[i].FundTarget {
+					resWithStatus = append(resWithStatus,res[i])
+				}
+			} else {
+				if res[i].Status == status {
+					resWithStatus = append(resWithStatus,res[i])
+				}
 			}
 		}
 		return ToDomainGetAll(resWithStatus), int(countOnline), int(countDraft), int(countArchive), nil
 	}
+
 	
 	return ToDomainGetAll(res), int(countOnline), int(countDraft), int(countArchive), nil
 }
