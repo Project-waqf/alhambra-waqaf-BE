@@ -99,12 +99,16 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 		return []domain.Wakaf{}, 0, 0, 0, err
 	}
 
-
+	if isUser {
+		countOnline = 0
+	}
+	
 	if status != "" {
 		for i := 0; i < len(res); i++ {
 			if isUser {		
-				if res[i].Status == status && res[i].Collected == res[i].FundTarget {
+				if res[i].Status == status && res[i].Collected != res[i].FundTarget {
 					resWithStatus = append(resWithStatus,res[i])
+					countOnline += 1
 				}
 			} else {
 				if res[i].Status == status {
@@ -112,6 +116,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 				}
 			}
 		}
+
 		return ToDomainGetAll(resWithStatus), int(countOnline), int(countDraft), int(countArchive), nil
 	}
 
