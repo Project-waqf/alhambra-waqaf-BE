@@ -88,11 +88,18 @@ func (d *AdminDelivery) Register() echo.HandlerFunc {
 
 func (d *AdminDelivery) Edit() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var input Register
+		var input = Register{}
 
 		err := c.Bind(&input)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+		}
+
+		if input.OldPassword != "" {
+			_, err = d.AdminServices.Login(ToDomainLogin(Login{Email: input.Email, Password: input.OldPassword}))
+			if err != nil {
+				return c.JSON(http.StatusUnauthorized, helper.Failed("wrong password"))
+			}
 		}
 
 		id, _ := middlewares.DecodeToken(c)

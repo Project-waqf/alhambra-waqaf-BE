@@ -9,9 +9,10 @@ type Login struct {
 
 type Register struct {
 	Id       int
-	Name     string `json:"name" form:"name"`
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
+	Name     string `json:"name,omitempty" form:"name"`
+	Email    string `json:"email,omitempty" form:"email"`
+	Password string `json:"password,omitempty" form:"password"`
+	OldPassword string `json:"old_password,omitempty" form:"old_password"`
 }
 
 type RegisterResponseNew struct {
