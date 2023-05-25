@@ -6,7 +6,6 @@ type Partner struct {
 	Id          uint
 	Name        string
 	Picture     string
-	PictureName string
 	FileId      string
 	Link        string
 	CreatedAt   time.Time

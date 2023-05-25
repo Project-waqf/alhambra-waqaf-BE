@@ -5,7 +5,6 @@ import "wakaf/features/partners/domain"
 type PartnerResponse struct {
 	Id          uint   `json:"id"`
 	Name        string `json:"name"`
-	PictureName string `json:"picture_name"`
 	Link        string `json:"link"`
 	Picture     string `json:"picture"`
 	CreatedAt   string `json:"created_at"`
@@ -26,7 +25,6 @@ func GetDetailResponse(input *domain.Partner) PartnerResponse {
 	return PartnerResponse{
 		Id:          input.Id,
 		Name:        input.Name,
-		PictureName: input.PictureName,
 		Picture:     input.Picture,
 		Link:        input.Link,
 		CreatedAt:   input.CreatedAt.Format("02 January 2006"),

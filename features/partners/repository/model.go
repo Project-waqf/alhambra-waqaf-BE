@@ -9,7 +9,6 @@ import (
 type Partner struct {
 	gorm.Model
 	Name        string
-	PictureName string
 	Link        string
 	Picture     string
 	FileId      string
@@ -19,7 +18,6 @@ func FromDomainCreatePartner(input *domain.Partner) Partner {
 	return Partner{
 		Name:        input.Name,
 		Link:        input.Link,
-		PictureName: input.PictureName,
 		Picture:     input.Picture,
 		FileId:      input.FileId,
 	}
@@ -29,7 +27,6 @@ func ToDomainCreatePartner(input Partner) *domain.Partner {
 	return &domain.Partner{
 		Id:          input.ID,
 		Name:        input.Name,
-		PictureName: input.PictureName,
 		Picture:     input.Picture,
 		FileId:      input.FileId,
 		Link:        input.Link,
@@ -42,7 +39,6 @@ func ToDomainGetPartner(input Partner) *domain.Partner {
 	return &domain.Partner{
 		Id:          input.ID,
 		Name:        input.Name,
-		PictureName: input.PictureName,
 		Link:        input.Link,
 		Picture:     input.Picture,
 		FileId:      input.FileId,

@@ -61,7 +61,6 @@ type Donor struct {
 type Partner struct {
 	gorm.Model
 	Name        string `gorm:"type:varchar(255);not null"`
-	PictureName string `gorm:"type:varchar(255);not null"`
 	Picture     string `gorm:"varchar(255);not null"`
 	FileId      string `gorm:"type:varchar(255)"`
 }
