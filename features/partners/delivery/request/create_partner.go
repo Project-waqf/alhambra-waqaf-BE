@@ -5,7 +5,7 @@ import "wakaf/features/partners/domain"
 type PartnerRequest struct {
 	Name        string `json:"name" form:"name"`
 	PictureName string `json:"picture_name" form:"picture_name"`
-	Link        string `json:"link" form:"string"`
+	Link        string `json:"link" form:"link"`
 	Picture     string
 	FileId      string
 }
