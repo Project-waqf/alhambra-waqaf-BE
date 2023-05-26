@@ -60,9 +60,10 @@ type Donor struct {
 
 type Partner struct {
 	gorm.Model
-	Name        string `gorm:"type:varchar(255);not null"`
-	Picture     string `gorm:"varchar(255);not null"`
-	FileId      string `gorm:"type:varchar(255)"`
+	Name    string `gorm:"type:varchar(255);not null"`
+	Picture string `gorm:"varchar(255);not null"`
+	FileId  string `gorm:"type:varchar(255)"`
+	Linkg   string `gorm:"type:varchar(255)"`
 }
 
 func InitMigrate(db *gorm.DB) {

@@ -42,7 +42,6 @@ func ToDomainAdd(input WakafRequest) domain.Wakaf {
 	date, err := time.Parse(format+" 15:04:05", input.DueDate+" 23:59:59")
 	if err != nil {
 		logger.Error("Error parse due date", zap.Error(err))
-		return domain.Wakaf{}
 	}
 
 	return domain.Wakaf{

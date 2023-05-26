@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"reflect"
 	"strings"
 	"wakaf/features/wakaf/domain"
 	"wakaf/pkg/helper"
@@ -42,12 +43,54 @@ func (wakaf *WakafService) GetAllWakaf(category string, page int, isUser bool, s
 	return res, countOnline, countDraft, countArchive, nil
 }
 
+func isEmptyValue(value reflect.Value) bool {
+	switch value.Kind() {
+	case reflect.String, reflect.Array, reflect.Slice, reflect.Map:
+		return value.Len() == 0
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return value.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return value.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return value.Float() == 0.0
+	case reflect.Bool:
+		return !value.Bool()
+	case reflect.Ptr, reflect.Interface:
+		return value.IsNil()
+	default:
+		return false
+	}
+}
+
 func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Wakaf, error) {
-	res, err := wakaf.WakafRepo.Edit(id, input)
+
+	resGet, err := wakaf.WakafRepo.GetSingleWakaf(id)
 	if err != nil {
-		logger.Error("Failed update wakaf", zap.Error(err))
+		logger.Error("Wakaf not found", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
+
+	v := reflect.ValueOf(input)
+	wakafValue := reflect.ValueOf(&resGet).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if isEmptyValue(field) {
+			continue
+		}
+
+		fieldName := v.Type().Field(i).Name
+		wakafField := wakafValue.FieldByName(fieldName)
+		if wakafField.IsValid() && wakafField.CanSet() {
+			wakafField.Set(field)
+		}
+	}
+
+	res, err := wakaf.WakafRepo.Edit(id, resGet)
+	if err != nil {
+		logger.Error("Failed update wakaf", zap.Error(err))
+		return res, err
+	}
+
 	return res, nil
 }
 
@@ -144,7 +187,7 @@ func (wakaf *WakafService) SearchWakaf(input string) ([]domain.Wakaf, int, int, 
 }
 
 func (wakaf *WakafService) GetSummary() (int, int, int, error) {
-	
+
 	count, sum, wakif, err := wakaf.WakafRepo.GetSummary()
 	if err != nil {
 		logger.Error("Failed get summary wakaf", zap.Error(err))
