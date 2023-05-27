@@ -167,7 +167,7 @@ func (wakaf *WakafDelivery) DeleteWakaf() echo.HandlerFunc {
 		}
 
 		fileIdDb, err := wakaf.WakafService.GetFileId(uint(cnvId))
-		if err == nil && fileIdDb == "" {
+		if err == nil && fileIdDb != "" {
 			logger.Info("Failed to get fileId", zap.Error(err))
 			err = helper.Delete(fileIdDb)
 			if err != nil {

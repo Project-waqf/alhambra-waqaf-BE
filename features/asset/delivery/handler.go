@@ -166,7 +166,7 @@ func (asset *AssetDelivery) DeleteAsset() echo.HandlerFunc {
 		}
 
 		fileIdDb, err := asset.AssetService.GetFileId(uint(cnvId))
-		if err == nil && fileIdDb == "" {
+		if err == nil && fileIdDb != "" {
 			err = helper.Delete(fileIdDb)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
