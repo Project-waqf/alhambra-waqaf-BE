@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"wakaf/features/asset/domain"
 
 	"gorm.io/gorm"
@@ -29,30 +30,26 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, in
 	var res []Asset
 	var countOnline, countDraft, countArchive int64
 
-	if status == "online" {
-		if page != 0 {
-			var offset int = 0
-			if page != 1 {
-				offset = 3
-			}
+	fmt.Println(page, status)
+	if page != 0 {
+		var offset int = 0
+		offset = 10 * (page - 1)
+		if status == "online" {
 			if err := asset.db.Where("status = 'online'").Order("created_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
+				return []domain.Asset{}, 0, 0, 0, err	
+			}
+		} else if status == "draft" {
+			if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.Asset{}, 0, 0, 0, err
 			}
-		}
-		if err := asset.db.Where("status = 'online'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, 0, 0, err
-		}
-	} else if status == "draft" {
-		if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, 0, 0, err
-		}
-	} else if status == "archive" {
-		if err := asset.db.Where("status = 'archive'").Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, 0, 0, err
-		}
-	} else {
-		if err := asset.db.Order("updated_at DESC").Find(&res).Error; err != nil {
-			return []domain.Asset{}, 0, 0, 0, err
+		} else if status == "archive" {
+			if err := asset.db.Where("status = 'archive'").Order("updated_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
+				return []domain.Asset{}, 0, 0, 0, err
+			}
+		} else {
+			if err := asset.db.Order("updated_at DESC").Find(&res).Error; err != nil {
+				return []domain.Asset{}, 0, 0, 0, err
+			}
 		}
 	}
 
