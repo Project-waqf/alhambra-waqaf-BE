@@ -63,7 +63,7 @@ type Partner struct {
 	Name    string `gorm:"type:varchar(255);not null"`
 	Picture string `gorm:"varchar(255);not null"`
 	FileId  string `gorm:"type:varchar(255)"`
-	Linkg   string `gorm:"type:varchar(255)"`
+	Link    string `gorm:"type:varchar(255)"`
 }
 
 func InitMigrate(db *gorm.DB) {
