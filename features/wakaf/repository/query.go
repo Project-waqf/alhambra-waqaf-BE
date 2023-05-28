@@ -87,8 +87,14 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 		}
 	}
 
-	if err := wakaf.db.Model(&Wakaf{}).Where("status = ?", "online").Count(&countOnline).Error; err != nil {
-		return []domain.Wakaf{}, 0, 0, 0, err
+	if category != ""  && isUser {
+		if err := wakaf.db.Model(&Wakaf{}).Where("status = ? AND category = ?", "online", "kesehatan").Count(&countOnline).Error; err != nil {
+			return []domain.Wakaf{}, 0, 0, 0, err
+		}
+	} else {
+		if err := wakaf.db.Model(&Wakaf{}).Where("status = ?", "online").Count(&countOnline).Error; err != nil {
+			return []domain.Wakaf{}, 0, 0, 0, err
+		}
 	}
 
 	if err := wakaf.db.Model(&Wakaf{}).Where("status = ?", "draft").Count(&countDraft).Error; err != nil {
@@ -98,17 +104,12 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 	if err := wakaf.db.Model(&Wakaf{}).Where("status = ?", "archive").Count(&countArchive).Error; err != nil {
 		return []domain.Wakaf{}, 0, 0, 0, err
 	}
-
-	if isUser {
-		countOnline = 0
-	}
 	
 	if status != "" {
 		for i := 0; i < len(res); i++ {
 			if isUser {		
 				if res[i].Status == status && res[i].Collected != res[i].FundTarget {
 					resWithStatus = append(resWithStatus,res[i])
-					countOnline += 1
 				}
 			} else {
 				if res[i].Status == status {
