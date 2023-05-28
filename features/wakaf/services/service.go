@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"strings"
+	"time"
 	"wakaf/features/wakaf/domain"
 	"wakaf/pkg/helper"
 	paymentgateway "wakaf/utils/payment-gateway"
@@ -26,6 +27,12 @@ var (
 )
 
 func (wakaf *WakafService) AddWakaf(input domain.Wakaf) (domain.Wakaf, error) {
+	var emptyTime time.Time
+	
+	if input.DueDate == emptyTime {
+		input.DueDate = time.Now()
+	}
+	
 	res, err := wakaf.WakafRepo.Insert(input)
 	if err != nil {
 		logger.Error("Failed insert wakaf", zap.Error(err))
