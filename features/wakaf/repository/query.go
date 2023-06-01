@@ -66,7 +66,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 	} else {
 		if page != 0 {
 			if isUser {
-				if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= NOW() AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", offset).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
@@ -80,7 +80,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
-				if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
+				if err := wakaf.db.Order("created_at desc").Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			}

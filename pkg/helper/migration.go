@@ -28,7 +28,7 @@ type Wakaf struct {
 	gorm.Model
 	Title      string     `gorm:"type:varchar(255);not null"`
 	Detail     string     `gorm:"type:longtext;not null"`
-	Category   string     `gorm:"type:enum('pendidikan', 'bangunan', 'umum', 'kesehatan');not null"`
+	Category   string     `gorm:"type:enum('pendidikan', 'pembangunan', 'kesehatan', 'quran', 'dakwah', 'produktif', 'pangan_barokah', 'kemanusiaan');not null"`
 	Picture    string     `gorm:"type:varchar(255);not null"`
 	Collected  int        `gorm:"not null"`
 	FundTarget int        `gorm:"not null"`

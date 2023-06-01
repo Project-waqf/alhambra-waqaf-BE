@@ -90,13 +90,12 @@ func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 			response = helper.SuccessGetAll("Success search wakaf", FromDomainGetAll(res), countOnline, countDraft, countArchive)
 			} else {
 				status := c.QueryParam("status")
-				fmt.Print("ini status ", status)
 				category := c.QueryParam("category")
 				page := c.QueryParam("page")
 				cnvPage, err := strconv.Atoi(page)
 				if err != nil {
 					logger.Error("Failed to convert query param page")
-				cnvPage = 1
+				cnvPage = 0
 			}
 
 			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.GetAllWakaf(category, cnvPage, isAdmin, status)
