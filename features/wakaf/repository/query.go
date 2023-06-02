@@ -41,6 +41,8 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 		offset = 9 * (page - 1)
 	}
 
+	fmt.Println(category, page, isUser, status)
+
 	if category != "" {
 		if page != 0 {
 			if isUser {
@@ -69,12 +71,12 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= NOW() AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", offset).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
-			} else {
-				if err := wakaf.db.Order("created_at desc").Limit(9).Offset(offset).Find(&res).Error; err != nil {
-					return []domain.Wakaf{}, 0, 0, 0, err
-				}
+				} else {
+					if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE status = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", status, offset).Find(&res).Error; err != nil {
+						return []domain.Wakaf{}, 0, 0, 0, err
+					}
 			}
-		} else {
+			} else {
 			if isUser {
 				if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
