@@ -41,12 +41,12 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 		offset = 9 * (page - 1)
 	}
 
-	fmt.Println(category, page, isUser, status)
+	fmt.Println(category, page, isUser, status, offset)
 
 	if category != "" {
 		if page != 0 {
 			if isUser {
-				if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("updated_at DESC").Limit(9).Offset(offset).Find(&res).Error; err != nil {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= ? AND collected != fund_target AND status = ? AND category = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 0, 9", today, status, category).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
@@ -71,14 +71,14 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= NOW() AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", offset).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
-				} else {
-					if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE status = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", status, offset).Find(&res).Error; err != nil {
-						return []domain.Wakaf{}, 0, 0, 0, err
-					}
-			}
 			} else {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE status = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", status, offset).Find(&res).Error; err != nil {
+					return []domain.Wakaf{}, 0, 0, 0, err
+				}
+			}
+		} else {
 			if isUser {
-				if err := wakaf.db.Where("due_date >= ?", today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= ? AND status = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", today, status, offset).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
@@ -90,7 +90,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 	}
 
 	if category != ""  && isUser {
-		if err := wakaf.db.Model(&Wakaf{}).Where("status = ? AND category = ?", "online", "kesehatan").Count(&countOnline).Error; err != nil {
+		if err := wakaf.db.Model(&Wakaf{}).Where("status = ? AND category = ? AND due_date >= ? AND fund_target != collected", status, category, today).Count(&countOnline).Error; err != nil {
 			return []domain.Wakaf{}, 0, 0, 0, err
 		}
 	} else {
