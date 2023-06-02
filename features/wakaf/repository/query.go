@@ -46,7 +46,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 	if category != "" {
 		if page != 0 {
 			if isUser {
-				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= ? AND collected != fund_target AND status = ? AND category = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 0, 9", today, status, category).Find(&res).Error; err != nil {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= NOW() AND collected != fund_target AND status = ? AND category = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", status, category, offset).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
