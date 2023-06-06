@@ -41,8 +41,6 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 		offset = 9 * (page - 1)
 	}
 
-	fmt.Println(category, page, isUser, status, offset)
-
 	if category != "" {
 		if page != 0 {
 			if isUser {

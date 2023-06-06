@@ -32,16 +32,8 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, in
 	if page != 0 {
 		var offset int = 0
 		offset = 10 * (page - 1)
-		if status == "online" {
-			if err := asset.db.Where("status = 'online'").Order("created_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
-				return []domain.Asset{}, 0, 0, 0, err
-			}
-		} else if status == "draft" {
-			if err := asset.db.Where("status = 'draft'").Order("updated_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
-				return []domain.Asset{}, 0, 0, 0, err
-			}
-		} else if status == "archive" {
-			if err := asset.db.Where("status = 'archive'").Order("updated_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
+		if status != "" {
+			if err := asset.db.Raw("SELECT * FROM assets WHERE status = ? AND deleted_at IS NULL LIMIT ?, 8", status, offset).Find(&res).Error; err != nil {
 				return []domain.Asset{}, 0, 0, 0, err
 			}
 		} else {
