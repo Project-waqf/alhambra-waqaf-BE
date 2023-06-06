@@ -31,7 +31,7 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, in
 
 	if page != 0 {
 		var offset int = 0
-		offset = 10 * (page - 1)
+		offset = 8 * (page - 1)
 		if status != "" {
 			if err := asset.db.Raw("SELECT * FROM assets WHERE status = ? AND deleted_at IS NULL LIMIT ?, 8", status, offset).Find(&res).Error; err != nil {
 				return []domain.Asset{}, 0, 0, 0, err
