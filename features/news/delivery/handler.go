@@ -124,19 +124,20 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 			if err != nil {
 				logger.Error("Failed to get fileId", zap.Error(err))
 				return c.JSON(http.StatusNotFound, helper.Failed("Failed to get fileId"))
+			} else if err == nil && fileIdDb == "" {
+				fileId, filename, err := helper.Upload(c, file, fileheader, "news")
+				if err != nil {
+					return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+				}
+				input.FileId = fileId
+				input.Picture = filename
+			} else {
+				err = helper.Delete(fileIdDb)
+				if err != nil {
+					logger.Error("Failed delete image in imagekit", zap.Error(err))
+					return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+				}
 			}
-			err = helper.Delete(fileIdDb)
-			if err != nil {
-				logger.Error("Failed delete image in imagekit", zap.Error(err))
-				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
-			}
-
-			fileId, filename, err := helper.Upload(c, file, fileheader, "news")
-			if err != nil {
-				return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
-			}
-			input.FileId = fileId
-			input.Picture = filename
 		}
 
 		res, err := news.NewsServices.UpdateNews(cnvId, ToDomainAddNews(input))
