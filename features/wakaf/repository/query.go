@@ -94,7 +94,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, sort
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
-				if err := wakaf.db.Raw("SELECT * FROM wakafs deleted_at IS NULL ORDER BY ", "created_at " + sort).Find(&res).Error; err != nil {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE deleted_at IS NULL ORDER BY ?", "created_at " + sort).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			}
