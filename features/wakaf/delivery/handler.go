@@ -74,14 +74,14 @@ func (wakaf *WakafDelivery) AddWakaf() echo.HandlerFunc {
 func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		search := c.QueryParam("search")
-		
+
 		isAdminParam := c.QueryParam("isUser")
 		var isAdmin = true
-		if isAdminParam == "false"  {
+		if isAdminParam == "false" {
 			isAdmin = false
 		}
 		var response map[string]interface{}
-		
+
 		if search != "" {
 			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.SearchWakaf(search)
 			if err != nil {
@@ -97,7 +97,7 @@ func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 			cnvPage, err := strconv.Atoi(page)
 			if err != nil {
 				logger.Error("Failed to convert query param page")
-			cnvPage = 0
+				cnvPage = 0
 			}
 
 			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.GetAllWakaf(category, cnvPage, isAdmin, sort, filter, status)
@@ -106,7 +106,7 @@ func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 			}
 			response = helper.SuccessGetAll("Get all wakaf successfully", FromDomainGetAll(res), countOnline, countDraft, countArchive)
 		}
-	return c.JSON(http.StatusOK, response)
+		return c.JSON(http.StatusOK, response)
 	}
 }
 
