@@ -77,6 +77,10 @@ func FromDomainAdd(input domain.Wakaf) WakafResponse {
 	t2 := date(date1[0], date1[1], date1[2])
 	days := daysBetween(t1, t2)
 
+	if input.DueDate.Before(timeNow) {
+		days = 0
+	}
+
 	return WakafResponse{
 		ID:         input.ID,
 		Title:      input.Title,
@@ -96,31 +100,11 @@ func FromDomainGetAll(input []domain.Wakaf) []WakafResponse {
 	var res []WakafResponse
 
 	for _, v := range input {
-		// // Days between now and due date
-		// dueDate := v.DueDate.Format("2006-1-2")
-		// dt := strings.Split(dueDate, "-")
-		// timeNow := time.Now()
-		// var date1 []int
-		// for _, v := range dt {
-		// 	time, err := strconv.Atoi(v)
-		// 	if err != nil {
-		// 		logger.Error("Failed to convert date")
-		// 	}
-		// 	date1 = append(date1, time)
-		// }
-
-		// t1 := date(timeNow.Year(), int(timeNow.Month()), timeNow.Day())
-		// t2 := date(date1[0], date1[1], date1[2])
-		// days := daysBetween(t1, t2)
-
-		// if timeNow.After(v.DueDate) {
-		// 	days = 0
-		// }
 		if v.Collected == v.FundTarget {
 			v.IsComplete = true
 		}
 		resDetail := FromDomainGet(v)
-		res = append(res, resDetail )
+		res = append(res, resDetail)
 	}
 	return res
 }
@@ -142,6 +126,10 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 	t1 := date(timeNow.Year(), int(timeNow.Month()), timeNow.Day())
 	t2 := date(date1[0], date1[1], date1[2])
 	days := daysBetween(t1, t2)
+
+	if input.DueDate.Before(timeNow) {
+		days = 0
+	}
 
 	var newDonors []Donor
 
@@ -166,7 +154,7 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
 		IsComplete: input.IsComplete,
-		Status: input.Status,
+		Status:     input.Status,
 		Donors:     newDonors,
 	}
 }
