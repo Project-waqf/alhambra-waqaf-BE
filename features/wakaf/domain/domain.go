@@ -41,7 +41,7 @@ type PayWakaf struct {
 
 type UseCaseInterface interface {
 	AddWakaf(input Wakaf) (Wakaf, error)
-	GetAllWakaf(category string, page int, isUser bool, status string) ([]Wakaf, int, int, int, error)
+	GetAllWakaf(category string, page int, isUser bool, sort, filter, status string) ([]Wakaf, int, int, int, error)
 	UpdateWakaf(id uint, input Wakaf) (Wakaf, error)
 	DeleteWakaf(id uint) (Wakaf, error)
 	GetFileId(id uint) (string, error)
@@ -55,7 +55,7 @@ type UseCaseInterface interface {
 
 type RepoInterface interface {
 	Insert(input Wakaf) (Wakaf, error)
-	GetAllWakaf(category string, page int, isUser bool, status string) ([]Wakaf, int, int, int, error)
+	GetAllWakaf(category string, page int, isUser bool, sort, filter, status string) ([]Wakaf, int, int, int, error)
 	Edit(id uint, input Wakaf) (Wakaf, error)
 	Delete(id uint) (Wakaf, error)
 	GetFileId(id uint) (string, error)

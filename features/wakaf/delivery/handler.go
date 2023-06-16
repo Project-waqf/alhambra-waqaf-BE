@@ -88,23 +88,25 @@ func (wakaf *WakafDelivery) GetAllWakaf() echo.HandlerFunc {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
 			response = helper.SuccessGetAll("Success search wakaf", FromDomainGetAll(res), countOnline, countDraft, countArchive)
-			} else {
-				status := c.QueryParam("status")
-				category := c.QueryParam("category")
-				page := c.QueryParam("page")
-				cnvPage, err := strconv.Atoi(page)
-				if err != nil {
-					logger.Error("Failed to convert query param page")
-				cnvPage = 0
+		} else {
+			sort := c.QueryParam("sort")
+			filter := c.QueryParam("filter")
+			status := c.QueryParam("status")
+			category := c.QueryParam("category")
+			page := c.QueryParam("page")
+			cnvPage, err := strconv.Atoi(page)
+			if err != nil {
+				logger.Error("Failed to convert query param page")
+			cnvPage = 0
 			}
 
-			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.GetAllWakaf(category, cnvPage, isAdmin, status)
+			res, countOnline, countDraft, countArchive, err := wakaf.WakafService.GetAllWakaf(category, cnvPage, isAdmin, sort, filter, status)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
 			response = helper.SuccessGetAll("Get all wakaf successfully", FromDomainGetAll(res), countOnline, countDraft, countArchive)
 		}
-		return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, response)
 	}
 }
 

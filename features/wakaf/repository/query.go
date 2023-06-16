@@ -29,7 +29,7 @@ func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, status string) ([]domain.Wakaf, int, int, int, error) {
+func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, sort, filter, status string) ([]domain.Wakaf, int, int, int, error) {
 	var res []Wakaf
 	var resWithStatus []Wakaf
 	var countOnline, countDraft, countArchive int64
@@ -63,6 +63,20 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 				}
 			}
 		}
+	} else if filter != "" {
+		if filter == "aktif" {
+			if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE due_date >= NOW() AND collected < fund_target AND deleted_at IS NULL ORDER BY ?", "created_at " + sort).Find(&res).Error; err != nil {
+				return []domain.Wakaf{}, 0, 0, 0, err
+			}
+		} else if filter == "complete" {
+			if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE collected > 0 AND collected = fund_target AND deleted_at IS NULL ORDER BY ?", "created_at " + sort).Find(&res).Error; err != nil {
+				return []domain.Wakaf{}, 0, 0, 0, err
+			}
+		} else {
+			if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE collected > 0 AND collected = fund_target AND deleted_at IS NULL ORDER BY ?", "created_at " + sort).Find(&res).Error; err != nil {
+				return []domain.Wakaf{}, 0, 0, 0, err
+			}
+		}
 	} else {
 		if page != 0 {
 			if isUser {
@@ -70,7 +84,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
-				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE status = ? AND deleted_at IS NULL ORDER BY created_at DESC LIMIT ?, 9", status, offset).Find(&res).Error; err != nil {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs WHERE status = ? AND deleted_at IS NULL ORDER BY created_at  LIMIT ?, 9", sort, status, offset).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			}
@@ -80,7 +94,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, stat
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
-				if err := wakaf.db.Order("created_at desc").Find(&res).Error; err != nil {
+				if err := wakaf.db.Raw("SELECT * FROM wakafs deleted_at IS NULL ORDER BY created_at ?", sort).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			}

@@ -41,8 +41,8 @@ func (wakaf *WakafService) AddWakaf(input domain.Wakaf) (domain.Wakaf, error) {
 	return res, nil
 }
 
-func (wakaf *WakafService) GetAllWakaf(category string, page int, isUser bool, status string) ([]domain.Wakaf, int, int, int, error) {
-	res, countOnline, countDraft, countArchive, err := wakaf.WakafRepo.GetAllWakaf(category, page, isUser, status)
+func (wakaf *WakafService) GetAllWakaf(category string, page int, isUser bool, sort, filter, status string) ([]domain.Wakaf, int, int, int, error) {
+	res, countOnline, countDraft, countArchive, err := wakaf.WakafRepo.GetAllWakaf(category, page, isUser, sort, filter, status)
 	if err != nil {
 		logger.Error("Failed get all wakaf", zap.Error(err))
 		return []domain.Wakaf{}, 0, 0, 0, err

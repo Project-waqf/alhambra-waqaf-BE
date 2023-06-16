@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
 	"wakaf/config"
 	"wakaf/factory"
 	"wakaf/pkg/helper"
@@ -35,7 +39,33 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
+	ctx, cancel := context.WithCancel(context.Background())
+
+	serverErr := make(chan os.Signal, 1)
+	signal.Notify(serverErr, os.Interrupt)
 
 	factory.InitFactory(e, db, &redis, &log)
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", config.SERVER_PORT)))
+	go func() {
+		e.Logger.Info("Server started")
+		if err := e.Start(fmt.Sprintf(":%v", config.SERVER_PORT)); err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down server")
+		}
+	}()
+
+	select {
+	case <-serverErr:
+		e.Logger.Print("Shutting down server gracefully...")
+
+		shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), 5 * time.Second)
+		defer cancelShutdown()
+
+		if err := e.Shutdown(shutdownCtx); err != nil {
+			e.Logger.Printf("Server shutdown error: %v", err)
+		}
+		e.Logger.Info("Server gracefully stopped")
+		cancel()
+	case <- ctx.Done():
+		e.Logger.Info("Server stopped")
+	}
+
 }
