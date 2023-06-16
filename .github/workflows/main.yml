@@ -45,5 +45,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            docker stop wakaf-be 
+            docker stop wakaf-be
+            docker rm wakaf-be
+            docker rmi faturfawkes/alhambra-wakaf
             docker-compose -f be-compose.yml up -d
