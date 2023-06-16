@@ -75,7 +75,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, sort
 				return []domain.Wakaf{}, 0, 0, 0, err
 			}
 		} else {
-			query := "SELECT * FROM wakafs WHERE collected < fund_target AND due_date < NOW() AND status = 'online' AND deleted_at IS NULL ORDER BY created_at " + sort
+			query := "SELECT * FROM wakafs WHERE collected < fund_target AND due_date > NOW() AND status = 'online' AND deleted_at IS NULL ORDER BY created_at " + sort
 			if err := wakaf.db.Raw(query).Find(&res).Error; err != nil {
 				return []domain.Wakaf{}, 0, 0, 0, err
 			}
