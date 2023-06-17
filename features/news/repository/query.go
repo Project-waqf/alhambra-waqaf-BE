@@ -26,7 +26,7 @@ func (news *NewsRepository) Insert(input domain.News) (domain.News, error) {
 	return ToDomainAddNews(cnv), nil
 }
 
-func (news *NewsRepository) GetAll(status string, page int) ([]domain.News, int, int, int, error) {
+func (news *NewsRepository) GetAll(status string, page int, sort string) ([]domain.News, int, int, int, error) {
 	var res []News
 	var countOnline, countDraft, countArchive int64
 
@@ -34,19 +34,23 @@ func (news *NewsRepository) GetAll(status string, page int) ([]domain.News, int,
 		var offset int = 0
 		offset = 10 * (page - 1)
 		if status == "online" {
-			if err := news.db.Where("status = 'online'").Order("updated_at DESC").Limit(10).Offset(offset).Find(&res).Error; err != nil {
+			order := "created_at " + sort
+			if err := news.db.Where("status = 'online'").Order(order).Limit(10).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.News{}, 0, 0, 0, err
 			}
 		} else if status == "draft" {
-			if err := news.db.Where("status = 'draft'").Order("updated_at DESC").Limit(10).Offset(offset).Find(&res).Error; err != nil {
+			order := "created_at " + sort
+			if err := news.db.Where("status = 'draft'").Order(order).Limit(10).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.News{}, 0, 0, 0, err
 			}
 		} else if status == "archive" {
-			if err := news.db.Where("status = 'archive'").Order("updated_at DESC").Limit(10).Offset(offset).Find(&res).Error; err != nil {
+			order := "created_at " + sort
+			if err := news.db.Where("status = 'archive'").Order(order).Limit(10).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.News{}, 0, 0, 0, err
 			}
 		} else {
-			if err := news.db.Order("updated_at DESC").Find(&res).Error; err != nil {
+			order := "created_at " + sort
+			if err := news.db.Order(order).Find(&res).Error; err != nil {
 				return []domain.News{}, 0, 0, 0, err
 			}
 		}

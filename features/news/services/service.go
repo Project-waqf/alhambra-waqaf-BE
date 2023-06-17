@@ -30,8 +30,8 @@ func (news *NewsServices) AddNews(input domain.News) (domain.News, error) {
 	return res, nil
 }
 
-func (news *NewsServices) GetAll(status string, page int) ([]domain.News, int, int, int, error) {
-	res, countOnline, countDraft, countArchive, err := news.NewsRepository.GetAll(status, page)
+func (news *NewsServices) GetAll(status string, page int, sort string) ([]domain.News, int, int, int, error) {
+	res, countOnline, countDraft, countArchive, err := news.NewsRepository.GetAll(status, page, sort)
 	if err != nil {
 		logger.Error("Error get all data", zap.Error(err))
 		return nil, 0, 0, 0, err

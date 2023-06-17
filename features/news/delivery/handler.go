@@ -69,6 +69,8 @@ func (news *NewsDelivery) GetAllNews() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		status := c.QueryParam("status")
 		page := c.QueryParam("page")
+		sort := c.QueryParam("sort")
+
 		var pageCnv int
 		if page != "" {
 			cnv, err := strconv.Atoi(page)
@@ -77,7 +79,7 @@ func (news *NewsDelivery) GetAllNews() echo.HandlerFunc {
 			}
 			pageCnv = cnv
 		}
-		res, countOnline, countDraft, countArchive, err := news.NewsServices.GetAll(status, pageCnv)
+		res, countOnline, countDraft, countArchive, err := news.NewsServices.GetAll(status, pageCnv, sort)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Something error in server"))
 		}

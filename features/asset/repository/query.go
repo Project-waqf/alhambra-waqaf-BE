@@ -25,7 +25,7 @@ func (asset *AssetRepo) Insert(input domain.Asset) (domain.Asset, error) {
 	return ToDomainAdd(data), nil
 }
 
-func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, int, int, error) {
+func (asset *AssetRepo) GetAll(status string, page int, sort string) ([]domain.Asset, int, int, int, error) {
 	var res []Asset
 	var countOnline, countDraft, countArchive int64
 
@@ -33,16 +33,19 @@ func (asset *AssetRepo) GetAll(status string, page int) ([]domain.Asset, int, in
 		var offset int = 0
 		offset = 8 * (page - 1)
 		if status != "" {
-			if err := asset.db.Raw("SELECT * FROM assets WHERE status = ? AND deleted_at IS NULL LIMIT ?, 8", status, offset).Find(&res).Error; err != nil {
+			query := "SELECT * FROM assets WHERE status = ? AND deleted_at IS NULL ORDER BY " + sort + " LIMIT ?, 8"
+			if err := asset.db.Raw(query, status, offset).Find(&res).Error; err != nil {
 				return []domain.Asset{}, 0, 0, 0, err
 			}
 		} else {
-			if err := asset.db.Order("updated_at DESC").Limit(8).Offset(offset).Find(&res).Error; err != nil {
+			order := "updated_at " +  sort
+			if err := asset.db.Order(order).Limit(8).Offset(offset).Find(&res).Error; err != nil {
 				return []domain.Asset{}, 0, 0, 0, err
 			}
 		}
 	} else {
-		if err := asset.db.Order("created_at DESC").Find(&res).Error; err != nil {
+		order := "created_at " + sort
+		if err := asset.db.Order(order).Find(&res).Error; err != nil {
 			return []domain.Asset{}, 0, 0, 0, err
 		}
 	}

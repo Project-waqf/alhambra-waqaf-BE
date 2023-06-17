@@ -72,11 +72,13 @@ func (asset *AssetDelivery) GetAllAsset() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		status := c.QueryParam("status")
 		page := c.QueryParam("page")
+		sort := c.QueryParam("sort")
+
 		cnvPage, err := strconv.Atoi(page)
 		if err != nil {
 			logger.Error("Failed to convert query param page")
 		}
-		res, countOnline, countDraft, countArchive, err := asset.AssetService.GetAllAsset(status, cnvPage)
+		res, countOnline, countDraft, countArchive, err := asset.AssetService.GetAllAsset(status, cnvPage, sort)
 		if err != nil {
 			if err != nil {
 				logger.Error("Error in usecase", zap.Error(err))
