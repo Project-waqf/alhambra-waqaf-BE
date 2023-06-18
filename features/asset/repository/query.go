@@ -33,7 +33,7 @@ func (asset *AssetRepo) GetAll(status string, page int, sort string) ([]domain.A
 		var offset int = 0
 		offset = 8 * (page - 1)
 		if status != "" {
-			query := "SELECT * FROM assets WHERE status = ? AND deleted_at IS NULL ORDER BY " + sort + " LIMIT ?, 8"
+			query := "SELECT * FROM assets WHERE status = ? AND deleted_at IS NULL ORDER BY created_at " + sort + " LIMIT ?, 8"
 			if err := asset.db.Raw(query, status, offset).Find(&res).Error; err != nil {
 				return []domain.Asset{}, 0, 0, 0, err
 			}
