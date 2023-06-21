@@ -23,9 +23,10 @@ type Wakaf struct {
 }
 
 type Donors struct {
-	Name string
-	Fund int `gorm:"column:gross_amount"`
-	Doa  string
+	Name      string
+	Fund      int `gorm:"column:gross_amount"`
+	Doa       string
+	CreatedAt time.Time
 }
 
 type Donor struct {
@@ -116,6 +117,7 @@ func ToDomainGet(input Wakaf, donors []Donors) domain.Wakaf {
 			Name: v.Name,
 			Fund: v.Fund,
 			Doa:  v.Doa,
+			Created_at: input.CreatedAt,
 		}
 		newDonors = append(newDonors, tmp)
 	}

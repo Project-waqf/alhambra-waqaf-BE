@@ -20,9 +20,10 @@ type Wakaf struct {
 }
 
 type Donors struct {
-	Name string
-	Fund int
-	Doa  string
+	Name       string
+	Fund       int
+	Doa        string
+	Created_at time.Time
 }
 
 type PayWakaf struct {

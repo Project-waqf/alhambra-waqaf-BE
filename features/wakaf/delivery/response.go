@@ -8,25 +8,27 @@ import (
 )
 
 type WakafResponse struct {
-	ID         uint    `json:"id"`
-	Title      string  `json:"title"`
-	Detail     string  `json:"detail"`
-	Category   string  `json:"category"`
-	Picture    string  `json:"picture"`
-	CreatedAt  string  `json:"created_at"`
-	UpdatedAt  string  `json:"updated_at"`
-	Collected  int     `json:"collected"`
-	FundTarget int     `json:"fund_target"`
-	DueDate    int     `json:"due_date"`
-	Status     string  `json:"status"`
-	IsComplete bool    `json:"is_complete"`
-	Donors     []Donor `json:"donors"`
+	ID            uint    `json:"id"`
+	Title         string  `json:"title"`
+	Detail        string  `json:"detail"`
+	Category      string  `json:"category"`
+	Picture       string  `json:"picture"`
+	CreatedAt     string  `json:"created_at"`
+	UpdatedAt     string  `json:"updated_at"`
+	Collected     int     `json:"collected"`
+	FundTarget    int     `json:"fund_target"`
+	DueDate       int     `json:"due_date"`
+	DueDateString string  `json:"due_date_string"`
+	Status        string  `json:"status"`
+	IsComplete    bool    `json:"is_complete"`
+	Donors        []Donor `json:"donors"`
 }
 
 type Donor struct {
-	Name string `json:"name"`
-	Fund int    `json:"fund"`
-	Doa  string `json:"doa"`
+	Name      string `json:"name"`
+	Fund      int    `json:"fund"`
+	Doa       string `json:"doa"`
+	CreatedAt string `json:"created_at"`
 }
 
 type PayWakafRes struct {
@@ -135,27 +137,29 @@ func FromDomainGet(input domain.Wakaf) WakafResponse {
 
 	for _, v := range input.Donors {
 		tmp := Donor{
-			Name: v.Name,
-			Fund: v.Fund,
-			Doa:  v.Doa,
+			Name:      v.Name,
+			Fund:      v.Fund,
+			Doa:       v.Doa,
+			CreatedAt: v.Created_at.Format("02/01/2006"),
 		}
 		newDonors = append(newDonors, tmp)
 	}
 
 	return WakafResponse{
-		ID:         input.ID,
-		Title:      input.Title,
-		Detail:     input.Detail,
-		Category:   input.Category,
-		Picture:    input.Picture,
-		CreatedAt:  input.CreatedAt.Format("02 January 2006"),
-		UpdatedAt:  input.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
-		DueDate:    days,
-		Collected:  input.Collected,
-		FundTarget: input.FundTarget,
-		IsComplete: input.IsComplete,
-		Status:     input.Status,
-		Donors:     newDonors,
+		ID:            input.ID,
+		Title:         input.Title,
+		Detail:        input.Detail,
+		Category:      input.Category,
+		Picture:       input.Picture,
+		CreatedAt:     input.CreatedAt.Format("02 January 2006"),
+		UpdatedAt:     input.UpdatedAt.Format("Monday, 02-01-2006 T15:04:05"),
+		DueDate:       days,
+		DueDateString: input.DueDate.Format("2006-01-02"),
+		Collected:     input.Collected,
+		FundTarget:    input.FundTarget,
+		IsComplete:    input.IsComplete,
+		Status:        input.Status,
+		Donors:        newDonors,
 	}
 }
 
