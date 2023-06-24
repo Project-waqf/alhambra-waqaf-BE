@@ -54,7 +54,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, sort
 			}
 		} else {
 			if isUser {
-				if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("updated_at desc").Limit(9).Find(&res).Error; err != nil {
+				if err := wakaf.db.Where("category = ? AND due_date >= ?", category, today).Order("created_at desc").Limit(9).Find(&res).Error; err != nil {
 					return []domain.Wakaf{}, 0, 0, 0, err
 				}
 			} else {
@@ -184,7 +184,7 @@ func (wakaf *WakafRepo) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 		return domain.Wakaf{}, err
 	}
 
-	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa").Where("id_wakaf = ?", id).Limit(10).Scan(&donors).Error; err != nil {
+	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa").Where("id_wakaf = ? AND doa != ''", id).Limit(10).Scan(&donors).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
 
