@@ -13,7 +13,7 @@ type Partner struct {
 }
 
 type UseCaseInterface interface {
-	GetAllPartner(limit, offset int) ([]*Partner, error)
+	GetAllPartner(limit, offset int, sort string) ([]*Partner, error)
 	GetPartnerDetail(id int) (*Partner, error)
 	UpdatePartner(id int, data *Partner) (*Partner, error)
 	CreatePartner(data *Partner) (*Partner, error)
@@ -22,7 +22,7 @@ type UseCaseInterface interface {
 }
 
 type RepoInterface interface {
-	GetAll(limit, offset int) ([]*Partner, error)
+	GetAll(limit, offset int, sort string) ([]*Partner, error)
 	GetDetail(id int) (*Partner, error)
 	Update(id int, data *Partner) (*Partner, error)
 	Insert(data *Partner) (*Partner, error)

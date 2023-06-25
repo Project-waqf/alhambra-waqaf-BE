@@ -25,7 +25,9 @@ func (d PartnerDelivery) GetAllPartner() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, helper.Failed("Offset not valid"))
 		}
 
-		res, err := d.PartnerService.GetAllPartner(cnvLimit, cnvOffset)
+		sort := c.QueryParam("sort")
+
+		res, err := d.PartnerService.GetAllPartner(cnvLimit, cnvOffset, sort)
 		if err != nil {
 			d.logger.Error("Failed get list partner", zap.Error(err))
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
