@@ -133,20 +133,22 @@ func (wakaf *WakafDelivery) UpdateWakaf() echo.HandlerFunc {
 			if err != nil {
 				logger.Error("Failed to get fileId", zap.Error(err))
 				return c.JSON(http.StatusNotFound, helper.Failed("Failed to get fileId"))
-			}
-			err = helper.Delete(fileIdDb)
-			if err != nil {
-				logger.Error("Failed delete image in imagekit", zap.Error(err))
-				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+			} else if fileIdDb == "" && err == nil {
+				fileId, fileName, err := helper.Upload(c, file, fileheader, "wakaf")
+				if err != nil {
+					logger.Error("Error upload image", zap.Error(err))
+					return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+				}
+				input.FileId = fileId
+				input.Picture = fileName
+			} else {
+				err = helper.Delete(fileIdDb)
+				if err != nil {
+					logger.Error("Failed delete image in imagekit", zap.Error(err))
+					return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+				}
 			}
 
-			fileId, fileName, err := helper.Upload(c, file, fileheader, "wakaf")
-			if err != nil {
-				logger.Error("Error upload image", zap.Error(err))
-				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
-			}
-			input.FileId = fileId
-			input.Picture = fileName
 		}
 
 		res, err := wakaf.WakafService.UpdateWakaf(uint(cnvId), ToDomainAdd(input))

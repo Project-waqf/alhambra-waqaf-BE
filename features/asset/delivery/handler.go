@@ -132,21 +132,21 @@ func (asset *AssetDelivery) UpdateAsset() echo.HandlerFunc {
 			if err != nil {
 				logger.Error("Failed to get fileId", zap.Error(err))
 				return c.JSON(http.StatusNotFound, helper.Failed("Id not found"))
+			} else if err == nil && fileIdDb == "" {
+				fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
+				if err != nil {
+					logger.Error("Failed upload image to imagekit", zap.Error(err))
+					return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+				}
+				input.FileId = fileId
+				input.Picture = fileName
+			} else {
+				err = helper.Delete(fileIdDb)
+				if err != nil {
+					logger.Error("Failed delete image in imagekit", zap.Error(err))
+					return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
+				}
 			}
-
-			err = helper.Delete(fileIdDb)
-			if err != nil {
-				logger.Error("Failed delete image in imagekit", zap.Error(err))
-				return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
-			}
-
-			fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
-			if err != nil {
-				logger.Error("Failed upload image to imagekit", zap.Error(err))
-				return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
-			}
-			input.FileId = fileId
-			input.Picture = fileName
 		}
 
 		res, err := asset.AssetService.UpdateAsset(uint(cnvId), ToDomainAdd(input))
