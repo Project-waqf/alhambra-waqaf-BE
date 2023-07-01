@@ -1,6 +1,7 @@
 package email
 
 import (
+	"crypto/tls"
 	"encoding/base64"
 	"fmt"
 	"net/smtp"
@@ -63,8 +64,12 @@ func SendOtpGmail(email, token string, logger *zap.Logger) error {
 	defer client.Close()
 
 	// Start TLS encryption.
-	if err = client.StartTLS(nil); err != nil {
-		logger.Error("Error Start TLS", zap.Error(err))
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true,
+	}
+
+	if err = client.StartTLS(tlsConfig); err != nil {
+		logger.Fatal("Error TLS", zap.Error(err))
 	}
 
 	// Authenticate with the server using the XOAUTH2 header.
