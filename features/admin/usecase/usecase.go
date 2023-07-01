@@ -102,7 +102,7 @@ func (u *AdminServices) ForgotSendEmail(input domain.Admin) (domain.Admin, error
 		return domain.Admin{}, err
 	}
 
-	if err := email.SendOtpGmail(input.Email, token); err != nil {
+	if err := email.SendOtpGmail(input.Email, token, &logger); err != nil {
 		logger.Error("Failed to send email", zap.Error(err))
 		return domain.Admin{}, err
 	}

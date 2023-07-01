@@ -3,11 +3,11 @@ package email
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 	"net/smtp"
 	"os"
 	"strconv"
 
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 )
 
@@ -40,7 +40,7 @@ const (
 	subject        = "Reset Password Admin wakafalhambra.com"
 )
 
-func SendOtpGmail(email, token string) error {
+func SendOtpGmail(email, token string, logger *zap.Logger) error {
 	body := GetBody(token)
 
 	// Create the email message.
@@ -58,37 +58,42 @@ func SendOtpGmail(email, token string) error {
 	// Connect to the SMTP server.
 	client, err := smtp.Dial(smtpHost + ":" + strconv.Itoa(smtpPort))
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("Error SMTP Dial", zap.Error(err))
 	}
 	defer client.Close()
 
+	// Start TLS encryption.
+	if err = client.StartTLS(nil); err != nil {
+		logger.Error("Error Start TLS", zap.Error(err))
+	}
+
 	// Authenticate with the server using the XOAUTH2 header.
 	if err = client.Auth(smtp.PlainAuth("", senderEmail, authString, smtpHost)); err != nil {
-		log.Fatal(err)
+		logger.Error("Error Auth", zap.Error(err))
 	}
 
 	// Set the sender and recipient.
 	if err = client.Mail(senderEmail); err != nil {
-		log.Fatal(err)
+		logger.Error("Error Mail", zap.Error(err))
 	}
 	if err = client.Rcpt(recipientEmail); err != nil {
-		log.Fatal(err)
+		logger.Error("Error RCPT", zap.Error(err))
 	}
 
 	// Send the email.
 	w, err := client.Data()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("Error Send Email", zap.Error(err))
 	}
 	_, err = w.Write([]byte(message))
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("Error Write Message", zap.Error(err))
 	}
 	err = w.Close()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("Error Close Write", zap.Error(err))
 	}
 
-	log.Println("Email sent successfully!")
+	logger.Info("Email sent successfully!")
 	return nil
 }
