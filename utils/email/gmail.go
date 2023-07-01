@@ -69,7 +69,7 @@ func SendOtpGmail(email, token string, logger *zap.Logger) error {
 	ctx := context.Background()
 
 	// Read your credentials file (JSON format)
-	credentialsFile := "/gmail.json"
+	credentialsFile := "gmail.json"
 	credentials, err := os.ReadFile(credentialsFile)
 	if err != nil {
 		log.Fatalf("Failed to read credentials file: %v", err)
