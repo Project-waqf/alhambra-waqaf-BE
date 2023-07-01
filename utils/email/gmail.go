@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"log"
 	"os"
 
 	"go.uber.org/zap"
@@ -72,13 +71,13 @@ func SendOtpGmail(email, token string, logger *zap.Logger) error {
 	credentialsFile := "gmail.json"
 	credentials, err := os.ReadFile(credentialsFile)
 	if err != nil {
-		log.Fatalf("Failed to read credentials file: %v", err)
+		logger.Error("Failed to read credentials file: ", zap.Error(err))
 		return err
 	}
 	// Retrieve the OAuth 2.0 token
 	config, err := google.ConfigFromJSON(credentials, gmail.MailGoogleComScope)
 	if err != nil {
-		log.Fatalf("Failed to read credentials file: %v", err)
+		logger.Error("Failed to read credentials file: ", zap.Error(err))
 		return err
 	}
 
@@ -88,13 +87,12 @@ func SendOtpGmail(email, token string, logger *zap.Logger) error {
 	// Create the HTTP client with the token
 	client := config.Client(ctx, tokenGoogle)
 
-
 	// Create the Gmail API client with the HTTP client
 	gmailService, err := gmail.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
-		log.Fatalf("Failed to create Gmail service: %v", err)
+		logger.Error("Failed to create Gmail service: ", zap.Error(err))
 	}
-	
+
 	// Compose the email
 	body := GetBody(token)
 
@@ -108,7 +106,7 @@ func SendOtpGmail(email, token string, logger *zap.Logger) error {
 	// Send the email
 	_, err = gmailService.Users.Messages.Send("me", message).Do()
 	if err != nil {
-		log.Fatalf("Failed to send email: %v", err)
+		logger.Error("Failed to send email: ", zap.Error(err))
 	}
 
 	fmt.Println("Email sent successfully!")
@@ -124,7 +122,7 @@ func getTokenFromAuthorizationCode(ctx context.Context, config *oauth2.Config) *
 	// Exchange the authorization code for a token
 	token, err := config.Exchange(ctx, authCode)
 	if err != nil {
-		log.Fatalf("Failed to exchange authorization code: %v", err)
+		fmt.Println("Failed to exchange authorization code: ", zap.Error(err))
 	}
 
 	return token

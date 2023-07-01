@@ -49,3 +49,4 @@ jobs:
             docker rm wakaf-be
             docker rmi faturfawkes/alhambra-wakaf
             docker-compose -f be-compose.yml up -d
+            docker cp /gmail.json wakaf-be:/app/gmail.json
