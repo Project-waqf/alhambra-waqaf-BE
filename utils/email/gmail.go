@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/smtp"
+	"os"
 	"strconv"
 
 	"golang.org/x/oauth2"
@@ -49,7 +50,7 @@ func SendOtpGmail(email, token string) error {
 		body
 
 	// Obtain an access token.
-	tokenGoogle := &oauth2.Token{AccessToken: "your_access_token"}
+	tokenGoogle := &oauth2.Token{AccessToken: os.Getenv("PASSWORD_GOOGLE")}
 
 	// Construct the XOAUTH2 authentication header.
 	authString := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s\000%s\000%s", senderEmail, tokenGoogle.AccessToken, tokenGoogle.AccessToken)))
