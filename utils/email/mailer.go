@@ -55,7 +55,7 @@ func (m *Mailer) SendEmailMessage(subject string, data any, templateName string,
 		return err
 	}
 
-	if err := tmpl.Execute(&buff, nil); err != nil {
+	if err := tmpl.Execute(&buff, data); err != nil {
 		return err
 	}
 
