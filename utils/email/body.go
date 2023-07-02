@@ -1,155 +1,160 @@
 package email
 
-import "os"
+// import (
+// 	"os"
+// 	"strings"
+// )
 
-func GetBody(token string) string {
+// func GetBody(token string) string {
 
-	email := os.Getenv("EMAIL_CALLBACK")
-	var url =  email + "/new-password?token=" + token
-	var body = `
-	<!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
-            <style>
-                a{
-                    font-style: none;
-                    text-decoration: none;
-                }
+// 	email := os.Getenv("EMAIL_CALLBACK")
+// 	var url =  email + "/new-password?token=" + token
+// 	var body = `
+// 	<!DOCTYPE html>
+//         <html lang="en">
+//         <head>
+//             <meta charset="UTF-8">
+//             <meta http-equiv="X-UA-Compatible" content="IE=edge">
+//             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//             <title>Document</title>
+//             <style>
+//                 a{
+//                     font-style: none;
+//                     text-decoration: none;
+//                 }
 
-                .Lupa-Password {
-                width: 800px;
-                height: 250px;
-                flex-grow: 0;
-                padding: 40px 60px 40px;
-                background-color: #fbfbfb;
-                }
-                .Hi-Admin {
-                width: 147px;
-                height: 40px;
-                margin: 10px 20px 8px 0;
-                margin-bottom: 20px;
-                font-family: Inter;
-                font-size: 32px;
-                font-weight: 500;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.25;
-                letter-spacing: normal;
-                text-align: left;
-                color: #27303e;
-                }
-                .Line-15 {
-                width: 700px;
-                height: 1px;
-                margin: 10px 0 10px;
-                background-color: #c9c9c9;
-                }
-                .Permintaan-untuk-mengatur-ulang-password-telah-dibuat-Jika-Anda-tidak-membuat-permintaan-ini-abaik {
-                width: 750px;
-                height: 56px;
-                margin: 48px 0 56px;
-                font-family: Inter;
-                font-size: 14px;
-                font-weight: normal;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.4;
-                letter-spacing: normal;
-                text-align: left;
-                color: #27303e;
-                }
-                .Extra-Small-Label-Light-12px {
-                width: 150px;
-                height: 35px;
-                flex-grow: 0;
-                display: flex;
-                margin-top: 10px;
-                margin-bottom: 10px;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
-                padding: 6px 30px;
-                border-radius: 8px;
-                background-color: #f98d3e;
-                margin-left: 40%;
-                border: none;
-                }
-                .Terima-kasih-Team-Al-Hambra {
-                width: 1240px;
-                height: 56px;
-                margin: 48px 0 0;
-                font-family: Inter;
-                font-size: 14px;
-                font-weight: normal;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.4;
-                letter-spacing: normal;
-                text-align: left;
-                color: #27303e;
-                }
-                .Large-Label-Heavy-18px {
-                width: 138px;
-                height: 27px;
-                flex-grow: 0;
-                font-family: Inter;
-                font-size: 14px;
-                margin-top: 1px;
-                font-weight: 500;
-                font-stretch: normal;
-                font-style: normal;
-                line-height: 1.5;
-                letter-spacing: normal;
-                text-align: center;
-                color: #fbfbfb;
-                }
-                img.zyro-image-removebg-2 {
-                width: 80px;
-                height: 80px;
-                margin: 0 0 0 450px;
-                object-fit: contain;
-                }
-                .header{
-                    flex: auto;
-                    flex-direction: row;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="Lupa-Password">
-                <div class="header">
-                    <span class="Hi-Admin">
-                        Hi, Admin
-                    </span>
-                    <!-- png -->
-                    <img src="https://ik.imagekit.io/alhambra/v1509_9269.png"
-                    srcset="img/zyro-image-removebg-2@2x.png 2x,
-                            img/zyro-image-removebg-2@3x.png 3x"
-                    class="zyro-image-removebg-2">
-                </div>
-                <div class="Line-15"></div>
-                <span class="Permintaan-untuk-mengatur-ulang-password-telah-dibuat-Jika-Anda-tidak-membuat-permintaan-ini-abaik">
-                    Permintaan untuk mengatur ulang password telah dibuat. Jika Anda tidak membuat permintaan ini, abaikan saja email ini. <br> Jika Anda memang membuat permintaan ini, harap setel ulang kata sandi Anda:
-                </span>
-                <button class="Extra-Small-Label-Light-12px">
-                    <a href="` + url + `">
-                        <span class="Large-Label-Heavy-18px">
-                            Reset Password
-                        </span>
-                    </a>
-                </button>
-                <span class="Terima-kasih-Team-Al-Hambra">
-                    Terima kasih,<br>
-                    Team Al Hambra
-                </span>
-            </div>
-        </body>
-    </html>
-	`
+//                 .Lupa-Password {
+//                 width: 800px;
+//                 height: 250px;
+//                 flex-grow: 0;
+//                 padding: 40px 60px 40px;
+//                 background-color: #fbfbfb;
+//                 }
+//                 .Hi-Admin {
+//                 width: 147px;
+//                 height: 40px;
+//                 margin: 10px 20px 8px 0;
+//                 margin-bottom: 20px;
+//                 font-family: Inter;
+//                 font-size: 32px;
+//                 font-weight: 500;
+//                 font-stretch: normal;
+//                 font-style: normal;
+//                 line-height: 1.25;
+//                 letter-spacing: normal;
+//                 text-align: left;
+//                 color: #27303e;
+//                 }
+//                 .Line-15 {
+//                 width: 700px;
+//                 height: 1px;
+//                 margin: 10px 0 10px;
+//                 background-color: #c9c9c9;
+//                 }
+//                 .Permintaan-untuk-mengatur-ulang-password-telah-dibuat-Jika-Anda-tidak-membuat-permintaan-ini-abaik {
+//                 width: 750px;
+//                 height: 56px;
+//                 margin: 48px 0 56px;
+//                 font-family: Inter;
+//                 font-size: 14px;
+//                 font-weight: normal;
+//                 font-stretch: normal;
+//                 font-style: normal;
+//                 line-height: 1.4;
+//                 letter-spacing: normal;
+//                 text-align: left;
+//                 color: #27303e;
+//                 }
+//                 .Extra-Small-Label-Light-12px {
+//                 width: 150px;
+//                 height: 35px;
+//                 flex-grow: 0;
+//                 display: flex;
+//                 margin-top: 10px;
+//                 margin-bottom: 10px;
+//                 flex-direction: row;
+//                 justify-content: center;
+//                 align-items: center;
+//                 padding: 6px 30px;
+//                 border-radius: 8px;
+//                 background-color: #f98d3e;
+//                 margin-left: 40%;
+//                 border: none;
+//                 }
+//                 .Terima-kasih-Team-Al-Hambra {
+//                 width: 1240px;
+//                 height: 56px;
+//                 margin: 48px 0 0;
+//                 font-family: Inter;
+//                 font-size: 14px;
+//                 font-weight: normal;
+//                 font-stretch: normal;
+//                 font-style: normal;
+//                 line-height: 1.4;
+//                 letter-spacing: normal;
+//                 text-align: left;
+//                 color: #27303e;
+//                 }
+//                 .Large-Label-Heavy-18px {
+//                 width: 138px;
+//                 height: 27px;
+//                 flex-grow: 0;
+//                 font-family: Inter;
+//                 font-size: 14px;
+//                 margin-top: 1px;
+//                 font-weight: 500;
+//                 font-stretch: normal;
+//                 font-style: normal;
+//                 line-height: 1.5;
+//                 letter-spacing: normal;
+//                 text-align: center;
+//                 color: #fbfbfb;
+//                 }
+//                 img.zyro-image-removebg-2 {
+//                 width: 80px;
+//                 height: 80px;
+//                 margin: 0 0 0 450px;
+//                 object-fit: contain;
+//                 }
+//                 .header{
+//                     flex: auto;
+//                     flex-direction: row;
+//                 }
+//             </style>
+//         </head>
+//         <body>
+//             <div class="Lupa-Password">
+//                 <div class="header">
+//                     <span class="Hi-Admin">
+//                         Hi, Admin
+//                     </span>
+//                     <!-- png -->
+//                     <img src="https://ik.imagekit.io/alhambra/v1509_9269.png"
+//                     srcset="img/zyro-image-removebg-2@2x.png 2x,
+//                             img/zyro-image-removebg-2@3x.png 3x"
+//                     class="zyro-image-removebg-2">
+//                 </div>
+//                 <div class="Line-15"></div>
+//                 <span class="Permintaan-untuk-mengatur-ulang-password-telah-dibuat-Jika-Anda-tidak-membuat-permintaan-ini-abaik">
+//                     Permintaan untuk mengatur ulang password telah dibuat. Jika Anda tidak membuat permintaan ini, abaikan saja email ini. <br> Jika Anda memang membuat permintaan ini, harap setel ulang kata sandi Anda:
+//                 </span>
+//                 <button class="Extra-Small-Label-Light-12px">
+//                     <a href="{{url}}">
+//                         <span class="Large-Label-Heavy-18px">
+//                             Reset Password
+//                         </span>
+//                     </a>
+//                 </button>
+//                 <span class="Terima-kasih-Team-Al-Hambra">
+//                     Terima kasih,<br>
+//                     Team Al Hambra
+//                 </span>
+//             </div>
+//         </body>
+//     </html>
+// 	`
 
-	return body
-}
+//     body = strings.ReplaceAll(body, "{{url}}", url)
+
+// 	return body
+// }
