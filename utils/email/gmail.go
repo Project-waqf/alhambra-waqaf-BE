@@ -43,5 +43,5 @@ func SendOtpGmail(email, token string) error {
 	}
 
 	ml.AddRecipient(email)
-	return ml.SendEmailMessage("Reset Password Admin wakafalhambra.com", EmailVerification{Url: url}, "templates/verification_email.html", "verification_email.html")
+	return ml.SendEmailMessage("Reset Password Admin wakafalhambra.com", EmailVerification{Url: url}, "verification_email.html", "templates/verification_email.html")
 }
