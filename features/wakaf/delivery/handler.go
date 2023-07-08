@@ -248,6 +248,11 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.Failed("Failed transaction"))
 		}
 
+		if input.TransactionStatus != "settlement" {
+			logger.Info("Callback payement not settlement")
+			return c.JSON(http.StatusOK, helper.Failed("Not Settlement"))
+		}
+
 		// Transaction Status Check
 		switch input.TransactionStatus {
 		case "pending":
