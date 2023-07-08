@@ -39,7 +39,7 @@ type PayWakaf struct {
 	OrderId     string
 	Status      string
 	PaymentType string `json:"PaymentType,omitempty"`
-	Token       string `json"Token,omitempty"`
+	Token       string `json:"Token,omitempty"`
 }
 
 type UseCaseInterface interface {

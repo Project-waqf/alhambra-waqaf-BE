@@ -208,15 +208,10 @@ func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error)
 
 func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
 	var res Donor
-	var id_wakaf int
 
-	if err := wk.db.Model(&Donor{}).Select("id_wakaf").Where("order_id", input.OrderId).Scan(&id_wakaf).Error; err != nil {
-		return domain.PayWakaf{}, err
-	}
+	fmt.Println("[DEBUG] id_wakaf : ", input.IdWakaf)
 
-	fmt.Println("[DEBUG] id_wakaf : ", id_wakaf)
-
-	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + @gross_amount WHERE id = @id_wakaf", sql.Named("gross_amount", input.GrossAmount), sql.Named("id_wakaf", id_wakaf)).Error; err != nil {
+	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + @gross_amount WHERE id = @id_wakaf", sql.Named("gross_amount", input.GrossAmount), sql.Named("id_wakaf", input.IdWakaf)).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 
