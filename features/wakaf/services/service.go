@@ -163,12 +163,6 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 
 func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
 
-	_, err := wakaf.WakafRepo.UpdatePayment(input)
-	if err != nil {
-		logger.Error("Failed update payment", zap.Error(err))
-		return domain.PayWakaf{}, err
-	}
-
 	resRedis, err := wakaf.WakafRepo.GetFromRedis(input.OrderId)
 	if err != nil {
 		logger.Error("Failed get data donor from redis")
@@ -181,7 +175,14 @@ func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf
 		return domain.PayWakaf{}, err
 	}
 
-	resDonor, err := wakaf.WakafRepo.PayWakaf(input)
+	_, err = wakaf.WakafRepo.UpdatePayment(dataDonor)
+	if err != nil {
+		logger.Error("Failed update payment", zap.Error(err))
+		return domain.PayWakaf{}, err
+	}
+
+
+	resDonor, err := wakaf.WakafRepo.PayWakaf(dataDonor)
 	if err != nil {
 		logger.Error("Failed insert donor", zap.Error(err))
 		return domain.PayWakaf{}, err
