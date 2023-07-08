@@ -273,7 +273,7 @@ func (wk *WakafRepo) GetSummary() (int, int, int, error) {
 func (repo *WakafRepo) SaveRedis(orderId string, data domain.PayWakaf) error {
 	dataDonor, err := json.Marshal(data)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	if err := repo.redis.Set(context.Background(), orderId, string(dataDonor), time.Duration(24*time.Hour)).Err(); err != nil {
