@@ -248,11 +248,6 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.Failed("Failed transaction"))
 		}
 
-		if input.TransactionStatus != "settlement" {
-			logger.Info("Callback payement not settlement")
-			return c.JSON(http.StatusOK, helper.Failed("Not Settlement"))
-		}
-
 		// Transaction Status Check
 		switch input.TransactionStatus {
 		case "pending":
@@ -273,15 +268,15 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 		case "authorize":
 			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 			return c.JSON(http.StatusOK, helper.Failed("Payment"+input.TransactionStatus))
+		default:
+			res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+	
+			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
+			return c.JSON(http.StatusOK, helper.Success("Update payment successfull", res))
 		}
-
-		res, err := wakaf.WakafService.UpdatePayment(ToDomainCallback(input))
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
-		}
-
-		logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
-		return c.JSON(http.StatusOK, helper.Success("Update payment successfull", res))
 	}
 }
 

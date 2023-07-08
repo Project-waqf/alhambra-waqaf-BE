@@ -189,7 +189,7 @@ func (wakaf *WakafRepo) GetSingleWakaf(id uint) (domain.Wakaf, error) {
 		return domain.Wakaf{}, err
 	}
 
-	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa").Where("id_wakaf = ? AND doa != ''", id).Limit(10).Scan(&donors).Error; err != nil {
+	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa").Where("id_wakaf = ? AND doa != ''", id).Order("created_at DESC").Limit(10).Scan(&donors).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
 
