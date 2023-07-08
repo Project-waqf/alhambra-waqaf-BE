@@ -35,7 +35,7 @@ func InitFactory(e *echo.Echo, db *gorm.DB, redis *redis.Client, logger *zap.Log
 	NewsDelivery.New(e, newsServiceFactory)
 
 	// WAKAF
-	wakafRepoFactory := WakafRepository.New(db)
+	wakafRepoFactory := WakafRepository.New(db, redis)
 	wakafServiceFactory := WakafServices.New(wakafRepoFactory)
 	WakafDelivery.New(e, wakafServiceFactory)
 
