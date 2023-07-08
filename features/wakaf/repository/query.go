@@ -207,18 +207,18 @@ func (Wakaf *WakafRepo) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, error)
 }
 
 func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
-	var res Donor
+	data := FromDomainPaywakaf(input)
 
-	fmt.Println("[DEBUG] id_wakaf : ", input.IdWakaf)
+	fmt.Println("[DEBUG] DATA CALLBACK : ", input)
 
 	if err := wk.db.Exec("UPDATE wakafs SET collected = collected + @gross_amount WHERE id = @id_wakaf", sql.Named("gross_amount", input.GrossAmount), sql.Named("id_wakaf", input.IdWakaf)).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
 
-	if err := wk.db.Table("donors").Where("order_id = ?", input.OrderId).Updates(Donor{Status: input.Status, PaymentType: input.PaymentType}).Last(&res).Error; err != nil {
+	if err := wk.db.Create(&data).Last(&data).Error; err != nil {
 		return domain.PayWakaf{}, err
 	}
-	return ToDomainPayment(res), nil
+	return ToDomainPayment(data), nil
 }
 
 func (wk *WakafRepo) Search(input string) ([]domain.Wakaf, int, int, int, error) {
