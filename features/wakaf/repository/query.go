@@ -1,21 +1,26 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"time"
 	"wakaf/features/wakaf/domain"
 
+	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 )
 
 type WakafRepo struct {
-	db *gorm.DB
+	db    *gorm.DB
+	redis *redis.Client
 }
 
-func New(db *gorm.DB) domain.RepoInterface {
+func New(db *gorm.DB, redis *redis.Client) domain.RepoInterface {
 	return &WakafRepo{
-		db: db,
+		db:    db,
+		redis: redis,
 	}
 }
 
@@ -263,4 +268,24 @@ func (wk *WakafRepo) GetSummary() (int, int, int, error) {
 		return 0, 0, 0, err
 	}
 	return int(count), int(sum), int(wakif), nil
+}
+
+func (repo *WakafRepo) SaveRedis(orderId string, data domain.PayWakaf) error {
+	dataDonor, err := json.Marshal(data)
+	if err != nil {
+		return nil
+	}
+
+	if err := repo.redis.Set(context.Background(), orderId, string(dataDonor), time.Duration(24*time.Hour)).Err(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *WakafRepo) GetFromRedis(orderId string) (string, error) {
+	res, err := repo.redis.Get(context.Background(), orderId).Result()
+	if err != nil {
+		return "", err
+	}
+	return res, nil
 }

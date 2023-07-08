@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
 	"reflect"
 	"strings"
@@ -28,11 +29,11 @@ var (
 
 func (wakaf *WakafService) AddWakaf(input domain.Wakaf) (domain.Wakaf, error) {
 	var emptyTime time.Time
-	
+
 	if input.DueDate == emptyTime {
 		input.DueDate = time.Now()
 	}
-	
+
 	res, err := wakaf.WakafRepo.Insert(input)
 	if err != nil {
 		logger.Error("Failed insert wakaf", zap.Error(err))
@@ -148,25 +149,45 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 		logger.Info("Failed get redirect url because transaction has completed")
 		return domain.PayWakaf{}, errors.New("completed")
 	}
-	res, err := wakaf.WakafRepo.PayWakaf(input)
+
+	err = wakaf.WakafRepo.SaveRedis(orderId, input)
 	if err != nil {
-		logger.Error("Failed add donatur", zap.Error(err))
+		logger.Error("Failed save donor to redis", zap.Error(err))
 		return domain.PayWakaf{}, err
 	}
-	res.RedirectURL = snapResp.RedirectURL
-	res.Token = snapResp.Token
-	return res, nil
+
+	input.RedirectURL = snapResp.RedirectURL
+	input.Token = snapResp.Token
+	return input, nil
 }
 
 func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, error) {
 
-	res, err := wakaf.WakafRepo.UpdatePayment(input)
+	_, err := wakaf.WakafRepo.UpdatePayment(input)
 	if err != nil {
 		logger.Error("Failed update payment", zap.Error(err))
 		return domain.PayWakaf{}, err
 	}
 
-	return res, nil
+	resRedis, err := wakaf.WakafRepo.GetFromRedis(input.OrderId)
+	if err != nil {
+		logger.Error("Failed get data donor from redis")
+		return domain.PayWakaf{}, err
+	}
+	
+	var dataDonor domain.PayWakaf
+	if err := json.Unmarshal([]byte(resRedis), &dataDonor); err != nil {
+		logger.Error("Error unmarshal data donor", zap .Error(err))
+		return domain.PayWakaf{}, err
+	}
+
+	resDonor, err := wakaf.WakafRepo.PayWakaf(input)
+	if err != nil {
+		logger.Error("Failed insert donor", zap.Error(err))
+		return domain.PayWakaf{}, err
+	}
+
+	return resDonor, nil
 }
 
 func (wakaf *WakafService) DenyTransaction(input string) error {

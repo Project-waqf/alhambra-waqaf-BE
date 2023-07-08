@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type Wakaf struct {
 	ID         uint
@@ -23,7 +25,7 @@ type Donors struct {
 	Name       string
 	Fund       int
 	Doa        string
-	Created_at time.Time
+	Created_at time.Time `json:"created_at,omitempty"`
 }
 
 type PayWakaf struct {
@@ -65,4 +67,6 @@ type RepoInterface interface {
 	UpdatePayment(input PayWakaf) (PayWakaf, error)
 	Search(input string) ([]Wakaf, int, int, int, error)
 	GetSummary() (int, int, int, error)
+	SaveRedis(orderId string, data PayWakaf) error
+	GetFromRedis(orderId string) (string, error)
 }
