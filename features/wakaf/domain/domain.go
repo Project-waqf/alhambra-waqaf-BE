@@ -35,11 +35,11 @@ type PayWakaf struct {
 	GrossAmount int
 	Doa         string
 	CreatedAt   time.Time
-	RedirectURL string
+	RedirectURL string `json:"RedirectURL,omitempty"`
 	OrderId     string
 	Status      string
-	PaymentType string
-	Token       string
+	PaymentType string `json:"PaymentType,omitempty"`
+	Token       string `json"Token,omitempty"`
 }
 
 type UseCaseInterface interface {
