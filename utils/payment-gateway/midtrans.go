@@ -14,17 +14,17 @@ import (
 )
 
 func Midtrans(input domain.PayWakaf) (*snap.Response, string) {
-	// environment := os.Getenv("MIDTRANS_ENV")
-	// var midtransEnv midtrans.EnvironmentType
-	// if environment == "1" {
-	// 	midtransEnv = 1
-	// } else {
-	// 	midtransEnv = 2
-	// }
+	environment := os.Getenv("MIDTRANS_ENV")
+	var midtransEnv midtrans.EnvironmentType
+	if environment == "1" {
+		midtransEnv = 1
+	} else {
+		midtransEnv = 2
+	}
 
 	// 1. Initiate Snap client
 	var s = snap.Client{}
-	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
+	s.New(os.Getenv("SERVER_KEY"), midtransEnv)
 	// Use to midtrans.Production if you want Production Environment (accept real transaction).
 	var orderId = "ORDER-" + (time.Now().Format("02-Jan-06 15:04")) + fmt.Sprintf("%f", rand.Float64())
 
