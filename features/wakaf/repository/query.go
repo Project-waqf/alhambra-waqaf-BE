@@ -215,9 +215,6 @@ func (wk *WakafRepo) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf, erro
 		return domain.PayWakaf{}, err
 	}
 
-	if err := wk.db.Create(&data).Last(&data).Error; err != nil {
-		return domain.PayWakaf{}, err
-	}
 	return ToDomainPayment(data), nil
 }
 
