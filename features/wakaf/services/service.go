@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -77,6 +78,8 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 		logger.Error("Wakaf not found", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
+	fmt.Println("INI DUE DATE EXISTING ", resGet.DueDate)
+	fmt.Println("INI DUE DATE NEW ", input.DueDate)
 
 	if input.DueDate != resGet.DueDate {
 		resGet.DueDate = input.DueDate

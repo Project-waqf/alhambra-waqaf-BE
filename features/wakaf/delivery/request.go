@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -44,8 +43,6 @@ func ToDomainAdd(input WakafRequest) domain.Wakaf {
 	if err != nil {
 		logger.Error("Error parse due date", zap.Error(err))
 	}
-
-	fmt.Println("INI ADALAH DUE DATE ", date)
 
 	return domain.Wakaf{
 		ID:         input.ID,
