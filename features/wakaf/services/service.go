@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -78,8 +77,6 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 		logger.Error("Wakaf not found", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
-	fmt.Println("INI DUE DATE EXISTING ", resGet.DueDate.Format("2006-01-02"))
-	fmt.Println("INI DUE DATE NEW ", input.DueDate.Format("2006-01-02"))
 
 	if input.DueDate.Format("2006-01-02") != resGet.DueDate.Format("2006-01-02") {
 		resGet.DueDate = input.DueDate
@@ -160,10 +157,10 @@ func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf
 		logger.Error("Failed get data donor from redis")
 		return domain.PayWakaf{}, err
 	}
-	
+
 	var dataDonor domain.PayWakaf
 	if err := json.Unmarshal([]byte(resRedis), &dataDonor); err != nil {
-		logger.Error("Error unmarshal data donor", zap .Error(err))
+		logger.Error("Error unmarshal data donor", zap.Error(err))
 		return domain.PayWakaf{}, err
 	}
 
@@ -172,7 +169,6 @@ func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf
 		logger.Error("Failed update payment", zap.Error(err))
 		return domain.PayWakaf{}, err
 	}
-
 
 	resDonor, err := wakaf.WakafRepo.PayWakaf(dataDonor)
 	if err != nil {
