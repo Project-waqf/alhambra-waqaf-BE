@@ -63,7 +63,7 @@ func daysBetween(a, b time.Time) int {
 func FromDomainAdd(input domain.Wakaf) WakafResponse {
 
 	// Days between now and due date
-	dueDate := input.DueDate.Format("2006-1-2")
+	dueDate := input.DueDate.Format("2006-01-02")
 	dt := strings.Split(dueDate, "-")
 	timeNow := time.Now()
 	var date1 []int
@@ -93,7 +93,7 @@ func FromDomainAdd(input domain.Wakaf) WakafResponse {
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
 		Detail:     input.Detail,
-		DueDate:    days,
+		DueDate:    days-1,
 		Status:     input.Status,
 	}
 }
