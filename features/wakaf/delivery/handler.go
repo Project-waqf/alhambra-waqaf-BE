@@ -148,7 +148,6 @@ func (wakaf *WakafDelivery) UpdateWakaf() echo.HandlerFunc {
 					return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
 				}
 			}
-
 		}
 
 		res, err := wakaf.WakafService.UpdateWakaf(uint(cnvId), ToDomainAdd(input))
