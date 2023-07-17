@@ -78,10 +78,10 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 		logger.Error("Wakaf not found", zap.Error(err))
 		return domain.Wakaf{}, err
 	}
-	fmt.Println("INI DUE DATE EXISTING ", resGet.DueDate)
-	fmt.Println("INI DUE DATE NEW ", input.DueDate)
+	fmt.Println("INI DUE DATE EXISTING ", resGet.DueDate.Format("2006-01-02"))
+	fmt.Println("INI DUE DATE NEW ", input.DueDate.Format("2006-01-02"))
 
-	if input.DueDate != resGet.DueDate {
+	if input.DueDate.Format("2006-01-02") != resGet.DueDate.Format("2006-01-02") {
 		resGet.DueDate = input.DueDate
 	}
 
