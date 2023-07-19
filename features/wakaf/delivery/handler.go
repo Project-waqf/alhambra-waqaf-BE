@@ -148,6 +148,13 @@ func (wakaf *WakafDelivery) UpdateWakaf() echo.HandlerFunc {
 					logger.Error("Failed delete image in imagekit", zap.Error(err))
 					return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
 				}
+				fileId, fileName, err := helper.Upload(c, file, fileheader, "wakaf")
+				if err != nil {
+					logger.Error("Error upload image", zap.Error(err))
+					return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+				}
+				input.FileId = fileId
+				input.Picture = fileName
 			}
 		}
 

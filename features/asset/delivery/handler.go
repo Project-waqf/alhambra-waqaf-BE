@@ -146,6 +146,13 @@ func (asset *AssetDelivery) UpdateAsset() echo.HandlerFunc {
 					logger.Error("Failed delete image in imagekit", zap.Error(err))
 					return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
 				}
+				fileId, fileName, err := helper.Upload(c, file, fileheader, "asset")
+				if err != nil {
+					logger.Error("Failed upload image to imagekit", zap.Error(err))
+					return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+				}
+				input.FileId = fileId
+				input.Picture = fileName
 			}
 		}
 

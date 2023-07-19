@@ -139,6 +139,12 @@ func (news *NewsDelivery) UpdateNews() echo.HandlerFunc {
 					logger.Error("Failed delete image in imagekit", zap.Error(err))
 					return c.JSON(http.StatusInternalServerError, helper.Failed("Failed to update"))
 				}
+				fileId, filename, err := helper.Upload(c, file, fileheader, "news")
+				if err != nil {
+					return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+				}
+				input.FileId = fileId
+				input.Picture = filename
 			}
 		}
 
