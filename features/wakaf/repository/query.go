@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+	"wakaf/features/asset/repository"
 	"wakaf/features/wakaf/domain"
 
 	"github.com/go-redis/redis/v8"
@@ -280,4 +281,21 @@ func (repo *WakafRepo) GetFromRedis(orderId string) (string, error) {
 		return "", err
 	}
 	return res, nil
+}
+
+func (wk *WakafRepo) GetSummaryDashboard() (int, int, int, error) {
+	var online, complete, asset int64
+
+	if err := wk.db.Model(&Wakaf{}).Where("collected != fund_target AND NOW() < due_date").Count(&online).Error; err != nil {
+		return 0, 0, 0, err
+	}
+
+	if err := wk.db.Model(&Wakaf{}).Where("collected = fund_target").Count(&complete).Error; err != nil {
+		return 0, 0, 0, err
+	}
+
+	if err := wk.db.Model(repository.Asset{}).Count(&asset).Error; err != nil {
+		return 0, 0, 0, err
+	}
+	return int(online), int(complete), int(asset), nil
 }

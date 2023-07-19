@@ -47,6 +47,12 @@ type SummaryWakafRes struct {
 	TotalWakif   int `json:"total_wakif"`
 }
 
+type SummaryWakafDashboardRes struct {
+	TotalOnline   int `json:"total_online"`
+	TotalComplete int `json:"total_complete"`
+	TotalAsset    int `json:"total_asset"`
+}
+
 func date(year, month, day int) time.Time {
 	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }
@@ -93,7 +99,7 @@ func FromDomainAdd(input domain.Wakaf) WakafResponse {
 		Collected:  input.Collected,
 		FundTarget: input.FundTarget,
 		Detail:     input.Detail,
-		DueDate:    days-1,
+		DueDate:    days - 1,
 		Status:     input.Status,
 	}
 }
@@ -175,10 +181,6 @@ func FromDomainPaywakaf(input domain.PayWakaf) PayWakafRes {
 	}
 }
 
-func SummaryWakaf(count, sum, wakif int) SummaryWakafRes {
-	return SummaryWakafRes{
-		TotalProgram: count,
-		TotalWakaf:   sum,
-		TotalWakif:   wakif,
-	}
+func SummaryWakaf[T any](data T) T {
+	return data
 }

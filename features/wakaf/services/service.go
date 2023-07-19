@@ -212,3 +212,13 @@ func (wakaf *WakafService) GetSummary() (int, int, int, error) {
 	}
 	return count, sum, wakif, nil
 }
+
+func (wakaf *WakafService) GetSummaryDashboard() (int, int, int, error) {
+
+	online, complete, asset, err := wakaf.WakafRepo.GetSummaryDashboard()
+	if err != nil {
+		logger.Error("Failed get summary wakaf dashboard")
+		return 0, 0, 0, err
+	}
+	return online, complete, asset, nil
+}

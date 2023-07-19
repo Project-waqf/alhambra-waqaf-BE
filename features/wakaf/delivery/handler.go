@@ -31,6 +31,7 @@ func New(e *echo.Echo, data domain.UseCaseInterface) {
 	e.POST("/wakaf/pay", handler.PayWakaf())
 	e.POST("/wakaf/payment/callback", handler.PaymentCallback())
 	e.GET("/wakaf/summary", handler.SummaryWakaf())
+	e.GET("/wakaf/summary/dashboard", handler.SummaryWakafDashboard())
 	e.GET("/wakaf/payment/finish", func(c echo.Context) error {
 		return c.Redirect(http.StatusMovedPermanently, "https://wakafalhambra.com")
 	})
@@ -272,7 +273,7 @@ func (wakaf *WakafDelivery) PaymentCallback() echo.HandlerFunc {
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
-	
+
 			logger.Info("Payment "+input.TransactionStatus, zap.Any("Order Id", input.OrderId))
 			return c.JSON(http.StatusOK, helper.Success("Update payment successfull", res))
 		}
@@ -287,6 +288,30 @@ func (wakaf *WakafDelivery) SummaryWakaf() echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 		}
 
-		return c.JSON(http.StatusOK, helper.Success("Success get summary", SummaryWakaf(count, sum, wakif)))
+		data := SummaryWakafRes{
+			TotalProgram: count,
+			TotalWakaf:   sum,
+			TotalWakif:   wakif,
+		}
+
+		return c.JSON(http.StatusOK, helper.Success("Success get summary", SummaryWakaf[SummaryWakafRes](data)))
+	}
+}
+
+func (wakaf *WakafDelivery) SummaryWakafDashboard() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		online, complete, asset, err := wakaf.WakafService.GetSummaryDashboard()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server!"))
+		}
+
+		data := SummaryWakafDashboardRes{
+			TotalOnline:   online,
+			TotalComplete: complete,
+			TotalAsset:    asset,
+		}
+
+		return c.JSON(http.StatusOK, helper.Success("Success get summary dashboard", SummaryWakaf[SummaryWakafDashboardRes](data)))
 	}
 }

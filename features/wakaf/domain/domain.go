@@ -54,6 +54,7 @@ type UseCaseInterface interface {
 	DenyTransaction(input string) error
 	SearchWakaf(input string) ([]Wakaf, int, int, int, error)
 	GetSummary() (int, int, int, error)
+	GetSummaryDashboard() (int, int, int, error)
 }
 
 type RepoInterface interface {
@@ -69,4 +70,5 @@ type RepoInterface interface {
 	GetSummary() (int, int, int, error)
 	SaveRedis(orderId string, data PayWakaf) error
 	GetFromRedis(orderId string) (string, error)
+	GetSummaryDashboard() (int, int, int, error)
 }
