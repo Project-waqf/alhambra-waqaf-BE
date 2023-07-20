@@ -146,7 +146,11 @@ func (wakaf *WakafService) PayWakaf(input domain.PayWakaf) (domain.PayWakaf, err
 		input.GrossAmount = resWakaf.FundTarget - resWakaf.Collected
 	}
 
-	snapResp, orderId := paymentgateway.Midtrans(input)
+	snapResp, orderId, err := paymentgateway.Midtrans(input)
+	if err != nil {
+		logger.Info("Failed payment gateway", zap.Error(err))
+		return domain.PayWakaf{}, err
+	}
 	input.OrderId = orderId
 	input.Status = "pending"
 	if snapResp.RedirectURL == "" {

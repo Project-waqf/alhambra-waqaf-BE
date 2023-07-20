@@ -286,7 +286,7 @@ func (repo *WakafRepo) GetFromRedis(orderId string) (string, error) {
 func (wk *WakafRepo) GetSummaryDashboard() (int, int, int, error) {
 	var online, complete, asset int64
 
-	if err := wk.db.Model(&Wakaf{}).Where("collected != fund_target AND NOW() < due_date").Count(&online).Error; err != nil {
+	if err := wk.db.Model(&Wakaf{}).Where("collected != fund_target AND NOW() < due_date AND status = ?", "online").Count(&online).Error; err != nil {
 		return 0, 0, 0, err
 	}
 
@@ -294,7 +294,7 @@ func (wk *WakafRepo) GetSummaryDashboard() (int, int, int, error) {
 		return 0, 0, 0, err
 	}
 
-	if err := wk.db.Model(repository.Asset{}).Count(&asset).Error; err != nil {
+	if err := wk.db.Model(repository.Asset{}).Where("status = ?", "online").Count(&asset).Error; err != nil {
 		return 0, 0, 0, err
 	}
 	return int(online), int(complete), int(asset), nil
