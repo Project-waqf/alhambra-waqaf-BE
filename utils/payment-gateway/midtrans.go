@@ -13,7 +13,8 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 )
 
-func Midtrans(input domain.PayWakaf) (*snap.Response, string) {
+
+func Midtrans(input domain.PayWakaf) (*snap.Response, string, error) {
 	environment := os.Getenv("MIDTRANS_ENV")
 	var midtransEnv midtrans.EnvironmentType
 	if environment == "1" {
@@ -32,50 +33,38 @@ func Midtrans(input domain.PayWakaf) (*snap.Response, string) {
 	req := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
 			OrderID:  orderId,
-			GrossAmt: int64(input.GrossAmount),
+			GrossAmt: int64(input.GrossAmount + input.Payment.Tax),
 		},
-		CreditCard: &snap.CreditCardDetails{
-			Secure: true,
-		},
-		EnabledPayments: []snap.SnapPaymentType{
-			snap.PaymentTypeGopay,
-			snap.PaymentTypeShopeepay,
-			snap.PaymentTypeCreditCard,
-			snap.PaymentTypeBankTransfer,
-			snap.PaymentTypeBNIVA,
-			snap.PaymentTypePermataVA,
-			snap.PaymentTypeBCAVA,
-			snap.PaymentTypeBRIVA,
-			snap.PaymentTypeOtherVA,
-			snap.PaymentTypeMandiriClickpay,
-			snap.PaymentTypeCimbClicks,
-			snap.PaymentTypeDanamonOnline,
-			snap.PaymentTypeKlikBca,
-			snap.PaymentTypeBCAKlikpay,
-			snap.PaymentTypeBRIEpay,
-			snap.PaymentTypeMandiriEcash,
-			snap.PaymentTypeTelkomselCash,
-			snap.PaymentTypeEChannel,
-			snap.PaymentTypeIndomaret,
-			snap.PaymentTypeKioson,
-			snap.PaymentTypeAlfamart,
-			snap.PaymentTypeConvenienceStore,
-			"other_qris",
-			// snap.PaymentTypeAkulaku,
+		Items: &[]midtrans.ItemDetails{
+			{
+				Name: "Wakaf",
+				Price: int64(input.GrossAmount),
+				Qty: 1,
+			},
+			{
+				Name: "Tax",
+				Price: int64(input.Payment.Tax),
+				Qty: 1,
+			},
 		},
 		CustomerDetail: &midtrans.CustomerDetails{
 			FName: input.Name,
 			Email: input.Email,
 		},
+		EnabledPayments: []snap.SnapPaymentType{
+			snap.SnapPaymentType(input.Payment.Merchant),
+		},
 	}
 
 	// 3. Execute request create Snap transaction to Midtrans Snap API
-	snapResp, _ := s.CreateTransaction(req)
-	return snapResp, orderId
+	snapResp, err := s.CreateTransaction(req)
+	return snapResp, orderId, err
 }
 
 func DenyTransaction(input string) (string, error) {
-	url := fmt.Sprintf("https://api.sandbox.midtrans.com/v2/%s/deny", input)
+	// Sandbox Environment : https://api.sandbox.midtrans.com
+	// Production Environment : https://api.midtrans.com
+	url := fmt.Sprintf("MIDTRANS_URL" +"/v2/%s/deny", input)
 
 	req, _ := http.NewRequest("POST", url, nil)
 

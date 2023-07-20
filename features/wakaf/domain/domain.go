@@ -40,6 +40,12 @@ type PayWakaf struct {
 	Status      string
 	PaymentType string `json:"PaymentType,omitempty"`
 	Token       string `json:"Token,omitempty"`
+	Payment     Payment
+}
+
+type Payment struct {
+	Merchant string
+	Tax      int
 }
 
 type UseCaseInterface interface {

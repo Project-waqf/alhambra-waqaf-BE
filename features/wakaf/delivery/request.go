@@ -22,11 +22,17 @@ type WakafRequest struct {
 }
 
 type PayWakafReq struct {
-	IdWakaf     int    `json:"id_wakaf" form:"id_wakaf"`
-	Email       string `json:"email" form:"email"`
-	Name        string `json:"name" form:"name"`
-	GrossAmount int    `json:"gross_amount" form:"gross_amount"`
-	Doa         string `json:"doa" form:"doa"`
+	IdWakaf     int     `json:"id_wakaf" form:"id_wakaf"`
+	Email       string  `json:"email" form:"email"`
+	Name        string  `json:"name" form:"name"`
+	GrossAmount int     `json:"gross_amount" form:"gross_amount"`
+	Doa         string  `json:"doa" form:"doa"`
+	Payment     Payment `json:"payment" form:"payment"`
+}
+
+type Payment struct {
+	Merchant string `json:"merchant" form:"merchant"`
+	Tax      int    `json:"tax" form:"tax"`
 }
 
 type CallbackMidtrans struct {
@@ -64,6 +70,10 @@ func ToDomainPayWakaf(input PayWakafReq) domain.PayWakaf {
 		Email:       input.Email,
 		GrossAmount: input.GrossAmount,
 		Doa:         input.Doa,
+		Payment: domain.Payment{
+			Merchant: input.Payment.Merchant,
+			Tax:      input.Payment.Tax,
+		},
 	}
 }
 
