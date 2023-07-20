@@ -58,7 +58,7 @@ func Midtrans(input domain.PayWakaf) (*snap.Response, string, error) {
 
 	// 3. Execute request create Snap transaction to Midtrans Snap API
 	snapResp, err := s.CreateTransaction(req)
-	return snapResp, orderId, err
+	return snapResp, orderId, err.GetRawError()
 }
 
 func DenyTransaction(input string) (string, error) {
