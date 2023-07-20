@@ -152,6 +152,7 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, sort
 func (wakaf *WakafRepo) Edit(id uint, input domain.Wakaf) (domain.Wakaf, error) {
 	data := FromDomainAdd(input)
 
+	fmt.Println("WAKAF REPO ", data.DueDate)
 	if err := wakaf.db.Where("id = ?", id).Updates(&data).Last(&data).Error; err != nil {
 		return domain.Wakaf{}, err
 	}

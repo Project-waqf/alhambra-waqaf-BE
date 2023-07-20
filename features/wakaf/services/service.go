@@ -94,8 +94,8 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 		}
 	}
 
-	fmt.Println("NEW", input.DueDate.Format("2006-01-02"))
-	fmt.Println("OLD", resGet.DueDate.Format("2006-01-02"))
+	fmt.Println("NEW", input.DueDate)
+	fmt.Println("OLD", resGet.DueDate)
 
 	if input.DueDate.Format("2006-01-02") != resGet.DueDate.Format("2006-01-02") {
 		resGet.DueDate = input.DueDate
