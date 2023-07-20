@@ -3,7 +3,6 @@ package services
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"reflect"
 	"strings"
 	"time"
@@ -93,9 +92,6 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 			wakafField.Set(field)
 		}
 	}
-
-	fmt.Println("NEW", input.DueDate)
-	fmt.Println("OLD", resGet.DueDate)
 
 	if input.DueDate.Format("2006-01-02") != resGet.DueDate.Format("2006-01-02") {
 		resGet.DueDate = input.DueDate

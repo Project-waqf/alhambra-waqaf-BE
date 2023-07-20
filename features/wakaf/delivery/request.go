@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -50,6 +51,14 @@ func ToDomainAdd(input WakafRequest) domain.Wakaf {
 		logger.Error("Error parse due date", zap.Error(err))
 	}
 
+	// Get the GMT+7 time zone
+	gmt7Location, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		fmt.Println("Error loading time zone:", err)
+	}
+
+	dateJkt := date.In(gmt7Location)
+
 	return domain.Wakaf{
 		ID:         input.ID,
 		Title:      input.Title,
@@ -58,7 +67,7 @@ func ToDomainAdd(input WakafRequest) domain.Wakaf {
 		FileId:     input.FileId,
 		Detail:     input.Detail,
 		FundTarget: input.FundTarget,
-		DueDate:    date,
+		DueDate:    dateJkt,
 		Status:     input.Status,
 	}
 }
