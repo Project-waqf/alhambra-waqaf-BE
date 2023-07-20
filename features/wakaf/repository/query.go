@@ -29,7 +29,7 @@ func (wakaf *WakafRepo) Insert(input domain.Wakaf) (domain.Wakaf, error) {
 	input.Collected = 0
 	data := FromDomainAdd(input)
 
-	if err := wakaf.db.Create(&data).Last(&data).Error; err != nil {
+	if err := wakaf.db.Save(&data).Last(&data).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
 	return ToDomainAdd(data), nil
