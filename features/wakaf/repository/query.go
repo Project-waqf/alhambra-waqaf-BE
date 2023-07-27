@@ -304,8 +304,11 @@ func (wk *WakafRepo) GetSummaryDashboard() (int, int, int, error) {
 func (wakaf *WakafRepo) GetSingleWakafBySlug(slug string) (domain.Wakaf, error) {
 	var data Wakaf
 	var donors []Donors
-
+	
 	newSlug := strings.ReplaceAll(slug, "-", " ")
+	if strings.Contains(slug, "_") {
+		newSlug = strings.ReplaceAll(newSlug, "_", "-")
+	}
 
 	if err := wakaf.db.Where("title = ?", newSlug).First(&data).Error; err != nil {
 		return domain.Wakaf{}, err
