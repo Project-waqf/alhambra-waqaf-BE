@@ -90,19 +90,37 @@ func (news *NewsDelivery) GetAllNews() echo.HandlerFunc {
 
 func (news *NewsDelivery) GetSingleNews() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		var slug string
 		idTmp := c.Param("id_news")
 		id, err := strconv.Atoi(idTmp)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+			logger.Error("Error when convert id", zap.Error(err))
+			slug = idTmp
 		}
-		res, err := news.NewsServices.Get(id)
-		if err != nil {
-			if strings.Contains(err.Error(), "found") {
-				return c.JSON(http.StatusNotFound, helper.Failed("Data not found"))
+
+		var resData domain.News
+
+		if slug == "" {	
+			res, err := news.NewsServices.Get(id)
+			if err != nil {
+				if strings.Contains(err.Error(), "found") {
+					return c.JSON(http.StatusNotFound, helper.Failed("Data not found"))
+				}
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
 			}
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			resData = res
+		} else {
+			res, err := news.NewsServices.GetBySlug(slug)
+			if err != nil {
+				if strings.Contains(err.Error(), "found") {
+					return c.JSON(http.StatusNotFound, helper.Failed("Data not found"))
+				}
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+			resData = res
 		}
-		return c.JSON(http.StatusOK, helper.Success("Get news successfully", FromDomainGet(res)))
+		
+		return c.JSON(http.StatusOK, helper.Success("Get news successfully", FromDomainGet(resData)))
 	}
 }
 

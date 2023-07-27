@@ -84,3 +84,12 @@ func (news *NewsServices) GetFileId(id int) (string, error) {
 	}
 	return res, nil
 }
+
+func (news *NewsServices) GetBySlug(slug string) (domain.News, error) {
+	res, err := news.NewsRepository.GetBySlug(slug)
+	if err != nil {
+		logger.Error("Error get data", zap.Error(err))
+		return domain.News{}, err
+	}
+	return res, nil
+}

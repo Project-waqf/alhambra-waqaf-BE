@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"strings"
 	"wakaf/features/news/domain"
 
 	"gorm.io/gorm"
@@ -143,4 +144,19 @@ func (news *NewsRepository) GetFileId(id int) (string, error) {
 	}
 
 	return ToDomainGet(res).FileId, nil
+}
+
+func (news *NewsRepository) GetBySlug(slug string) (domain.News, error) {
+	var res News
+
+	newSlug := strings.ReplaceAll(slug, "-", " ")
+	if strings.Contains(slug, "_") {
+		newSlug = strings.ReplaceAll(newSlug, "_", "-")
+	}
+
+	if err := news.db.Where("title = ? and status = 'online'", newSlug).First(&res).Error; err != nil {
+		return domain.News{}, err
+	}
+
+	return ToDomainGet(res), nil
 }

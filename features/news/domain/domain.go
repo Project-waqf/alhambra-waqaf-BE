@@ -22,6 +22,7 @@ type UseCaseInterface interface {
 	Delete(id int) (News, error)
 	ToOnline(id int) error
 	GetFileId(id int) (string, error)
+	GetBySlug(slug string) (News, error)
 }
 
 type RepoInterface interface {
@@ -32,4 +33,5 @@ type RepoInterface interface {
 	Delete(id int) (News, error)
 	ToOnline(id int) error
 	GetFileId(id int) (string, error)
+	GetBySlug(slug string) (News, error)
 }
