@@ -61,6 +61,7 @@ type UseCaseInterface interface {
 	SearchWakaf(input string) ([]Wakaf, int, int, int, error)
 	GetSummary() (int, int, int, error)
 	GetSummaryDashboard() (int, int, int, error)
+	GetSingleWakafBySlug(slug string) (Wakaf, error)
 }
 
 type RepoInterface interface {
@@ -77,4 +78,5 @@ type RepoInterface interface {
 	SaveRedis(orderId string, data PayWakaf) error
 	GetFromRedis(orderId string) (string, error)
 	GetSummaryDashboard() (int, int, int, error)
+	GetSingleWakafBySlug(slug string) (Wakaf, error)
 }

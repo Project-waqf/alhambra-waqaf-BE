@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 	"wakaf/features/asset/repository"
 	"wakaf/features/wakaf/domain"
@@ -298,4 +299,21 @@ func (wk *WakafRepo) GetSummaryDashboard() (int, int, int, error) {
 		return 0, 0, 0, err
 	}
 	return int(online), int(complete), int(asset), nil
+}
+
+func (wakaf *WakafRepo) GetSingleWakafBySlug(slug string) (domain.Wakaf, error) {
+	var data Wakaf
+	var donors []Donors
+
+	newSlug := strings.ReplaceAll(slug, "-", " ")
+
+	if err := wakaf.db.Where("title = ?", newSlug).First(&data).Error; err != nil {
+		return domain.Wakaf{}, err
+	}
+
+	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa").Where("id_wakaf = ? AND doa != ''", data.ID).Order("created_at DESC").Limit(10).Scan(&donors).Error; err != nil {
+		return domain.Wakaf{}, err
+	}
+
+	return ToDomainGet(data, donors), nil
 }

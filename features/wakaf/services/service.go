@@ -241,3 +241,13 @@ func (wakaf *WakafService) GetSummaryDashboard() (int, int, int, error) {
 	}
 	return online, complete, asset, nil
 }
+
+func (wakaf *WakafService) GetSingleWakafBySlug(slug string) (domain.Wakaf, error) {
+
+	res, err := wakaf.WakafRepo.GetSingleWakafBySlug(slug)
+	if err != nil {
+		logger.Error("Failed get single wakaf", zap.Error(err))
+		return domain.Wakaf{}, err
+	}
+	return res, nil
+}

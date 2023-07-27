@@ -197,18 +197,30 @@ func (wakaf *WakafDelivery) DeleteWakaf() echo.HandlerFunc {
 func (wakaf *WakafDelivery) GetSingleWakaf() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id_wakaf")
+		var slug string
 		cnvId, err := strconv.Atoi(id)
 		if err != nil {
 			logger.Error("Error when convert id", zap.Error(err))
-			return c.JSON(http.StatusBadRequest, helper.Failed("Error input"))
+			slug = id
 		}
 
-		res, err := wakaf.WakafService.GetSingleWakaf(uint(cnvId))
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+		var resData domain.Wakaf
+
+		if slug == "" {
+			res, err := wakaf.WakafService.GetSingleWakaf(uint(cnvId))
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+			resData = res
+		} else {
+			res, err := wakaf.WakafService.GetSingleWakafBySlug(slug)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, helper.Failed("Something error in server"))
+			}
+			resData = res
 		}
 
-		return c.JSON(http.StatusOK, FromDomainGet(res))
+		return c.JSON(http.StatusOK, FromDomainGet(resData))
 	}
 }
 
