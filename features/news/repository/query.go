@@ -154,6 +154,10 @@ func (news *NewsRepository) GetBySlug(slug string) (domain.News, error) {
 		newSlug = strings.ReplaceAll(newSlug, "_", "-")
 	}
 
+	if strings.Contains(slug, "and") {
+		newSlug = strings.ReplaceAll(newSlug, "and", "&")
+	}
+
 	if err := news.db.Where("title = ? and status = 'online'", newSlug).First(&res).Error; err != nil {
 		return domain.News{}, err
 	}

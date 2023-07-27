@@ -310,6 +310,10 @@ func (wakaf *WakafRepo) GetSingleWakafBySlug(slug string) (domain.Wakaf, error) 
 		newSlug = strings.ReplaceAll(newSlug, "_", "-")
 	}
 
+	if strings.Contains(slug, "and") {
+		newSlug = strings.ReplaceAll(newSlug, "and", "&")
+	}
+
 	if err := wakaf.db.Where("title = ?", newSlug).First(&data).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
