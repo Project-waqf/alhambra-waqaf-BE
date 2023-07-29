@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: faturfawkes/alhambra-wakaf
+          tags: faturfawkes/alhambra-wakaf:1.0.0
       - 
         name: executing remote ssh using ssh key
         uses: appleboy/ssh-action@master
