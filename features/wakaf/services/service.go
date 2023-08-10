@@ -82,6 +82,8 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 		resGet.DueDate = input.DueDate
 	}
 
+	input.CreatedAt = resGet.CreatedAt
+
 	res, err := wakaf.WakafRepo.Edit(id, input)
 	if err != nil {
 		logger.Error("Failed update wakaf", zap.Error(err))
