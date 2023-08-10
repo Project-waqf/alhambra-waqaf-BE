@@ -72,13 +72,7 @@ func isEmptyValue(value reflect.Value) bool {
 
 func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Wakaf, error) {
 
-	resGet, err := wakaf.WakafRepo.GetSingleWakaf(id)
-	if err != nil {
-		logger.Error("Wakaf not found", zap.Error(err))
-		return domain.Wakaf{}, err
-	}
-
-	res, err := wakaf.WakafRepo.Edit(id, resGet)
+	res, err := wakaf.WakafRepo.Edit(id, input)
 	if err != nil {
 		logger.Error("Failed update wakaf", zap.Error(err))
 		return res, err
