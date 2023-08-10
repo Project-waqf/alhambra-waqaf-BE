@@ -155,9 +155,9 @@ func (wakaf *WakafRepo) Edit(id uint, input domain.Wakaf) (domain.Wakaf, error) 
 
 	query := "UPDATE wakafs SET title = ?, category = ?, picture = ?, detail = ?, " +
 	"fund_target = ?, file_id = ?, status = ?, due_date = ?, " +
-	"updated_at = ?"
+	"updated_at = ? WHERE id = ?"
 	err := wakaf.db.Exec(query, data.Title, data.Category, data.Picture, data.Detail,
-		data.FundTarget, data.FileId, data.Status, data.DueDate, time.Now()).Error
+		data.FundTarget, data.FileId, data.Status, data.DueDate, time.Now(), id).Error
 	if err != nil {
 		return domain.Wakaf{}, err
 	}
