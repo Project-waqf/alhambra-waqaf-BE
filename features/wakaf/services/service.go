@@ -78,26 +78,11 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 		return domain.Wakaf{}, err
 	}
 
-	v := reflect.ValueOf(input)
-	wakafValue := reflect.ValueOf(&resGet).Elem()
-	for i := 0; i < v.NumField(); i++ {
-		field := v.Field(i)
-		if isEmptyValue(field) {
-			continue
-		}
-
-		fieldName := v.Type().Field(i).Name
-		wakafField := wakafValue.FieldByName(fieldName)
-		if wakafField.IsValid() && wakafField.CanSet() {
-			wakafField.Set(field)
-		}
-	}
-
 	if input.DueDate.Format("2006-01-02") != resGet.DueDate.Format("2006-01-02") {
 		resGet.DueDate = input.DueDate
 	}
 
-	res, err := wakaf.WakafRepo.Edit(id, resGet)
+	res, err := wakaf.WakafRepo.Edit(id, input)
 	if err != nil {
 		logger.Error("Failed update wakaf", zap.Error(err))
 		return res, err
