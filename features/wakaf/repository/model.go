@@ -56,6 +56,7 @@ func FromDomainAdd(input domain.Wakaf) Wakaf {
 		FundTarget: input.FundTarget,
 		DueDate:    input.DueDate,
 		Status:     input.Status,
+		CreatedAt:  input.CreatedAt,
 	}
 }
 
@@ -114,9 +115,9 @@ func ToDomainGet(input Wakaf, donors []Donors) domain.Wakaf {
 
 	for _, v := range donors {
 		var tmp = domain.Donors{
-			Name: v.Name,
-			Fund: v.Fund,
-			Doa:  v.Doa,
+			Name:       v.Name,
+			Fund:       v.Fund,
+			Doa:        v.Doa,
 			Created_at: input.CreatedAt,
 		}
 		newDonors = append(newDonors, tmp)
