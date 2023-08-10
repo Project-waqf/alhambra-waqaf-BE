@@ -153,9 +153,18 @@ func (wakaf *WakafRepo) GetAllWakaf(category string, page int, isUser bool, sort
 func (wakaf *WakafRepo) Edit(id uint, input domain.Wakaf) (domain.Wakaf, error) {
 	data := FromDomainAdd(input)
 
-	if err := wakaf.db.Model(&Wakaf{}).Where("id = ?", id).Updates(&data).Last(&data).Error; err != nil {
+	query := "UPDATE wakafs SET title = ?, category = ?, picture = ?, detail = ?, " +
+	"fund_target = ?, file_id = ?, status = ?, due_date = ?, " +
+	"updated_at = ?"
+	err := wakaf.db.Exec(query, data.Title, data.Category, data.Picture, data.Detail,
+		data.FundTarget, data.FileId, data.Status, data.DueDate, time.Now()).Error
+	if err != nil {
 		return domain.Wakaf{}, err
 	}
+
+	// if err := wakaf.db.Model(&Wakaf{}).Where("id = ?", id).Updates(&data).Last(&data).Error; err != nil {
+	// 	return domain.Wakaf{}, err
+	// }
 
 	data.ID = id
 	return ToDomainAdd(data), nil

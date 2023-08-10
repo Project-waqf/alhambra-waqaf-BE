@@ -78,10 +78,6 @@ func (wakaf *WakafService) UpdateWakaf(id uint, input domain.Wakaf) (domain.Waka
 		return domain.Wakaf{}, err
 	}
 
-	if input.DueDate.Format("2006-01-02") != resGet.DueDate.Format("2006-01-02") {
-		resGet.DueDate = input.DueDate
-	}
-
 	res, err := wakaf.WakafRepo.Edit(id, resGet)
 	if err != nil {
 		logger.Error("Failed update wakaf", zap.Error(err))

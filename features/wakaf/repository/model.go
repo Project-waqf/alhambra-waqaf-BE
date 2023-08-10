@@ -130,6 +130,8 @@ func ToDomainGet(input Wakaf, donors []Donors) domain.Wakaf {
 		Picture:    input.Picture,
 		CreatedAt:  input.UpdatedAt,
 		UpdatedAt:  input.UpdatedAt,
+		Status:     input.Status,
+		FileId:     input.FileId,
 		Detail:     input.Detail,
 		FundTarget: input.FundTarget,
 		DueDate:    input.DueDate,
