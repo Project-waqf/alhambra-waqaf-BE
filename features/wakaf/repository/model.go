@@ -118,7 +118,7 @@ func ToDomainGet(input Wakaf, donors []Donors) domain.Wakaf {
 			Name:       v.Name,
 			Fund:       v.Fund,
 			Doa:        v.Doa,
-			Created_at: input.CreatedAt,
+			Created_at: v.CreatedAt,
 		}
 		newDonors = append(newDonors, tmp)
 	}

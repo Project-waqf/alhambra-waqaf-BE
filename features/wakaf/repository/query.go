@@ -318,7 +318,7 @@ func (wakaf *WakafRepo) GetSingleWakafBySlug(slug string) (domain.Wakaf, error) 
 		return domain.Wakaf{}, err
 	}
 
-	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa").Where("id_wakaf = ? AND doa != ''", data.ID).Order("created_at DESC").Limit(10).Scan(&donors).Error; err != nil {
+	if err := wakaf.db.Table("donors").Select("name, gross_amount, doa, created_at").Where("id_wakaf = ? AND doa != ''", data.ID).Order("created_at DESC").Limit(10).Scan(&donors).Error; err != nil {
 		return domain.Wakaf{}, err
 	}
 

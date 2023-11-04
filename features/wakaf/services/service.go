@@ -164,6 +164,8 @@ func (wakaf *WakafService) UpdatePayment(input domain.PayWakaf) (domain.PayWakaf
 		return domain.PayWakaf{}, err
 	}
 
+	dataDonor.Status = "settlement"
+	dataDonor.PaymentType = input.PaymentType
 	resDonor, err := wakaf.WakafRepo.PayWakaf(dataDonor)
 	if err != nil {
 		logger.Error("Failed insert donor", zap.Error(err))
