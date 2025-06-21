@@ -1,25 +1,17 @@
 FROM golang:1.19
 
-# SET TIMEZONE
-#RUN apt-get update && \
-#    apt-get install -yq tzdata && \
-#    ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime && \
-#    dpkg-reconfigure -f noninteractive tzdata
-
-#ENV TZ="Asia/Jakarta"
-
-# MEMBUAT FOLDER APP
-RUN mkdir /app
-
-# SET DIREKTORI APP
 WORKDIR /app
 
-# COPY FILE KE FOLDER APP
-ADD . .
+# Copy dependency files dan download dependency
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
 
-# BUAT FILE EXE
-RUN go build -o main
+# Copy semua kode program
+COPY . .
 
-#RUN EXE
-CMD [ "./main" ]
+# Build dan tampilkan hasil isi folder /app
+RUN go build -o main . && ls -lah /app
 
+# Jalankan binary
+CMD ["./main"]
