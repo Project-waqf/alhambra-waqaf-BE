@@ -1,0 +1,33 @@
+services:
+  wakaf-be:
+    image: faturfawkes/alhambra-wakaf:latest
+    container_name: wakaf-be
+    ports:
+      - "8000:8000"
+    environment:
+      SERVER_PORT: 8000
+      DB_USERNAME: 
+      DB_PASSWORD: 
+      DB_HOST: 
+      DB_PORT: 
+      DB_NAME: 
+      REDIS_HOST: 
+      REDIS_PORT: 
+      IMAGEIO_PUBLIC: 
+      IMAGEIO_PRIVATE: 
+      SECRET_JWT: 
+      SALT1: 
+      SALT2: 
+      JWT_EXPIRY: 
+      SERVER_KEY: 
+      CLIENT_KEY: 
+      SECRET_KEY: 
+      EMAIL_GOOGLE: 
+      PASSWORD_GOOGLE: 
+      EMAIL_CALLBACK: 
+    networks:
+      - wakaf-net
+
+networks:
+  wakaf-net:
+    external: true
