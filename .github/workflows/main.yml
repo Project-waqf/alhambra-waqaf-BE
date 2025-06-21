@@ -49,5 +49,5 @@ jobs:
             docker rm wakaf-be
             docker rmi $(docker images -q faturfawkes/alhambra-wakaf)
             cd wakaf-be
-            docker compose -f be-compose.yml up -d
+            docker compose up -d
             
